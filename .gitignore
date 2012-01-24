@@ -1,0 +1,6 @@
+.emacs.desktop*
+TAGS
+*~
+auto-save-list
+.#*
+tramp
