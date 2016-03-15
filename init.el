@@ -104,8 +104,8 @@
  '(uniquify-buffer-name-style (quote post-forward-angle-brackets) nil (uniquify))
  '(url-proxy-services
    (quote
-    (("https" . "A.B.C.D:8080")
-     ("http" . "A.B.C.D:8080"))))
+    (("https" . "10.206.247.65:8080")
+     ("http" . "10.206.247.65:8080"))))
  '(use-file-dialog nil)
  '(vc-handled-backends (quote (RCS SVN SCCS Bzr Git Hg Arch)))
  '(vc-svn-diff-switches "-x -b")
@@ -512,8 +512,8 @@
 ; rails pdf prawn
 (add-to-list 'auto-mode-alist '("\.pdf\.prawn$" . ruby-mode))
 
-(setenv "http_proxy" "http://A.B.C.D:8080")
-(setenv "https_proxy" "http://A.B.C.D:8080")
+(setenv "http_proxy" "http://10.206.247.65:8080")
+(setenv "https_proxy" "http://10.206.247.65:8080")
 
 (require 'package)
 (add-to-list 'package-archives
