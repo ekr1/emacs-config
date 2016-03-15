@@ -494,6 +494,15 @@
 
 ;;;;;  oben:      '(custom-enabled-themes (quote (deeper-blue)))
 
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(default ((t (:inherit nil :stipple nil :background "#181818" :foreground "gray80" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 1 :width normal :foundry "default" :family "default"))))
+ '(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face :foreground "gray55"))))
+ '(font-lock-comment-face ((t (:foreground "gray55")))))
+
 ; rails pdf prawn
 (add-to-list 'auto-mode-alist '("\.pdf\.prawn$" . ruby-mode))
 
