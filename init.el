@@ -123,7 +123,7 @@
     (set-frame-size frame w h)))
 (defun arrange-my-frame ()
   ""
-  (arrange-frame 80 51 526 0))
+  (arrange-frame 102 66 528 0))
 (add-hook 'emacs-startup-hook 'arrange-my-frame)
 (arrange-my-frame)
 (toggle-frame-maximized)
@@ -602,3 +602,9 @@
 ;(setq electric-indent-functions-without-reindent (remove 'indent-line-function electric-indent-functions-without-reindent))
 
 (setq-default electric-indent-inhibit t) 
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(default ((t (:family "Droid Sans Mono" :foundry "unknown" :slant normal :weight normal :height 90 :width normal)))))
