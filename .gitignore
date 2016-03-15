@@ -4,3 +4,10 @@ TAGS
 auto-save-list
 .#*
 tramp
+nohup.out
+elpa/archives/gnu/archive-contents.signed
+elpa/archives/gnu/archive-contents
+elpa/archives/melpa-stable/archive-contents
+projectile-bookmarks.eld
+projectile.cache
+
