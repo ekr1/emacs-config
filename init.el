@@ -354,11 +354,6 @@
 (setenv "TERM" "dumb")  ; for perldoc etc.
 (setenv "PAGER" "cat")
 
-;; Rinari  (ruby on rails)
-;(add-to-list 'load-path "~/.emacs.d/rinari")
-;(require 'rinari)
-
-
 ;;;; obsolete X mode ;;;;
 ;;;; obsolete X mode ;;;;;; Font
 ;;;; obsolete X mode ;;;;;; ====
