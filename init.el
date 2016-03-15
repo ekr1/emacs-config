@@ -126,7 +126,7 @@
   (arrange-frame 102 66 528 0))
 (add-hook 'emacs-startup-hook 'arrange-my-frame)
 (arrange-my-frame)
-(toggle-frame-maximized)
+;(toggle-frame-maximized)
 
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
