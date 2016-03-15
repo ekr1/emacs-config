@@ -10,4 +10,4 @@ elpa/archives/gnu/archive-contents
 elpa/archives/melpa-stable/archive-contents
 projectile-bookmarks.eld
 projectile.cache
-
+elpa/gnupg/*.gpg
