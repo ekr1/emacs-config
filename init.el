@@ -123,9 +123,10 @@
     (set-frame-size frame w h)))
 (defun arrange-my-frame ()
   ""
-  (arrange-frame 148 68 494 22))
+  (arrange-frame 80 51 526 0))
 (add-hook 'emacs-startup-hook 'arrange-my-frame)
 (arrange-my-frame)
+(toggle-frame-maximized)
 
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
