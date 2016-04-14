@@ -531,10 +531,10 @@
 ;(setq x-select-enable-clipboard nil)
 ;(setq x-select-enable-primary t)
 
-;If emacs is run in a terminal, the clipboard- functions have no
-;effect. Instead, we use of xsel, see
-;http://www.vergenet.net/~conrad/software/xsel/ -- "a command-line
-;program for getting and setting the contents of the X selection"
+; If emacs is run in a terminal, the clipboard- functions have no
+; effect. Instead, we use of xsel, see
+; http://www.vergenet.net/~conrad/software/xsel/ -- "a command-line
+; program for getting and setting the contents of the X selection"
 
 (unless window-system
   (when (getenv "DISPLAY")
@@ -556,16 +556,39 @@
       (let ((xsel-output (shell-command-to-string "xsel --output")))
         (unless (string= (car kill-ring) xsel-output)
           xsel-output )))
-    ;; Attach callbacks to hooks
-    (setq interprogram-cut-function 'xsel-cut-function)
-    (setq interprogram-paste-function 'xsel-paste-function)
+    ;; Attach callbacks to hooks; this is too "global" and makes all "intra-emacs" cut&paste too slow.
+    ;; Attached to ctrl-ins/shift-ins instead
+    ; (setq interprogram-cut-function 'xsel-cut-function)
+    ; (setq interprogram-paste-function 'xsel-paste-function)
     ;; Idea from
     ;; http://shreevatsa.wordpress.com/2006/10/22/emacs-copypaste-and-x/
     ;; http://www.mail-archive.com/help-gnu-emacs@gnu.org/msg03577.html
      ))
 
-;; (setq interprogram-cut-function nil)
-;; (setq interprogram-paste-function nil)
+(setq interprogram-cut-function nil)
+(setq interprogram-paste-function nil)
+
+(defun ekr-kill-region-and-xsel ()
+  (interactive)
+  "kill-region and then place into X selection"
+  (kill-region (region-beginning) (region-end))
+  (xsel-cut-function (current-kill 0)))
+
+(defun ekr-kill-ring-save-and-xsel ()
+  (interactive)
+  "kill-ring-save and then place into X selection"
+  (kill-ring-save (region-beginning) (region-end))
+  (xsel-cut-function (current-kill 0)))
+
+(defun ekr-xsel-and-yank ()
+  (interactive)
+  "read x-selection into kill ring and then yank"
+  (kill-new (shell-command-to-string "xsel --output"))
+  (yank))
+
+(global-set-key (kbd "<S-delete>") 'ekr-kill-region-and-xsel)
+(global-set-key (kbd "<C-insert>") 'ekr-kill-ring-save-and-xsel)
+(global-set-key (kbd "<S-insert>") 'ekr-xsel-and-yank)
 
 (require 'yaml-mode)
 (add-to-list 'auto-mode-alist '("\.yml$" . yaml-mode))
