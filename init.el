@@ -601,3 +601,8 @@
 ;(setq electric-indent-functions-without-reindent (remove 'indent-line-function electric-indent-functions-without-reindent))
 
 (setq-default electric-indent-inhibit t) 
+
+(require 'recentf)
+(recentf-mode 1)
+(setq recentf-max-menu-items 25)
+(global-set-key "\C-x\ \C-r" 'recentf-open-files)
