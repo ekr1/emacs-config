@@ -639,3 +639,38 @@
 (recentf-mode 1)
 (setq recentf-max-menu-items 25)
 (global-set-key "\C-x\ \C-r" 'recentf-open-files)
+
+; putty key workarounds, all prefixed by "C-x p"; works with putty defaults
+
+(defmacro defkbalias (old new)
+  `(define-key (current-global-map) ,new
+     (lookup-key (current-global-map) ,old)))
+
+(defkbalias (kbd "<end>") (kbd "C-x p e"))
+
+(defkbalias (kbd "C-<right>") (kbd "C-x p c r"))
+(defkbalias (kbd "C-<left>") (kbd "C-x p c l"))
+(defkbalias (kbd "C-<up>") (kbd "C-x p c u"))
+(defkbalias (kbd "C-<down>") (kbd "C-x p c d"))
+(defkbalias (kbd "C-<down>") (kbd "C-x p c e"))
+
+;;; emacs.ahk:
+; 
+; #NoEnv  ; Recommended for performance and compatibility with future AutoHotkey releases.
+; #Warn  ; Enable warnings to assist with detecting common errors.
+; SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
+; SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
+; 
+; ; ! Alt
+; ; ^ Control
+; ; + Shift
+; 
+; #IfWinActive, zeus emacs
+; 
+; end:: Send, ^xpe
+; 
+; ^right:: Send, ^xpcr
+; ^left:: Send, ^xpcl
+; ^up:: Send, ^xpcu
+; ^down:: Send, ^xpcd
+; ^end:: Send, ^xpce
