@@ -652,7 +652,8 @@
 (defkbalias (kbd "C-<left>") (kbd "C-x p c l"))
 (defkbalias (kbd "C-<up>") (kbd "C-x p c u"))
 (defkbalias (kbd "C-<down>") (kbd "C-x p c d"))
-(defkbalias (kbd "C-<down>") (kbd "C-x p c e"))
+(defkbalias (kbd "C-<end>") (kbd "C-x p c e"))
+(defkbalias (kbd "C-<home>") (kbd "C-x p c h"))
 
 ;;; emacs.ahk:
 ; 
@@ -674,3 +675,6 @@
 ; ^up:: Send, ^xpcu
 ; ^down:: Send, ^xpcd
 ; ^end:: Send, ^xpce
+; ^home:: Send, ^xpch
+
+
