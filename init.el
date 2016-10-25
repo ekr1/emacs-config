@@ -57,7 +57,6 @@
  '(cperl-indent-wrt-brace t)
  '(cperl-invalid-face (quote default))
  '(cperl-merge-trailing-else nil)
- '(cua-mode nil nil (cua-base))
  '(custom-enabled-themes (quote (tango-dark)))
  '(desktop-files-not-to-save (quote "xyzzy (will crash if this is nil)"))
  '(desktop-globals-to-clear
@@ -96,6 +95,8 @@
    (quote
     ((buffer-file-coding-system . iso-8859-1)
      (buffer-file-coding-system . utf-8))))
+ '(select-enable-clipboard t)
+ '(select-enable-primary t)
  '(show-paren-mode t)
  '(split-width-threshold 140)
  '(tool-bar-mode nil)
@@ -118,8 +119,6 @@
  '(vc-handled-backends (quote (RCS SVN SCCS Bzr Git Hg Arch)))
  '(vc-svn-diff-switches "-x -b")
  '(with-editor-emacsclient-executable nil)
- '(x-select-enable-clipboard t)
- '(x-select-enable-primary t)
  '(xslt-process-fop-log-level (quote (debug)))
  '(xslt-process-xml-xslt-associations nil)
  '(xterm-mouse-mode t))
@@ -621,3 +620,14 @@
 
 (global-set-key (kbd "C-x g") 'magit-status)
 (global-set-key (kbd "C-x C-g") 'magit-dispatch-popup)
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
+
+; maximise on windows
+
+(run-at-time "1" nil '(lambda () (toggle-frame-maximized)))
+
