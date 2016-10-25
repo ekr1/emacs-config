@@ -1,3 +1,5 @@
+; If this does not load at all (no error message), maybe remove ~/.emacs.
+
 (add-to-list 'load-path "~/.emacs.d/elisp")
 
 (require 'compile)
@@ -497,8 +499,8 @@
 ; rails pdf prawn
 (add-to-list 'auto-mode-alist '("\.pdf\.prawn$" . ruby-mode))
 
-(setenv "http_proxy" "http://A.B.C.D:8080")
-(setenv "https_proxy" "http://A.B.C.D:8080")
+;(setenv "http_proxy" "http://A.B.C.D:8080")
+;(setenv "https_proxy" "http://A.B.C.D:8080")
 
 (require 'package)
 (add-to-list 'package-archives
