@@ -1,5 +1,11 @@
 ; If this does not load at all (no error message), maybe remove ~/.emacs.
 
+; nohup emacs --daemon >/dev/null &
+; killall emacsclient ; emacsclient -t /dev/null
+
+; export TERM=xterm-256color
+; screen -dR emacs -c .screenrc.emacs
+
 (add-to-list 'load-path "~/.emacs.d/elisp")
 
 (require 'compile)
@@ -111,6 +117,7 @@
  '(use-file-dialog nil)
  '(vc-handled-backends (quote (RCS SVN SCCS Bzr Git Hg Arch)))
  '(vc-svn-diff-switches "-x -b")
+ '(with-editor-emacsclient-executable nil)
  '(x-select-enable-clipboard t)
  '(x-select-enable-primary t)
  '(xslt-process-fop-log-level (quote (debug)))
@@ -608,3 +615,9 @@
 (recentf-mode 1)
 (setq recentf-max-menu-items 25)
 (global-set-key "\C-x\ \C-r" 'recentf-open-files)
+;;;
+;;; magit
+;;;
+
+(global-set-key (kbd "C-x g") 'magit-status)
+(global-set-key (kbd "C-x C-g") 'magit-dispatch-popup)
