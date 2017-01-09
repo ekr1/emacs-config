@@ -49,7 +49,6 @@
  '(cperl-indent-wrt-brace t)
  '(cperl-invalid-face (quote default))
  '(cperl-merge-trailing-else nil)
- '(cua-mode nil nil (cua-base))
  '(custom-enabled-themes (quote (tango-dark)))
  '(desktop-files-not-to-save (quote "xyzzy (will crash if this is nil)"))
  '(desktop-globals-to-clear
@@ -607,4 +606,4 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:family "Droid Sans Mono" :foundry "unknown" :slant normal :weight normal :height 90 :width normal)))))
+ '(default ((t (:family "Inconsolata" :foundry "unknown" :slant normal :weight normal :height 98 :width normal)))))
