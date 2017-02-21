@@ -171,16 +171,16 @@
 	(message "Open wiki-update.cfg first"))))
   )
 
-(defun ekr-compile-plsql ()
-  (interactive)
-  "compile the current .sql file in the correct schema"
-  (if (eq 0 (string-match 
-	     "/opt/rot/app/release/dev-ekr/quellen/packages/" 
-	     (buffer-file-name)))
-      (progn (save-buffer)
-             (shell-command
-              (concat "date ; echo | node appsys_dev @"
-                      (file-name-nondirectory buffer-file-name))))))
+;; (defun ekr-compile-plsql ()
+;;   (interactive)
+;;   "compile the current .sql file in the correct schema"
+;;   (if (eq 0 (string-match 
+;; 	     "/opt/rot/app/release/dev-ekr/quellen/packages/" 
+;; 	     (buffer-file-name)))
+;;       (progn (save-buffer)
+;;              (shell-command
+;;               (concat "date ; echo | node appsys_dev @"
+;;                       (file-name-nondirectory buffer-file-name))))))
 
 (defun ekr-recompile ()
   (interactive)
@@ -229,7 +229,7 @@
 
 (global-set-key (kbd "<f1>") 'ekr-wiki-update)
 (global-set-key (kbd "<f2>") 'ekr-recompile)
-(global-set-key (kbd "<f3>") 'ekr-compile-plsql)
+;; (global-set-key (kbd "<f3>") 'ekr-compile-plsql)
 (global-set-key (kbd "<f4>") 'ekr-read-ssh-agent)
 (global-set-key (kbd "<f5>") 'ekr-git-gui)
 (global-set-key (kbd "M-n") 'next-error)

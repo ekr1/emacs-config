@@ -18,6 +18,7 @@
 (setq mc/cmds-to-run-once
       '(
         ekr-recompile
+        projectile-find-file
         switch-to-buffer
         toggle-frame-fullscreen
         ))
