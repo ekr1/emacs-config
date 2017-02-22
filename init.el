@@ -620,13 +620,23 @@
 
 (global-set-key (kbd "C-x g") 'magit-status)
 (global-set-key (kbd "C-x C-g") 'magit-dispatch-popup)
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
 
+(if (string= default-directory "~/src/akp_test_sf/")
+    (progn
+      (custom-set-faces
+       ;; custom-set-faces was added by Custom.
+       ;; If you edit it by hand, you could mess it up, so be careful.
+       ;; Your init file should contain only one such instance.
+       ;; If there is more than one, they won't work right.
+       '(default ((t (:inherit nil :stipple nil :background "DodgerBlue4"
+                               :foreground "#eeeeec" :inverse-video nil :box nil :strike-through nil
+                               :overline nil :underline nil :slant normal :weight normal :height 113
+                               :width normal :foundry "unknown" :family "DejaVu Sans Mono")))))
+      (message "Special face for akp_test_sf..."))
+  (progn
+    (message "Standard face...")
+    (message default-directory)))
+  
 ; maximise on windows
 
 (run-at-time "1" nil '(lambda () (toggle-frame-maximized)))
