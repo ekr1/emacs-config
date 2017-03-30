@@ -123,17 +123,17 @@
  '(xslt-process-xml-xslt-associations nil)
  '(xterm-mouse-mode t))
 
-(defun arrange-frame (w h x y)
-  "Set the width, height, and x/y position of the current frame"
-  (let ((frame (selected-frame)))
-    (delete-other-windows)
-    (set-frame-position frame x y)
-    (set-frame-size frame w h)))
-(defun arrange-my-frame ()
-  ""
-  (arrange-frame 148 68 494 22))
-(add-hook 'emacs-startup-hook 'arrange-my-frame)
-(arrange-my-frame)
+;; (defun arrange-frame (w h x y)
+;;   "Set the width, height, and x/y position of the current frame"
+;;   (let ((frame (selected-frame)))
+;;     (delete-other-windows)
+;;     (set-frame-position frame x y)
+;;     (set-frame-size frame w h)))
+;; (defun arrange-my-frame ()
+;;   ""
+;;   (arrange-frame 148 68 494 22))
+;; (add-hook 'emacs-startup-hook 'arrange-my-frame)
+;; (arrange-my-frame)
 
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
@@ -144,32 +144,32 @@
 ;           '("*Async Shell Command*" "*grep*" "*compilation*" "*vc-dir*"))
 (setq special-display-buffer-names nil)
 
-(defun ekr-wiki-update ()
-  (interactive)
-  "run ./wiki-update.cfg in the correct directory" 
-  (if (eq 0 (string-match 
-	    "/home/ekr/src/rotlib_ekr/" 
-	    (buffer-file-name)))
+;; (defun ekr-wiki-update ()
+;;   (interactive)
+;;   "run ./wiki-update.cfg in the correct directory" 
+;;   (if (eq 0 (string-match 
+;; 	    "/home/ekr/src/rotlib_ekr/" 
+;; 	    (buffer-file-name)))
 
-      ;; create rot-perl-lib docs (ekr)
-      (shell-command
-       "/home/ekr/src/rotlib_ekr/bin/pdoc-local.sh &")
+;;       ;; create rot-perl-lib docs (ekr)
+;;       (shell-command
+;;        "/home/ekr/src/rotlib_ekr/bin/pdoc-local.sh &")
 
-    ;; ... or wiki docs
-    (let ((buffer (find-file-noselect "/opt/rot/app/sdb1/system/quellen/docs/wiki-update.cfg"))
-	  (old-window (selected-window))
-	  (old-file-name (buffer-file-name)))
-      (if buffer
-	  (progn
-	    (delete-other-windows)
-	    (set-buffer buffer)
-	    (shell-command 
-	     (concat "./wiki-update.cfg -o '/"
-		     (file-name-nondirectory old-file-name)
-		     "$' &")) 
-	    (select-window old-window))
-	(message "Open wiki-update.cfg first"))))
-  )
+;;     ;; ... or wiki docs
+;;     (let ((buffer (find-file-noselect "/opt/rot/app/sdb1/system/quellen/docs/wiki-update.cfg"))
+;; 	  (old-window (selected-window))
+;; 	  (old-file-name (buffer-file-name)))
+;;       (if buffer
+;; 	  (progn
+;; 	    (delete-other-windows)
+;; 	    (set-buffer buffer)
+;; 	    (shell-command 
+;; 	     (concat "./wiki-update.cfg -o '/"
+;; 		     (file-name-nondirectory old-file-name)
+;; 		     "$' &")) 
+;; 	    (select-window old-window))
+;; 	(message "Open wiki-update.cfg first"))))
+;;   )
 
 (defun ekr-compile-plsql ()
   (interactive)
@@ -227,7 +227,7 @@
   (start-process "git gui" nil "git" "gui")
   (message "'git gui' started"))
 
-(global-set-key (kbd "<f1>") 'ekr-wiki-update)
+;; (global-set-key (kbd "<f1>") 'ekr-wiki-update)
 (global-set-key (kbd "<f2>") 'ekr-recompile)
 (global-set-key (kbd "<f3>") 'ekr-compile-plsql)
 (global-set-key (kbd "<f4>") 'ekr-read-ssh-agent)
@@ -502,20 +502,21 @@
 
 ;;;;;  oben:      '(custom-enabled-themes (quote (deeper-blue)))
 
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil :background "#181818" :foreground "gray80" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 1 :width normal :foundry "default" :family "default"))))
- '(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face :foreground "gray55"))))
- '(font-lock-comment-face ((t (:foreground "gray55")))))
+;;;; in PUTTY, not X11:
+;; (custom-set-faces
+;;  ;; custom-set-faces was added by Custom.
+;;  ;; If you edit it by hand, you could mess it up, so be careful.
+;;  ;; Your init file should contain only one such instance.
+;;  ;; If there is more than one, they won't work right.
+;;  '(default ((t (:inherit nil :stipple nil :background "#181818" :foreground "gray80" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 1 :width normal :foundry "default" :family "default"))))
+;;  '(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face :foreground "gray55"))))
+;;  '(font-lock-comment-face ((t (:foreground "gray55")))))
 
 ; rails pdf prawn
 (add-to-list 'auto-mode-alist '("\.pdf\.prawn$" . ruby-mode))
 
-(setenv "http_proxy" "http://10.206.247.65:8080")
-(setenv "https_proxy" "http://10.206.247.65:8080")
+(setenv "http_proxy" "http://proxy.rotdev.t-systems.com:3128")
+(setenv "https_proxy" "http://proxy.rotdev.t-systems.com:3128")
 
 (require 'package)
 (add-to-list 'package-archives
