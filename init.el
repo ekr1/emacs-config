@@ -227,13 +227,31 @@
   (start-process "git gui" nil "git" "gui")
   (message "'git gui' started"))
 
-(global-set-key (kbd "<f1>") 'ekr-wiki-update)
+(defun ekr-next-scenario ()
+  (interactive)
+  "Jump to the next cucumber scenario in the compilation buffer"
+  (switch-to-buffer-other-window "*compilation*")
+  (search-forward "Szenario:")
+  (execute-kbd-macro (kbd "<return>"))
+  ))
+
+(defun my-previous-scenario ()
+  (interactive)
+  "Jump to the previous cucumber scenario in the compilation buffer"
+  (switch-to-buffer-other-window "*compilation*")
+  (search-backward "Szenario:")
+  (execute-kbd-macro (kbd "<return>"))
+  )
+
+;; (global-set-key (kbd "<f1>") 'ekr-wiki-update)
 (global-set-key (kbd "<f2>") 'ekr-recompile)
 ;; (global-set-key (kbd "<f3>") 'ekr-compile-plsql)
 (global-set-key (kbd "<f4>") 'ekr-read-ssh-agent)
 (global-set-key (kbd "<f5>") 'ekr-git-gui)
 (global-set-key (kbd "M-n") 'next-error)
 (global-set-key (kbd "M-p") 'previous-error)
+(global-set-key (kbd "C-M-n") 'ekr-next-scenario)
+(global-set-key (kbd "C-M-p") 'ekr-previous-scenario)
 (global-set-key (kbd "C-/") 'comment-or-uncomment-region)
 
 (defun ask-before-closing ()
@@ -263,6 +281,11 @@
 (setq compilation-error-regexp-alist
       (remove-if 'starts-with-ekr
                  (mapcar 'car compilation-error-regexp-alist-alist)))
+
+; erstes entfernen, beim Entwickeln
+;(setq compilation-error-regexp-alist-alist
+;      (cdr compilation-error-regexp-alist-alist))
+
 
 ; (REGEXP FILE [LINE COLUMN TYPE HYPERLINK HIGHLIGHT...])
 
@@ -295,6 +318,19 @@
 (add-to-list 'compilation-error-regexp-alist-alist
  	     '(ekr-cucumber-comment "# \\(.+\\):\\([0-9]+\\)"
 		     1 2 nil 0))
+
+; also jump between...
+;  Szenario: xxxxx           # /home/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.feature:242
+(add-to-list 'compilation-error-regexp-alist 'ekr-cucumber-scenario)
+(add-to-list 'compilation-error-regexp-alist-alist
+ 	     '(ekr-cucumber-scenario "Szenario: .+ # \\(.+\\):\\([0-9]+\\)"
+                                     1 2 nil 1))
+
+; You can implement step definitions for undefined steps with these snippets:
+(add-to-list 'compilation-error-regexp-alist 'ekr-cucumber-pending)
+(add-to-list 'compilation-error-regexp-alist-alist
+ 	     '(ekr-cucumber-pending "You can implement step definitions for undefined steps with these snippets"
+                                     1 1 nil 1))
 
 ;; Der Rest sollte weit hinten stehen um am Anfang der Liste zu erscheinen...
 
@@ -346,6 +382,19 @@
 (add-to-list 'compilation-error-regexp-alist-alist
  	     '(ekr-perl-ignore-rubocop " \\^+"
 		     1 1 nil 0))
+
+; cucumber undefined step
+; ./bin/rake:8:in `<top (required)>'
+(add-to-list 'compilation-error-regexp-alist 'ekr-cucumber-ignore-junk)
+(add-to-list 'compilation-error-regexp-alist-alist
+ 	     '(ekr-cucumber-ignore-junk "\./bin/rake:"
+                                       1 1 nil 0))
+
+(add-to-list 'compilation-error-regexp-alist 'ekr-cucumber-ignore-junk2)
+(add-to-list 'compilation-error-regexp-alist-alist
+ 	     '(ekr-cucumber-ignore-junk2 "-e:1:"
+                                       1 1 nil 0))
+
 
 ;; ; line wrap in compilation mode (avoid 100% CPU for long li
 ;; (defun my-compilation-mode-hook ()
@@ -657,3 +706,8 @@
    (t
     ;; default
     (string-inflection-ruby-style-cycle))))
+
+; avoid extreme pauses on long compilation lines
+(require 'truncated-compilation-mode)
+(truncated-compilation-mode)
+
