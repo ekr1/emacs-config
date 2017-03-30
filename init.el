@@ -74,6 +74,31 @@
  '(display-buffer-reuse-frames t)
  '(feature-cucumber-command
    "time bin/rake cucumber:rerun_nodb CUCUMBER_OPTS=\"{options}\" FEATURE=\"{feature}\" ")
+ '(file-coding-system-alist
+   (quote
+    (("\\.dz\\'" no-conversion . no-conversion)
+     ("\\.txz\\'" no-conversion . no-conversion)
+     ("\\.xz\\'" no-conversion . no-conversion)
+     ("\\.lzma\\'" no-conversion . no-conversion)
+     ("\\.lz\\'" no-conversion . no-conversion)
+     ("\\.g?z\\'" no-conversion . no-conversion)
+     ("\\.\\(?:tgz\\|svgz\\|sifz\\)\\'" no-conversion . no-conversion)
+     ("\\.tbz2?\\'" no-conversion . no-conversion)
+     ("\\.bz2\\'" no-conversion . no-conversion)
+     ("\\.Z\\'" no-conversion . no-conversion)
+     ("\\.elc\\'" . utf-8-emacs)
+     ("\\.el\\'" . prefer-utf-8)
+     ("\\.utf\\(-8\\)?\\'" . utf-8)
+     ("\\.xml\\'" . xml-find-file-coding-system)
+     ("\\(\\`\\|/\\)loaddefs.el\\'" raw-text . raw-text-unix)
+     ("\\.tar\\'" no-conversion . no-conversion)
+     ("\\.po[tx]?\\'\\|\\.po\\." . po-find-file-coding-system)
+     ("\\.\\(tex\\|ltx\\|dtx\\|drv\\)\\'" . latexenc-find-file-coding-system)
+     ("" undecided)
+     ("\\.rb\\'" . utf-8)
+     ("\\.yml\\'" . utf-8)
+     ("\\.erb\\'" . utf-8)
+     ("\\.feature\\'" . utf-8))))
  '(grep-find-ignored-files
    (quote
     (".#*" "*.o" "*~" "*.bin" "*.lbin" "*.so" "*.a" "*.ln" "*.blg" "*.bbl" "*.elc" "*.lof" "*.glo" "*.idx" "*.lot" "*.fmt" "*.tfm" "*.class" "*.fas" "*.lib" "*.mem" "*.x86f" "*.sparcf" "*.dfsl" "*.pfsl" "*.d64fsl" "*.p64fsl" "*.lx64fsl" "*.lx32fsl" "*.dx64fsl" "*.dx32fsl" "*.fx64fsl" "*.fx32fsl" "*.sx64fsl" "*.sx32fsl" "*.wx64fsl" "*.wx32fsl" "*.fasl" "*.ufsl" "*.fsl" "*.dxl" "*.lo" "*.la" "*.gmo" "*.mo" "*.toc" "*.aux" "*.cp" "*.fn" "*.ky" "*.pg" "*.tp" "*.vr" "*.cps" "*.fns" "*.kys" "*.pgs" "*.tps" "*.vrs" "*.pyc" "*.pyo" "*.gz")))
@@ -682,10 +707,19 @@
                                :overline nil :underline nil :slant normal :weight normal :height 113
                                :width normal :foundry "unknown" :family "DejaVu Sans Mono")))))
       (message "Special face for akp_test_sf..."))
-  (progn
-    (message "Standard face...")
-    (message default-directory)))
-  
+  (if (string= default-directory "~/src/svn2_adlerfelsen/")
+      (progn
+        (custom-set-faces
+         '(default ((t (:inherit nil :stipple nil :background "DarkOrange4"
+                                 :foreground "#eeeeec" :inverse-video nil :box nil :strike-through nil
+                                 :overline nil :underline nil :slant normal :weight normal :height 113
+                                 :width normal :foundry "unknown" :family "DejaVu Sans Mono")))))
+        (message "Special face for svn2_adlerfelsen..."))
+    (progn
+      (message "Standard face...")
+      (message default-directory))))
+
+
 ; maximise on windows
 
 (run-at-time "1" nil '(lambda () (toggle-frame-maximized)))
