@@ -258,7 +258,7 @@
   (switch-to-buffer-other-window "*compilation*")
   (search-forward "Szenario:")
   (execute-kbd-macro (kbd "<return>"))
-  ))
+  )
 
 (defun my-previous-scenario ()
   (interactive)
