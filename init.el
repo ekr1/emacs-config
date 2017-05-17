@@ -255,16 +255,14 @@
   "Jump to the next cucumber scenario in the compilation buffer"
   (switch-to-buffer-other-window "*compilation*")
   (search-forward "Szenario:")
-  (execute-kbd-macro (kbd "<return>"))
-  ))
+  (execute-kbd-macro (kbd "<return>")))
 
 (defun my-previous-scenario ()
   (interactive)
   "Jump to the previous cucumber scenario in the compilation buffer"
   (switch-to-buffer-other-window "*compilation*")
   (search-backward "Szenario:")
-  (execute-kbd-macro (kbd "<return>"))
-  )
+  (execute-kbd-macro (kbd "<return>")))
 
 ;; (global-set-key (kbd "<f1>") 'ekr-wiki-update)
 (global-set-key (kbd "<f2>") 'ekr-recompile)
