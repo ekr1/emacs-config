@@ -120,8 +120,6 @@
    (quote
     ((buffer-file-coding-system . iso-8859-1)
      (buffer-file-coding-system . utf-8))))
- '(select-enable-clipboard t)
- '(select-enable-primary t)
  '(show-paren-mode t)
  '(split-width-threshold 140)
  '(tool-bar-mode nil)
