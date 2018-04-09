@@ -416,6 +416,11 @@
  	     '(ekr-cucumber-ignore-junk2 "-e:1:"
                                        1 1 nil 0))
 
+(add-to-list 'compilation-error-regexp-alist 'ekr-ignore-cucumber-braces)
+(add-to-list 'compilation-error-regexp-alist-alist
+ 	     '(ekr-ignore-cucumber-braces "<pre><code>\\(.*?\\):\\([0-9]+\\):"
+		     1 2 nil 1))
+
 
 ;; ; line wrap in compilation mode (avoid 100% CPU for long li
 ;; (defun my-compilation-mode-hook ()
