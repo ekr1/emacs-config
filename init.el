@@ -1,5 +1,18 @@
 ; If this does not load at all (no error message), maybe remove ~/.emacs.
 
+; vimacs (emacs mode for vim)
+; ---------------------------
+; wget http://www.algorithm.com.au/downloads/vimacs/vimacs-0.95.tar.gz
+; mkdir -p $HOME/.vim/doc
+; mkdir -p $HOME/.vim/plugin
+; cp -R doc plugin $HOME/.vim
+; vim --cmd "helptags $HOME/.vim/doc" --cmd "q"
+;
+; or
+;
+; cat vimacs.tgz.uue | uudecode - | tar -C ~/.vim -xzf -
+
+
 ; nohup emacs --daemon >/dev/null &
 ; killall emacsclient ; emacsclient -t /dev/null
 
@@ -101,7 +114,7 @@
      ("\\.feature\\'" . utf-8))))
  '(grep-find-ignored-files
    (quote
-    (".#*" "*.o" "*~" "*.bin" "*.lbin" "*.so" "*.a" "*.ln" "*.blg" "*.bbl" "*.elc" "*.lof" "*.glo" "*.idx" "*.lot" "*.fmt" "*.tfm" "*.class" "*.fas" "*.lib" "*.mem" "*.x86f" "*.sparcf" "*.dfsl" "*.pfsl" "*.d64fsl" "*.p64fsl" "*.lx64fsl" "*.lx32fsl" "*.dx64fsl" "*.dx32fsl" "*.fx64fsl" "*.fx32fsl" "*.sx64fsl" "*.sx32fsl" "*.wx64fsl" "*.wx32fsl" "*.fasl" "*.ufsl" "*.fsl" "*.dxl" "*.lo" "*.la" "*.gmo" "*.mo" "*.toc" "*.aux" "*.cp" "*.fn" "*.ky" "*.pg" "*.tp" "*.vr" "*.cps" "*.fns" "*.kys" "*.pgs" "*.tps" "*.vrs" "*.pyc" "*.pyo" "*.gz")))
+    (".#*" "*.o" "*~" "*.bin" "*.lbin" "*.so" "*.a" "*.ln" "*.blg" "*.bbl" "*.elc" "*.lof" "*.glo" "*.idx" "*.lot" "*.fmt" "*.tfm" "*.class" "*.fas" "*.lib" "*.mem" "*.x86f" "*.sparcf" "*.dfsl" "*.pfsl" "*.d64fsl" "*.p64fsl" "*.lx64fsl" "*.lx32fsl" "*.dx64fsl" "*.dx32fsl" "*.fx64fsl" "*.fx32fsl" "*.sx64fsl" "*.sx32fsl" "*.wx64fsl" "*.wx32fsl" "*.fasl" "*.ufsl" "*.fsl" "*.dxl" "*.lo" "*.la" "*.gmo" "*.mo" "*.toc" "*.aux" "*.cp" "*.fn" "*.ky" "*.pg" "*.tp" "*.vr" "*.cps" "*.fns" "*.kys" "*.pgs" "*.tps" "*.vrs" "*.pyc" "*.pyo" "*.gz" "cucumber.json")))
  '(grep-find-template "find . <X> -type f <F> -print0 | xargs -0 grep <C> -n <R>")
  '(icicle-guess-commands-in-path nil)
  '(icicle-redefine-standard-commands-flag nil)
@@ -121,6 +134,7 @@
     ((buffer-file-coding-system . iso-8859-1)
      (buffer-file-coding-system . utf-8))))
  '(show-paren-mode t)
+ '(smerge-command-prefix "d")
  '(split-width-threshold 140)
  '(tool-bar-mode nil)
  '(tooltip-mode nil)
@@ -136,8 +150,8 @@
  '(uniquify-buffer-name-style (quote post-forward-angle-brackets) nil (uniquify))
  '(url-proxy-services
    (quote
-    (("https" . "A.B.C.D:8080")
-     ("http" . "A.B.C.D:8080"))))
+    (("https" . "141.77.17.155:8080")
+     ("http" . "141.77.17.155:8080"))))
  '(use-file-dialog nil)
  '(vc-handled-backends (quote (RCS SVN SCCS Bzr Git Hg Arch)))
  '(vc-svn-diff-switches "-x -b")
@@ -604,8 +618,6 @@
   (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/")))
 (package-initialize) ;; You might already have this line
 
-(projectile-global-mode)
-
 ;;;;;;;;;;;;;;;;;;; mintty xterm-mouse mode (cut, paste, windows clipboard...)
 ;;; clipboard is via VcXsrv
 
@@ -760,4 +772,78 @@
 ; avoid extreme pauses on long compilation lines
 (require 'truncated-compilation-mode)
 (truncated-compilation-mode)
+
+; frame commands
+;(require 'frame-cmds)
+
+; debugger
+(require 'realgud)
+(add-to-list 'load-path "~/.emacs.d/elisp/realgud-byebug")
+(require 'realgud-byebug)
+
+
+;; default smerge bindings
+;;
+;; C-c ^ RET       smerge-keep-current
+;; C-c ^ =         Prefix Command
+;; C-c ^ C         smerge-combine-with-next
+;; C-c ^ E         smerge-ediff
+;; C-c ^ R         smerge-refine
+;; C-c ^ a         smerge-keep-all
+;; C-c ^ b         smerge-keep-base
+;; C-c ^ m         smerge-keep-mine
+;; C-c ^ n         smerge-next
+;; C-c ^ o         smerge-keep-other
+;; C-c ^ p         smerge-prev
+;; C-c ^ r         smerge-resolve
+;; 
+;; C-c ^ = <       smerge-diff-base-mine
+;; C-c ^ = =       smerge-diff-mine-other
+;; C-c ^ = >       smerge-diff-base-other
+
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
+
+
+(defun notify-compilation-result(buffer msg)
+  "Notify that the compilation is finished,
+close the *compilation* buffer if the compilation is successful,
+and set the focus back to Emacs frame"
+  (if (string= "*compilation*" (buffer-name buffer))
+      (if (string-match "^finished" msg)
+          (progn
+            (delete-windows-on buffer)
+            (tooltip-show "\n Compilation Successful :-) \n "))
+        (tooltip-show "\n Compilation Failed :-( \n "))
+                                        ; (setq current-frame (car (car (cdr (current-frame-configuration)))))
+                                        ; (select-frame-set-input-focus current-frame)
+    ))
+
+(add-to-list 'compilation-finish-functions
+	     'notify-compilation-result)
+
+;;;;;;; special ruby stuff (packages installed specifically for that)
+; https://lorefnon.me/2014/02/02/configuring-emacs-for-rails.html
+
+; auto syntax error check
+(require 'flymake-ruby)
+(add-hook 'ruby-mode-hook 'flymake-ruby-load)
+
+; ruby shell
+(global-set-key (kbd "C-c r r") 'inf-ruby-console-auto)
+
+;;;;;; projectile
+
+(projectile-global-mode)
+
+; many commands like C-c r m  (Model...)
+(projectile-rails-global-mode)
+
+(require 'robe)
+(add-hook 'ruby-mode-hook 'robe-mode)
+
 
