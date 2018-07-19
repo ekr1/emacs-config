@@ -10,7 +10,7 @@
 ;
 ; or
 ;
-; cat vimacs.tgz.uue | uudecode - | tar -C ~/.vim -xzf -
+; cat vimacs.tgz.uue | uudecode | tar -C ~/.vim -xzf -
 
 
 ; nohup emacs --daemon >/dev/null &
