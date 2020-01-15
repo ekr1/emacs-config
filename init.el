@@ -317,11 +317,6 @@
       (remove-if 'starts-with-ekr
                  (mapcar 'car compilation-error-regexp-alist-alist)))
 
-; erstes entfernen, beim Entwickeln
-;(setq compilation-error-regexp-alist-alist
-;      (cdr compilation-error-regexp-alist-alist))
-
-
 ; (REGEXP FILE [LINE COLUMN TYPE HYPERLINK HIGHLIGHT...])
 
 (add-to-list 'compilation-error-regexp-alist 'ekr-imp-log)
@@ -373,6 +368,12 @@
 (add-to-list 'compilation-error-regexp-alist-alist
  	     '(ekr-perl-ignore " at \\(library \\)?\\(/.*?\\) line \\([0-9]+\\)"
 		     2 3 nil 0))
+
+; undefined method `create_table?' for #<CreateDelayedJobs:0x00555f85d0b698>/home/ekr/src/akp/db/migrate/20150715091448_create_delayed_jobs.rb:4:in `up'
+(add-to-list 'compilation-error-regexp-alist 'ekr-ruby-classfile)
+(add-to-list 'compilation-error-regexp-alist-alist
+ 	     '(ekr-ruby-classfile "#<.*?>\\(/.*?\\):\\([0-9]+\\)"
+		     1 2 nil 0))
 
 (add-to-list 'compilation-error-regexp-alist 'ekr-perl-ignore-http)
 (add-to-list 'compilation-error-regexp-alist-alist
@@ -435,8 +436,27 @@
  	     '(ekr-ignore-cucumber-braces "<pre><code>\\(.*?\\):\\([0-9]+\\):"
 		     1 2 nil 1))
 
+; local python
+; tests/test_filter.py:127: 
+(add-to-list 'compilation-error-regexp-alist 'ekr-python)
+(add-to-list 'compilation-error-regexp-alist-alist
+ 	     '(ekr-python "\\(.+py\\):\\([0-9]+\\):"
+		     1 2 nil 2))
 
-;; ; line wrap in compilation mode (avoid 100% CPU for long li
+; pytest in Docker -> files are not reachable
+; /usr/local/lib/python3.6/site-packages/werkzeug/wrappers/json.py:119:
+(add-to-list 'compilation-error-regexp-alist 'ekr-ignore-pytest)
+(add-to-list 'compilation-error-regexp-alist-alist
+ 	     '(ekr-ignore-pytest "\\(/usr/local/lib/python.+\\):\\([0-9]+\\):"
+		     1 2 nil 0))
+
+; erstes entfernen, beim Entwickeln
+;(setq compilation-error-regexp-alist-alist
+;      (cdr compilation-error-regexp-alist-alist))
+
+
+
+;; ; line wrap in compilation mode (avoid 100% CPU for long lines)
 ;; (defun my-compilation-mode-hook ()
 ;;   (setq truncate-lines nil) ;; automatically becomes buffer local
 ;;   (set (make-local-variable 'truncate-partial-width-windows) nil))
