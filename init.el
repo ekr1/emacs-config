@@ -797,9 +797,11 @@
 ;(require 'frame-cmds)
 
 ; debugger
-(require 'realgud)
-(add-to-list 'load-path "~/.emacs.d/elisp/realgud-byebug")
-(require 'realgud-byebug)
+(unless (ignore-errors
+          (require 'realgud)
+          (add-to-list 'load-path "~/.emacs.d/elisp/realgud-byebug")
+          (require 'realgud-byebug))
+  (message "Warning: error loading realgud, ignoring"))
 
 
 ;; default smerge bindings
@@ -850,8 +852,10 @@ and set the focus back to Emacs frame"
 ; https://lorefnon.me/2014/02/02/configuring-emacs-for-rails.html
 
 ; auto syntax error check
-(require 'flymake-ruby)
-(add-hook 'ruby-mode-hook 'flymake-ruby-load)
+(unless (ignore-errors
+          (require 'flymake-ruby)
+          (add-hook 'ruby-mode-hook 'flymake-ruby-load))
+  (message "Warning: error loading flymake-ruby, ignoring"))
 
 ; ruby shell
 (global-set-key (kbd "C-c r r") 'inf-ruby-console-auto)
@@ -861,9 +865,13 @@ and set the focus back to Emacs frame"
 (projectile-global-mode)
 
 ; many commands like C-c r m  (Model...)
-(projectile-rails-global-mode)
+(unless (ignore-errors
+          (projectile-rails-global-mode))
+  (message "Warning: ignoring errors loading projectile-rails-global-mode"))
 
-(require 'robe)
-(add-hook 'ruby-mode-hook 'robe-mode)
+(unless (ignore-errors
+          (require 'robe)
+          (add-hook 'ruby-mode-hook 'robe-mode))
+  (message "Warning: ignoring errors loading robe"))
 
 
