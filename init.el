@@ -874,4 +874,15 @@ and set the focus back to Emacs frame"
           (add-hook 'ruby-mode-hook 'robe-mode))
   (message "Warning: ignoring errors loading robe"))
 
+;;;;;;; Mac
+
+; to be able to use Option-7 for | etc.
+
+; originally 'super
+(if (boundp 'ns-command-modifier)
+    (setq ns-command-modifier 'meta))
+
+; originally 'meta
+(if (boundp 'ns-option-modifier)
+    (setq ns-option-modifier nil))
 
