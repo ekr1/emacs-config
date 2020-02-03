@@ -279,7 +279,7 @@
   (execute-kbd-macro (kbd "<return>")))
 
 ;; (global-set-key (kbd "<f1>") 'ekr-wiki-update)
-(global-set-key (kbd "<f2>") 'ekr-recompile)
+(global-set-key (kbd "M-a") 'ekr-recompile)
 ;; (global-set-key (kbd "<f3>") 'ekr-compile-plsql)
 (global-set-key (kbd "<f4>") 'ekr-read-ssh-agent)
 (global-set-key (kbd "<f5>") 'ekr-git-gui)
