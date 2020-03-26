@@ -438,8 +438,15 @@
 
 (add-to-list 'compilation-error-regexp-alist 'ekr-ignore-cucumber-braces)
 (add-to-list 'compilation-error-regexp-alist-alist
- 	     '(ekr-ignore-cucumber-braces "<pre><code>\\(.*?\\):\\([0-9]+\\):"
+ 	     '(ekr-ignore-cucumbraceer-braces "<pre><code>\\(.*?\\):\\([0-9]+\\):"
 		     1 2 nil 1))
+
+; ruby "ap" stacktrace
+; [  0] "/Users/KRAEME/.rbenv/versions/2.3.3/lib/ruby/gems/2.3.0/gems/activemodel-4.0.6/lib/active_model/attribute_methods.rb:439:in `method_missing'",
+(add-to-list 'compilation-error-regexp-alist 'ekr-ruby-ap-trace)
+(add-to-list 'compilation-error-regexp-alist-alist
+ 	     '(ekr-ruby-ap-trace "\"\\(.+\\):\\([0-9]+\\):"
+		     1 2 nil 0))
 
 ; local python
 ; tests/test_filter.py:127: 
@@ -453,6 +460,13 @@
 (add-to-list 'compilation-error-regexp-alist 'ekr-ignore-pytest)
 (add-to-list 'compilation-error-regexp-alist-alist
  	     '(ekr-ignore-pytest "\\(/usr/local/lib/python.+\\):\\([0-9]+\\):"
+		     1 2 nil 0))
+
+; Python tests
+; E     File "/app/application/models/emil_schema.py", line 209
+(add-to-list 'compilation-error-regexp-alist 'ekr-python-test)
+(add-to-list 'compilation-error-regexp-alist-alist
+ 	     '(ekr-python-test "File \"/app/\\(.*?\\)\", line \\([0-9]+\\)"
 		     1 2 nil 0))
 
 ; erstes entfernen, beim Entwickeln
