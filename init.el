@@ -136,6 +136,7 @@
    (quote
     ((buffer-file-coding-system . iso-8859-1)
      (buffer-file-coding-system . utf-8))))
+ '(scroll-error-top-bottom t)
  '(show-paren-mode t)
  '(smerge-command-prefix "d")
  '(split-width-threshold 140)
