@@ -127,6 +127,9 @@
  '(max-mini-window-height 1)
  '(max-specpdl-size 10000)
  '(mouse-highlight t)
+ '(package-selected-packages
+   (quote
+    (groovy-mode ## string-inflection projectile multiple-cursors magit flycheck flx-ido)))
  '(projectile-globally-ignored-files (quote ("TAGS" "#*#")))
  '(ruby-insert-encoding-magic-comment nil)
  '(safe-local-variable-values
