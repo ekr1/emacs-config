@@ -40,6 +40,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(ahk-indentation 4)
  '(ansi-color-names-vector
    ["black" "#d55e00" "#009e73" "#f8ec59" "#0072b2" "#cc79a7" "#56b4e9" "white"])
  '(auto-hscroll-mode t)
@@ -128,6 +129,7 @@
  '(max-specpdl-size 10000)
  '(mouse-highlight t)
  '(package-selected-packages
+ '(inhibit-startup-screen t)
    (quote
     (groovy-mode ## string-inflection projectile multiple-cursors magit flycheck flx-ido)))
  '(projectile-globally-ignored-files (quote ("TAGS" "#*#")))
@@ -905,3 +907,5 @@ and set the focus back to Emacs frame"
 (if (boundp 'ns-option-modifier)
     (setq ns-option-modifier nil))
 
+; specifically nice for AHK-mode which has indentation bugs when there are trailing spaces
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
