@@ -131,7 +131,7 @@
  '(package-selected-packages
  '(inhibit-startup-screen t)
    (quote
-    (groovy-mode ## string-inflection projectile multiple-cursors magit flycheck flx-ido)))
+    (json-mode scala-mode groovy-mode ## string-inflection projectile multiple-cursors magit flycheck flx-ido)))
  '(projectile-globally-ignored-files (quote ("TAGS" "#*#")))
  '(ruby-insert-encoding-magic-comment nil)
  '(safe-local-variable-values
@@ -154,10 +154,7 @@
  '(undo-limit 12000000)
  '(undo-strong-limit 12000000)
  '(uniquify-buffer-name-style (quote post-forward-angle-brackets) nil (uniquify))
- '(url-proxy-services
-   (quote
-    (("https" . "141.77.17.155:8080")
-     ("http" . "141.77.17.155:8080"))))
+ '(url-proxy-services nil)
  '(use-file-dialog nil)
  '(vc-handled-backends (quote (RCS SVN SCCS Bzr Git Hg Arch)))
  '(vc-svn-diff-switches "-x -b")
@@ -471,7 +468,14 @@
  	     '(ekr-python-test "File \"/app/\\(.*?\\)\", line \\([0-9]+\\)"
 		     1 2 nil 0))
 
-; erstes entfernen, beim Entwickeln
+; gatling compilation
+; 09:16:27.407 [ERROR] i.g.c.ZincCompiler$ - /opt/gatling/user-files/simulations/BrowsefilterSimulation.scala:107:34: value mean is not a member of io.gatling.core.assertion.AssertionWithPath
+(add-to-list 'compilation-error-regexp-alist 'ekr-gatling-error)
+(add-to-list 'compilation-error-regexp-alist-alist
+ 	     '(ekr-gatling-error " - /opt/gatling/\\([^:]+\\):\\([0-9]+\\):\\([0-9]+\\):"
+		     1 2 nil 0))
+
+; erstes (also letztes ;) ) entfernen, beim Entwickeln
 ;(setq compilation-error-regexp-alist-alist
 ;      (cdr compilation-error-regexp-alist-alist))
 
@@ -634,12 +638,6 @@
 
 ; rails pdf prawn
 (add-to-list 'auto-mode-alist '("\.pdf\.prawn$" . ruby-mode))
-
-;(setenv "http_proxy" "http://A.B.C.D:8080")
-;(setenv "https_proxy" "http://A.B.C.D:8080")
-
-;(setenv "http_proxy" "http://proxy.rotdev.t-systems.com:3128")
-;(setenv "https_proxy" "http://proxy.rotdev.t-systems.com:3128")
 
 ;;;; in PUTTY, not X11:
 ;; (custom-set-faces
@@ -909,3 +907,11 @@ and set the focus back to Emacs frame"
 
 ; specifically nice for AHK-mode which has indentation bugs when there are trailing spaces
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
+
+;; naybe start docker-machine first ("docker-machine start default")
+(if (file-directory-p "/Users/KRAEME/.docker/machine")
+    (progn
+      (setenv "DOCKER_HOST" (shell-command-to-string "docker-machine env default | grep DOCKER_HOST | sed -e 's/export DOCKER_HOST=.//' -e 's/.$//' | tr -d '\n'"))
+      (setenv "DOCKER_TLS_VERIFY" "1")
+      (setenv "DOCKER_CERT_PATH" "/Users/KRAEME/.docker/machine/machines/default")
+      (setenv "DOCKER_MACHINE_NAME" "default")))
