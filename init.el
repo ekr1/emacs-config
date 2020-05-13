@@ -472,6 +472,13 @@
  	     '(ekr-gatling-error " - /opt/gatling/\\([^:]+\\):\\([0-9]+\\):\\([0-9]+\\):"
 		     1 2 nil 0))
 
+; standard ruby error
+;      ./lib/interfaces/magentaforce.rb:129:in `execute'
+(add-to-list 'compilation-error-regexp-alist 'ekr-ruby-error)
+(add-to-list 'compilation-error-regexp-alist-alist
+ 	     '(ekr-ruby-error " *\\(.+rb\\):\\([0-9]+\\):"
+		     1 2 nil 2))
+
 ; erstes (also letztes ;) ) entfernen, beim Entwickeln
 ;(setq compilation-error-regexp-alist-alist
 ;      (cdr compilation-error-regexp-alist-alist))
@@ -847,22 +854,23 @@
  )
 
 
-(defun notify-compilation-result(buffer msg)
-  "Notify that the compilation is finished,
-close the *compilation* buffer if the compilation is successful,
-and set the focus back to Emacs frame"
-  (if (string= "*compilation*" (buffer-name buffer))
-      (if (string-match "^finished" msg)
-          (progn
-            (delete-windows-on buffer)
-            (tooltip-show "\n Compilation Successful :-) \n "))
-        (tooltip-show "\n Compilation Failed :-( \n "))
-                                        ; (setq current-frame (car (car (cdr (current-frame-configuration)))))
-                                        ; (select-frame-set-input-focus current-frame)
-    ))
+;; (defun notify-compilation-result(buffer msg)
+;;   "Notify that the compilation is finished,
+;; close the *compilation* buffer if the compilation is successful,
+;; and set the focus back to Emacs frame"
+;;   (if (string= "*compilation*" (buffer-name buffer))
+;;       (if (string-match "^finished" msg)
+;;           (progn
+;;             (delete-windows-on buffer)
+;;             (tooltip-show "\n Compilation Successful :-) \n "))
+;;         (tooltip-show "\n Compilation Failed :-( \n "))
+;;                                         ; (setq current-frame (car (car (cdr (current-frame-configuration)))))
+;;                                         ; (select-frame-set-input-focus current-frame)
+;;     ))
+;;
+;; (add-to-list 'compilation-finish-functions
+;; 	     'notify-compilation-result)
 
-(add-to-list 'compilation-finish-functions
-	     'notify-compilation-result)
 
 ;;;;;;; special ruby stuff (packages installed specifically for that)
 ; https://lorefnon.me/2014/02/02/configuring-emacs-for-rails.html
