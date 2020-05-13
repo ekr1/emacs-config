@@ -137,6 +137,7 @@
     ((buffer-file-coding-system . iso-8859-1)
      (buffer-file-coding-system . utf-8))))
  '(scroll-error-top-bottom t)
+ '(server-mode t)
  '(show-paren-mode t)
  '(smerge-command-prefix "d")
  '(split-width-threshold 140)
@@ -911,3 +912,5 @@ and set the focus back to Emacs frame"
       (setenv "DOCKER_TLS_VERIFY" "1")
       (setenv "DOCKER_CERT_PATH" "/Users/KRAEME/.docker/machine/machines/default")
       (setenv "DOCKER_MACHINE_NAME" "default")))
+
+(server-start)
