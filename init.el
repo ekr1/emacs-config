@@ -129,10 +129,7 @@
  '(max-mini-window-height 1)
  '(max-specpdl-size 10000)
  '(mouse-highlight t)
- '(package-selected-packages
- '(inhibit-startup-screen t)
-   (quote
-    (json-mode scala-mode groovy-mode ## string-inflection projectile multiple-cursors magit flycheck flx-ido)))
+ '(package-selected-packages (quote (inhibit-startup-screen t)))
  '(projectile-globally-ignored-files (quote ("TAGS" "#*#")))
  '(ruby-insert-encoding-magic-comment nil)
  '(safe-local-variable-values
@@ -187,9 +184,9 @@
 
 ;; (defun ekr-wiki-update ()
 ;;   (interactive)
-;;   "run ./wiki-update.cfg in the correct directory" 
-;;   (if (eq 0 (string-match 
-;; 	    "/home/ekr/src/rotlib_ekr/" 
+;;   "run ./wiki-update.cfg in the correct directory"
+;;   (if (eq 0 (string-match
+;; 	    "/home/ekr/src/rotlib_ekr/"
 ;; 	    (buffer-file-name)))
 
 ;;       ;; create rot-perl-lib docs (ekr)
@@ -204,10 +201,10 @@
 ;; 	  (progn
 ;; 	    (delete-other-windows)
 ;; 	    (set-buffer buffer)
-;; 	    (shell-command 
+;; 	    (shell-command
 ;; 	     (concat "./wiki-update.cfg -o '/"
 ;; 		     (file-name-nondirectory old-file-name)
-;; 		     "$' &")) 
+;; 		     "$' &"))
 ;; 	    (select-window old-window))
 ;; 	(message "Open wiki-update.cfg first"))))
 ;;   )
@@ -215,8 +212,8 @@
 ;; (defun ekr-compile-plsql ()
 ;;   (interactive)
 ;;   "compile the current .sql file in the correct schema"
-;;   (if (eq 0 (string-match 
-;; 	     "/opt/rot/app/release/dev-ekr/quellen/packages/" 
+;;   (if (eq 0 (string-match
+;; 	     "/opt/rot/app/release/dev-ekr/quellen/packages/"
 ;; 	     (buffer-file-name)))
 ;;       (progn (save-buffer)
 ;;              (shell-command
@@ -227,11 +224,11 @@
   (interactive)
   "Save all files, wait a little bit, then call (recompile). For compilations that watch file-change-times (RotTestHelper...)"
   (progn (save-some-buffers t)
-	 (sleep-for 1.5)
+	 ;(sleep-for 1.5)
 	 (recompile)
          ;; if *compilation* is open in another frame (which is
          ;; visible and raised), then close it in "this" window
-         (if (string= "t"             
+         (if (string= "t"
                       (mapconcat (lambda (val)
                                    (if val "t" ""))
                                  (mapcar (lambda (frame)
@@ -255,7 +252,7 @@
   "Set the ssh-agent environment"
   (ignore-errors
    (kill-buffer ".ekr-ssh-agent"))
-  (with-current-buffer 
+  (with-current-buffer
       (find-file-noselect "/tmp/.ekr-ssh-agent")
     (buffer-string)
     (string-match "tmp/ssh-[^;]+." (buffer-string))  ; ???!? match-string adds one char before and skips the last one?!
@@ -367,8 +364,6 @@
  	     '(ekr-cucumber-pending "You can implement step definitions for undefined steps with these snippets"
                                      1 1 nil 1))
 
-;; Der Rest sollte weit hinten stehen um am Anfang der Liste zu erscheinen...
-
 (add-to-list 'compilation-error-regexp-alist 'ekr-perl-ignore)
 (add-to-list 'compilation-error-regexp-alist-alist
  	     '(ekr-perl-ignore " at \\(library \\)?\\(/.*?\\) line \\([0-9]+\\)"
@@ -418,7 +413,7 @@
  	     '(ekr-perl-ignore-ruby-rspec "RSpec::Expectations::ExpectationNotMetError"
 		     1 1 nil 0))
 
-;             ^^^^^^^^^^ 
+;             ^^^^^^^^^^
 (add-to-list 'compilation-error-regexp-alist 'ekr-perl-ignore-rubocop)
 (add-to-list 'compilation-error-regexp-alist-alist
  	     '(ekr-perl-ignore-rubocop " \\^+"
@@ -449,7 +444,7 @@
 		     1 2 nil 0))
 
 ; local python
-; tests/test_filter.py:127: 
+; tests/test_filter.py:127:
 (add-to-list 'compilation-error-regexp-alist 'ekr-python)
 (add-to-list 'compilation-error-regexp-alist-alist
  	     '(ekr-python "\\(.+py\\):\\([0-9]+\\):"
@@ -500,13 +495,13 @@
 ;;;; obsolete X mode ;;;;
 ;;;; obsolete X mode ;;;;;; .Xresources:
 ;;;; obsolete X mode ;;;;; -- Usage: "xrdb .Xresources" to activate
-;;;; obsolete X mode ;;;;; 
+;;;; obsolete X mode ;;;;;
 ;;;; obsolete X mode ;;;;; -- XTerm*faceName: Inconsolata
 ;;;; obsolete X mode ;;;;; -- XTerm*faceSize: 10
-;;;; obsolete X mode ;;;;; 
+;;;; obsolete X mode ;;;;;
 ;;;; obsolete X mode ;;;;; XTerm*faceName: Envy Code R
 ;;;; obsolete X mode ;;;;; XTerm*faceSize: 10
-;;;; obsolete X mode ;;;;; 
+;;;; obsolete X mode ;;;;;
 ;;;; obsolete X mode ;;;;; Emacs.font: Envy Code R-10
 ;;;; obsolete X mode ;;;;
 ;;;; obsolete X mode ;;;;;; Or, older:
@@ -526,43 +521,43 @@
 ;;;; obsolete X mode ;;;;; <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
 ;;;; obsolete X mode ;;;;; <!-- /etc/fonts/fonts.conf file to configure system font access -->
 ;;;; obsolete X mode ;;;;; <fontconfig>
-;;;; obsolete X mode ;;;;; 
+;;;; obsolete X mode ;;;;;
 ;;;; obsolete X mode ;;;;; <match target="font">
 ;;;; obsolete X mode ;;;;;     <edit name="antialias" mode="assign">
 ;;;; obsolete X mode ;;;;;       <bool>true</bool>
 ;;;; obsolete X mode ;;;;;     </edit>
 ;;;; obsolete X mode ;;;;; </match>
-;;;; obsolete X mode ;;;;; 
+;;;; obsolete X mode ;;;;;
 ;;;; obsolete X mode ;;;;; <match target="font">
 ;;;; obsolete X mode ;;;;;     <edit name="hinting" mode="assign">
 ;;;; obsolete X mode ;;;;;       <bool>true</bool>
 ;;;; obsolete X mode ;;;;;     </edit>
 ;;;; obsolete X mode ;;;;; </match>
-;;;; obsolete X mode ;;;;; 
+;;;; obsolete X mode ;;;;;
 ;;;; obsolete X mode ;;;;; <match target="font">
 ;;;; obsolete X mode ;;;;;     <edit name="autohint" mode="assign">
 ;;;; obsolete X mode ;;;;;       <bool>false</bool>
 ;;;; obsolete X mode ;;;;;     </edit>
 ;;;; obsolete X mode ;;;;; </match>
-;;;; obsolete X mode ;;;;; 
+;;;; obsolete X mode ;;;;;
 ;;;; obsolete X mode ;;;;; <match target="font">
 ;;;; obsolete X mode ;;;;;     <edit name="hintstyle" mode="assign">
 ;;;; obsolete X mode ;;;;;       <const>hintfull</const>
 ;;;; obsolete X mode ;;;;;     </edit>
 ;;;; obsolete X mode ;;;;; </match>
-;;;; obsolete X mode ;;;;; 
+;;;; obsolete X mode ;;;;;
 ;;;; obsolete X mode ;;;;; <match target="font">
 ;;;; obsolete X mode ;;;;;     <edit name="rgba" mode="assign">
 ;;;; obsolete X mode ;;;;;       <const>rgb</const>
 ;;;; obsolete X mode ;;;;;     </edit>
 ;;;; obsolete X mode ;;;;; </match>
-;;;; obsolete X mode ;;;;; 
+;;;; obsolete X mode ;;;;;
 ;;;; obsolete X mode ;;;;; <match target="font">
 ;;;; obsolete X mode ;;;;;     <edit mode="assign" name="lcdfilter">
 ;;;; obsolete X mode ;;;;;       <const>lcddefault</const>
 ;;;; obsolete X mode ;;;;;     </edit>
 ;;;; obsolete X mode ;;;;; </match>
-;;;; obsolete X mode ;;;;; 
+;;;; obsolete X mode ;;;;;
 ;;;; obsolete X mode ;;;;; </fontconfig>
 
 ; cucumber mode
@@ -606,33 +601,33 @@
 ;; Autohotkey:
 
 ;; #IfWinActive, ahk_class PuTTY
-;; 
-;; ; # Win (Windows logo key) 
-;; ; ! Alt 
-;; ; ^ Control 
-;; ; + Shift 
-;; 
+;;
+;; ; # Win (Windows logo key)
+;; ; ! Alt
+;; ; ^ Control
+;; ; + Shift
+;;
 ;; End:: Send ^e
 ;; +End:: Send ^{Space}^e
-;; 
+;;
 ;; Home:: Send ^a
 ;; +Home:: Send ^{Space}^a
-;; 
+;;
 ;; ^End:: Send !>
 ;; +^End:: Send ^{Space}!>
-;; 
+;;
 ;; ^Home:: Send !<
 ;; +^Home:: Send ^{Space}!<
-;; 
-;; 
+;;
+;;
 ;; ^Left:: Send !{Left}
 ;; ^Right:: Send !{Right}
-;; 
+;;
 ;; +Left:: Send ^{Space}{Left}
 ;; +Right:: Send ^{Space}{Right}
 ;; +Up:: Send ^{Space}{Up}
 ;; +Down:: Send ^{Space}{Down}
-;; 
+;;
 ;; #IfWinActive
 
 ;;;;;  oben:      '(custom-enabled-themes (quote (deeper-blue)))
@@ -748,7 +743,7 @@
 
 ;(setq electric-indent-functions-without-reindent (remove 'indent-line-function electric-indent-functions-without-reindent))
 
-(setq-default electric-indent-inhibit t) 
+(setq-default electric-indent-inhibit t)
 
 (require 'recentf)
 (recentf-mode 1)
@@ -838,7 +833,7 @@
 ;; C-c ^ o         smerge-keep-other
 ;; C-c ^ p         smerge-prev
 ;; C-c ^ r         smerge-resolve
-;; 
+;;
 ;; C-c ^ = <       smerge-diff-base-mine
 ;; C-c ^ = =       smerge-diff-mine-other
 ;; C-c ^ = >       smerge-diff-base-other
