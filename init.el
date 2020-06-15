@@ -935,4 +935,21 @@
       (setenv "DOCKER_CERT_PATH" "/Users/KRAEME/.docker/machine/machines/default")
       (setenv "DOCKER_MACHINE_NAME" "default")))
 
+
+;;; folding in xml
+
+(require 'hideshow)
+(require 'sgml-mode)
+(require 'nxml-mode)
+(add-to-list 'hs-special-modes-alist
+             '(nxml-mode
+               "<!--\\|<[^/>]*[^/]>"
+               "-->\\|</[^/>]*[^/]>"
+
+               "<!--"
+               sgml-skip-tag-forward
+               nil))
+(add-hook 'nxml-mode-hook 'hs-minor-mode)
+(define-key nxml-mode-map (kbd "C-c h") 'hs-toggle-hiding)
+
 (server-start)
