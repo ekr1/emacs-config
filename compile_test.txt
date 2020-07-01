@@ -1,0 +1,22 @@
+##### Nothing
+
+You can implement step definitions for undefined steps with these snippets:
+      stmt.c:243:in oci8lib_230.bundle
+    [  1] "/Users/KRAEME/.rbenv/versions/2.3.3/lib/ruby/gems/2.3.0/gems/actionpack-4.0.6/lib/action_controller/metal/mime_responds.rb:191:in `respond_to'",
+
+##### Info
+
+Wenn die REST-API für Mobilfunkverträge aufgerufen wird # features/step_definitions/api_mobilfunk_vertraege_steps.rb:17
+
+/app/src/emil/src/de/edag/fps/emil/AnwendungEMIL.java:54: warning: Signal is internal proprietary API and may be removed in a future release
+
+##### Warnings
+
+Szenario: Der Abruf der Verträge eines GP funktioniert    # /Users/KRAEME/Documents/src/akp/acnneu/features/api_mobilfunk_vertrage.feature:15
+
+##### Errors
+
+      ./lib/interfaces/magentaforce.rb:129:in `execute'
+cucumber -p rerun /Users/KRAEME/Documents/src/akp/acnneu/features/api_mobilfunk_vertrage.feature:16 # Szenario: Der Abruf der Verträge eines GP funktioniert
+    [  0] "/Users/KRAEME/Documents/src/akp/acnneu/app/controllers/gps_controller.rb:128:in `block (2 levels) in show_analytics'",
+            <pre><code>app/models/concerns/gp_asp.rb:60:in `_update_kundenbetreuer_direktvertrieb&#39;

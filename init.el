@@ -360,6 +360,13 @@
  	     '(ekr-rbenv "\\([a-zA-Z0-9_./-]*/.rbenv/.*?\\):\\([0-9]+\\):"
 		     1 2 nil 0))
 
+; cucumber output => ignore "<pre><code>" on first line of HTML stacktrace
+;            <pre><code>app/models/concerns/gp_asp.rb:60:in `_update_kundenbetreuer_direktvertrieb&#39;
+(add-to-list 'compilation-error-regexp-alist 'ekr-cucumber-html-pre)
+(add-to-list 'compilation-error-regexp-alist-alist
+ 	     '(ekr-cucumber-html-pre " *<pre><code>\\([a-zA-Z0-9_./-]*?\\.rb\\):\\([0-9]+\\):"
+		     1 2 nil 2))
+
 ; build in docker... /app/ entfernen
 ; /app/src/emil/build.xml:226: Javadoc failed: java.io.IOException: Cannot run program "javadoc": error=2, No such file or directory
 (add-to-list 'compilation-error-regexp-alist 'ekr-container-remove-app)
@@ -376,9 +383,6 @@
 
 ; erstes (also letztes ;) ) entfernen, beim Entwickeln
 ;(setq compilation-error-regexp-alist-alist (cdr compilation-error-regexp-alist-alist))
-
-
-
 
 ;; (add-to-list 'compilation-error-regexp-alist 'ekr-imp-log)
 ;; (add-to-list 'compilation-error-regexp-alist-alist
