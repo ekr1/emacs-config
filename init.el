@@ -320,6 +320,9 @@
       (remove-if 'starts-with-ekr
                  (mapcar 'car compilation-error-regexp-alist-alist)))
 
+; M-x re-builder
+; (setq compilation-debug t) ; => then M-x describe-text-properties
+
 ; (REGEXP FILE [LINE COLUMN TYPE HYPERLINK HIGHLIGHT...])
 ; TYPE is 2 or nil for a real error or 1 for warning or 0 for info.
 ;
@@ -339,11 +342,18 @@
  	     '(ekr-cucumber-comment "# \\(.+rb\\):\\([0-9]+\\)$"
 		     1 2 nil 0))
 
+; build in docker... /app/ entfernen
+; /app/src/emil/build.xml:226: Javadoc failed: java.io.IOException: Cannot run program "javadoc": error=2, No such file or directory
+(add-to-list 'compilation-error-regexp-alist 'ekr-container-remove-app)
+(add-to-list 'compilation-error-regexp-alist-alist
+ 	     '(ekr-container-remove-app "^/app/\\(.+?\\):\\([0-9]+\\):"
+                                     1 2 nil 2))
+
 ; also jump between Szenarios...
 ;  Szenario: xxxxx           # /home/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.feature:242
 (add-to-list 'compilation-error-regexp-alist 'ekr-cucumber-scenario)
 (add-to-list 'compilation-error-regexp-alist-alist
- 	     '(ekr-cucumber-scenario "# \\(.+\\.feature\\):\\([0-9]+\\)"
+ 	     '(ekr-cucumber-scenario "Szenario:.*# \\(.+\\.feature\\):\\([0-9]+\\)"
                                      1 2 nil 1))
 
 ; stacktrace
@@ -360,19 +370,20 @@
  	     '(ekr-rbenv "\\([a-zA-Z0-9_./-]*/.rbenv/.*?\\):\\([0-9]+\\):"
 		     1 2 nil 0))
 
-; cucumber output => ignore "<pre><code>" on first line of HTML stacktrace
+; cucumber output => ignore HTML on first line of HTML stacktrace
 ;            <pre><code>app/models/concerns/gp_asp.rb:60:in `_update_kundenbetreuer_direktvertrieb&#39;
+;        <h2>/Users/KRAEME/Documents/src/akp/acnneu/app/views/doculife_api/akte_index.json.jbuilder:14: syntax error, unexpected keyword_ensure, expecting end-of-input</h2>
 (add-to-list 'compilation-error-regexp-alist 'ekr-cucumber-html-pre)
 (add-to-list 'compilation-error-regexp-alist-alist
- 	     '(ekr-cucumber-html-pre " *<pre><code>\\([a-zA-Z0-9_./-]*?\\.rb\\):\\([0-9]+\\):"
+ 	     '(ekr-cucumber-html-pre ">\\([a-zA-Z0-9_./-]*?\\.[a-z]+\\):\\([0-9]+\\):"
 		     1 2 nil 2))
 
-; build in docker... /app/ entfernen
-; /app/src/emil/build.xml:226: Javadoc failed: java.io.IOException: Cannot run program "javadoc": error=2, No such file or directory
-(add-to-list 'compilation-error-regexp-alist 'ekr-container-remove-app)
-(add-to-list 'compilation-error-regexp-alist-alist
- 	     '(ekr-container-remove-app "^/app/\\(.+?\\):\\([0-9]+\\):"
-                                     1 2 nil 2))
+;; ; rspec... # entfernen
+;; ;      # ./spec/acceptance/doculife_api_spec.rb:17:in `block (3 levels) in <top (required)>'
+;; (add-to-list 'compilation-error-regexp-alist 'ekr-remove-hash)
+;; (add-to-list 'compilation-error-regexp-alist-alist
+;;  	     '(ekr-remove-hash "# \\(.+?\\):\\([0-9]+\\)$"
+;;                                      1 2 nil 2))
 
 ; ignore API warnings...
 ; /app/src/emil/src/de/edag/fps/emil/AnwendungEMIL.java:54: warning: Signal is internal proprietary API and may be removed in a future release
@@ -381,133 +392,15 @@
  	     '(ekr-ignore-sunapi ".*is internal proprietary API and may be removed in a future release.*"
 		     nil nil nil 0))
 
+; ignore cucumber artifact...
+; -e:1:in `<main>'
+(add-to-list 'compilation-error-regexp-alist 'ekr-ignore-minuse)
+(add-to-list 'compilation-error-regexp-alist-alist
+ 	     '(ekr-ignore-minuse "^-e:1:in"
+		     nil nil nil 0))
+
 ; erstes (also letztes ;) ) entfernen, beim Entwickeln
 ;(setq compilation-error-regexp-alist-alist (cdr compilation-error-regexp-alist-alist))
-
-;; (add-to-list 'compilation-error-regexp-alist 'ekr-imp-log)
-;; (add-to-list 'compilation-error-regexp-alist-alist
-;;  	     '(ekr-imp-log "IMPORT: Log-Datei \\(/opt/rot/dump/.*\.sql\\)<br>"
-;; 		     1 nil nil 0))
-;;
-;; (add-to-list 'compilation-error-regexp-alist 'ekr-rot-perl-lib)
-;; (add-to-list 'compilation-error-regexp-alist-alist
-;;  	     '(ekr-rot-perl-lib " at \\(/opt/rot/app/project.*?/vendor/rot-perl-lib/src/Rot/.*?\\) line \\([0-9]+\\)"
-;; 		     1 2 nil 0))
-
-;; (add-to-list 'compilation-error-regexp-alist 'ekr-rails-test)
-;; (add-to-list 'compilation-error-regexp-alist-alist
-;;  	     '(ekr-rails-test "\\[\\(/[^: ]+\\):\\([0-9]+\\)\\]"
-;; 		     1 2 nil 1))
-;;
-;; (add-to-list 'compilation-error-regexp-alist 'ekr-perl-ignore)
-;; (add-to-list 'compilation-error-regexp-alist-alist
-;;  	     '(ekr-perl-ignore " at \\(library \\)?\\(/.*?\\) line \\([0-9]+\\)"
-;; 		     2 3 nil 0))
-;;
-;; ; undefined method `create_table?' for #<CreateDelayedJobs:0x00555f85d0b698>/home/ekr/src/akp/db/migrate/20150715091448_create_delayed_jobs.rb:4:in `up'
-;; (add-to-list 'compilation-error-regexp-alist 'ekr-ruby-classfile)
-;; (add-to-list 'compilation-error-regexp-alist-alist
-;;  	     '(ekr-ruby-classfile "#<.*?>\\(/.*?\\):\\([0-9]+\\)"
-;; 		     1 2 nil 0))
-;;
-;; (add-to-list 'compilation-error-regexp-alist 'ekr-perl-ignore-http)
-;; (add-to-list 'compilation-error-regexp-alist-alist
-;;  	     '(ekr-perl-ignore-http "\\(http://\\)"
-;; 		     1 nil nil 0))
-;;
-;; (add-to-list 'compilation-error-regexp-alist 'ekr-perl-ignore-c-in-so)
-;; (add-to-list 'compilation-error-regexp-alist-alist
-;;  	     '(ekr-perl-ignore-c-in-so "\.c:[0-9]+:in [^ ]+\.so"
-;; 		     1 1 nil 0))
-;;
-;; (add-to-list 'compilation-error-regexp-alist 'ekr-perl-ignore-timestamp)
-;; (add-to-list 'compilation-error-regexp-alist-alist
-;;  	     '(ekr-perl-ignore-timestamp "[0-9]+/[0-9]+/[0-9]+ [0-9]+:[0-9]+:[0-9]+"
-;; 		     1 1 nil 0))
-;;
-;; ; Compilation started at Mon Feb 17 14:05:36
-;; (add-to-list 'compilation-error-regexp-alist 'ekr-perl-ignore-timestamp2)
-;; (add-to-list 'compilation-error-regexp-alist-alist
-;;  	     '(ekr-perl-ignore-timestamp2 "Com.* started at .* [0-9]+:[0-9]+:[0-9]+"
-;; 		     1 1 nil 0))
-;;
-;; ;            got: "06.01.2014 10:42:14"
-;; (add-to-list 'compilation-error-regexp-alist 'ekr-perl-ignore-timestamp3)
-;; (add-to-list 'compilation-error-regexp-alist-alist
-;;  	     '(ekr-perl-ignore-timestamp3 "[0-9]+\.[0-9]+\.[0-9]+ [0-9]+:[0-9]+:[0-9]+"
-;; 		     1 1 nil 0))
-;;
-;; ;   ..... RSpec::Expectations::ExpectationNotMetError ....
-;; (add-to-list 'compilation-error-regexp-alist 'ekr-perl-ignore-ruby-rspec)
-;; (add-to-list 'compilation-error-regexp-alist-alist
-;;  	     '(ekr-perl-ignore-ruby-rspec "RSpec::Expectations::ExpectationNotMetError"
-;; 		     1 1 nil 0))
-;;
-;; ;             ^^^^^^^^^^
-;; (add-to-list 'compilation-error-regexp-alist 'ekr-perl-ignore-rubocop)
-;; (add-to-list 'compilation-error-regexp-alist-alist
-;;  	     '(ekr-perl-ignore-rubocop " \\^+"
-;; 		     1 1 nil 0))
-;;
-;; ; cucumber undefined step
-;; ; ./bin/rake:8:in `<top (required)>'
-;; (add-to-list 'compilation-error-regexp-alist 'ekr-cucumber-ignore-junk)
-;; (add-to-list 'compilation-error-regexp-alist-alist
-;;  	     '(ekr-cucumber-ignore-junk "\./bin/rake:"
-;;                                        1 1 nil 0))
-;;
-;; (add-to-list 'compilation-error-regexp-alist 'ekr-cucumber-ignore-junk2)
-;; (add-to-list 'compilation-error-regexp-alist-alist
-;;  	     '(ekr-cucumber-ignore-junk2 "-e:1:"
-;;                                        1 1 nil 0))
-;;
-;; ; ruby "ap" stacktrace
-;; ; [  0] "/Users/KRAEME/.rbenv/versions/2.3.3/lib/ruby/gems/2.3.0/gems/activemodel-4.0.6/lib/active_model/attribute_methods.rb:439:in `method_missing'",
-;; (add-to-list 'compilation-error-regexp-alist 'ekr-ruby-ap-trace)
-;; (add-to-list 'compilation-error-regexp-alist-alist
-;;  	     '(ekr-ruby-ap-trace "\"\\(.+\\):\\([0-9]+\\):"
-;; 		     1 2 nil 0))
-;;
-;; ; pytest in Docker -> files are not reachable
-;; ; /usr/local/lib/python3.6/site-packages/werkzeug/wrappers/json.py:119:
-;; (add-to-list 'compilation-error-regexp-alist 'ekr-ignore-pytest)
-;; (add-to-list 'compilation-error-regexp-alist-alist
-;;  	     '(ekr-ignore-pytest "\\(/usr/local/lib/python.+\\):\\([0-9]+\\):"
-;; 		     1 2 nil 0))
-;;
-;; ; Python tests
-;; ; E     File "/app/application/models/emil_schema.py", line 209
-;; (add-to-list 'compilation-error-regexp-alist 'ekr-python-test)
-;; (add-to-list 'compilation-error-regexp-alist-alist
-;;  	     '(ekr-python-test "File \"/app/\\(.*?\\)\", line \\([0-9]+\\)"
-;; 		     1 2 nil 0))
-;;
-;; ; gatling compilation
-;; ; 09:16:27.407 [ERROR] i.g.c.ZincCompiler$ - /opt/gatling/user-files/simulations/BrowsefilterSimulation.scala:107:34: value mean is not a member of io.gatling.core.assertion.AssertionWithPath
-;; (add-to-list 'compilation-error-regexp-alist 'ekr-gatling-error)
-;; (add-to-list 'compilation-error-regexp-alist-alist
-;;  	     '(ekr-gatling-error " - /opt/gatling/\\([^:]+\\):\\([0-9]+\\):\\([0-9]+\\):"
-;; 		     1 2 nil 0))
-
-;; ; standard ruby/python error
-;; ;      ./lib/interfaces/magentaforce.rb:129:in `execute'
-;; (add-to-list 'compilation-error-regexp-alist 'ekr-ruby-error)
-;; (add-to-list 'compilation-error-regexp-alist-alist
-;;  	     '(ekr-ruby-error "^[ \"]+\\([a-zA-Z0-9/._-]+?\\):\\([0-9]+\\):"
-;; 		     1 2 nil 2))
-;;
-;; ; cucumber compressed mode
-;; ; cucumber -p rerun /Users/KRAEME/Documents/src/akp/acnneu/features/api_mobilfunk_vertrage.feature:16 # Szenario: Der Abruf der Verträge eines GP funktioniert
-;; (add-to-list 'compilation-error-regexp-alist 'ekr-ruby-cucumber-rerun)
-;; (add-to-list 'compilation-error-regexp-alist-alist
-;;  	     '(ekr-ruby-cucumber-rerun "^cucumber -p rerun +\\([a-zA-Z0-9/._-]+?\\):\\([0-9]+\\) #"
-;; 		     1 2 nil 2))
-
-;; ; line wrap in compilation mode (avoid 100% CPU for long lines)
-;; (defun my-compilation-mode-hook ()
-;;   (setq truncate-lines nil) ;; automatically becomes buffer local
-;;   (set (make-local-variable 'truncate-partial-width-windows) nil))
-;; (add-hook 'compilation-mode-hook 'my-compilation-mode-hook)
 
 (setenv "TERM" "dumb")  ; for perldoc etc.
 (setenv "PAGER" "cat")

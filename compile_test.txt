@@ -3,6 +3,7 @@
 You can implement step definitions for undefined steps with these snippets:
       stmt.c:243:in oci8lib_230.bundle
     [  1] "/Users/KRAEME/.rbenv/versions/2.3.3/lib/ruby/gems/2.3.0/gems/actionpack-4.0.6/lib/action_controller/metal/mime_responds.rb:191:in `respond_to'",
+-e:1:in `<main>'
 
 ##### Info
 
@@ -20,3 +21,5 @@ Szenario: Der Abruf der Verträge eines GP funktioniert    # /Users/KRAEME/Docum
 cucumber -p rerun /Users/KRAEME/Documents/src/akp/acnneu/features/api_mobilfunk_vertrage.feature:16 # Szenario: Der Abruf der Verträge eines GP funktioniert
     [  0] "/Users/KRAEME/Documents/src/akp/acnneu/app/controllers/gps_controller.rb:128:in `block (2 levels) in show_analytics'",
             <pre><code>app/models/concerns/gp_asp.rb:60:in `_update_kundenbetreuer_direktvertrieb&#39;
+     # ./spec/acceptance/doculife_api_spec.rb:17:in `block (3 levels) in <top (required)>'
+        <h2>/Users/KRAEME/Documents/src/akp/acnneu/app/views/doculife_api/akte_index.json.jbuilder:14: syntax error, unexpected keyword_ensure, expecting end-of-input</h2>
