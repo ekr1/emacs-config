@@ -129,7 +129,7 @@
  '(max-mini-window-height 1)
  '(max-specpdl-size 10000)
  '(mouse-highlight t)
- '(package-selected-packages (quote (inhibit-startup-screen t)))
+ '(package-selected-packages (quote (multiple-cursors inhibit-startup-screen t)))
  '(projectile-globally-ignored-files (quote ("TAGS" "#*#")))
  '(ruby-insert-encoding-magic-comment nil)
  '(safe-local-variable-values
