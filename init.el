@@ -129,7 +129,7 @@
  '(max-mini-window-height 1)
  '(max-specpdl-size 10000)
  '(mouse-highlight t)
- '(package-selected-packages (quote (inhibit-startup-screen t)))
+ '(package-selected-packages (quote (helm inhibit-startup-screen t)))
  '(projectile-globally-ignored-files (quote ("TAGS" "#*#")))
  '(ruby-insert-encoding-magic-comment nil)
  '(safe-local-variable-values
@@ -349,6 +349,13 @@
  	     '(ekr-container-remove-app "^/app/\\(.+?\\):\\([0-9]+\\):"
                                      1 2 nil 2))
 
+; ignore pytest timing
+; #13 3.878 test_main.py:79:4: E0602: Undefined variable '_clear_all' (undefined-variable)
+(add-to-list 'compilation-error-regexp-alist 'ekr-pytest-timing)
+(add-to-list 'compilation-error-regexp-alist-alist
+ 	     '(ekr-pytest-timing "^#[0-9]+ [0-9]+.[0-9]+ \\(.+?\\):\\([0-9]+\\):"
+                                     1 2 nil 2))
+
 ; also jump between Szenarios...
 ;  Szenario: xxxxx           # /home/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.feature:242
 (add-to-list 'compilation-error-regexp-alist 'ekr-cucumber-scenario)
@@ -378,6 +385,13 @@
  	     '(ekr-cucumber-html-pre ">\\([a-zA-Z0-9_./-]*?\\.[a-z]+\\):\\([0-9]+\\):"
 		     1 2 nil 2))
 
+; weird capybara output
+;          Showing <i>/Users/KRAEME/Documents/src/akp/acnneu/app/views/doculife_api/akte_index.json.jbuilder</i> where line <b>#5</b> raised:
+(add-to-list 'compilation-error-regexp-alist 'ekr-cucumber-showing)
+(add-to-list 'compilation-error-regexp-alist-alist
+ 	     '(ekr-cucumber-showing "Showing <i>\\(.*?\\)</i> where line <b>.\\([0-9]+\\)</b>"
+		     1 2 nil 2))
+
 ;; ; rspec... # entfernen
 ;; ;      # ./spec/acceptance/doculife_api_spec.rb:17:in `block (3 levels) in <top (required)>'
 ;; (add-to-list 'compilation-error-regexp-alist 'ekr-remove-hash)
@@ -398,6 +412,7 @@
 (add-to-list 'compilation-error-regexp-alist-alist
  	     '(ekr-ignore-minuse "^-e:1:in"
 		     nil nil nil 0))
+
 
 ; erstes (also letztes ;) ) entfernen, beim Entwickeln
 ;(setq compilation-error-regexp-alist-alist (cdr compilation-error-regexp-alist-alist))
@@ -848,5 +863,12 @@
                nil))
 (add-hook 'nxml-mode-hook 'hs-minor-mode)
 (define-key nxml-mode-map (kbd "C-c h") 'hs-toggle-hiding)
+
+; fix Home key on MacOs
+
+(global-set-key (kbd "<home>") 'move-beginning-of-line)
+(global-set-key (kbd "<end>") 'move-end-of-line)
+
+; run server
 
 (server-start)

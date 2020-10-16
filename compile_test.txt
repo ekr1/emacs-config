@@ -23,3 +23,5 @@ cucumber -p rerun /Users/KRAEME/Documents/src/akp/acnneu/features/api_mobilfunk_
             <pre><code>app/models/concerns/gp_asp.rb:60:in `_update_kundenbetreuer_direktvertrieb&#39;
      # ./spec/acceptance/doculife_api_spec.rb:17:in `block (3 levels) in <top (required)>'
         <h2>/Users/KRAEME/Documents/src/akp/acnneu/app/views/doculife_api/akte_index.json.jbuilder:14: syntax error, unexpected keyword_ensure, expecting end-of-input</h2>
+          Showing <i>/Users/KRAEME/Documents/src/akp/acnneu/app/views/doculife_api/akte_index.json.jbuilder</i> where line <b>#5</b> raised:
+#13 3.878 test_main.py:79:4: E0602: Undefined variable '_clear_all' (undefined-variable)
