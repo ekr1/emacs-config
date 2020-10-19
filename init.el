@@ -129,8 +129,9 @@
  '(max-mini-window-height 1)
  '(max-specpdl-size 10000)
  '(mouse-highlight t)
- '(package-selected-packages (quote (helm inhibit-startup-screen t)))
- '(package-selected-packages (quote (multiple-cursors inhibit-startup-screen t)))
+ '(package-selected-packages
+   (quote
+    (magit magit-filenotify flycheck flycheck-color-mode-line flycheck-indicator flycheck-pos-tip flycheck-pycheckers flycheck-yamllint multiple-cursors inhibit-startup-screen t)))
  '(projectile-globally-ignored-files (quote ("TAGS" "#*#")))
  '(ruby-insert-encoding-magic-comment nil)
  '(safe-local-variable-values
@@ -497,9 +498,9 @@
 
 ; cucumber mode
 (add-to-list 'load-path "~/.emacs.d/elisp/feature-mode")
-(setq feature-default-language "fi")
 ;(setq feature-default-i18n-file "/path/to/gherkin/gem/i18n.yml")
 (require 'feature-mode)
+(setq feature-default-language "fi")
 (add-to-list 'auto-mode-alist '("\.feature$" . feature-mode))
 ;; Keybinding	Description
 ;; C-c ,v	Verify all scenarios in the current buffer file.
@@ -722,22 +723,22 @@
 
 (run-at-time "1" nil '(lambda () (toggle-frame-maximized)))
 
-(require 'string-inflection)
-(global-unset-key (kbd "C-q"))
-(global-set-key (kbd "C-q C-u") 'my-string-inflection-cycle-auto)
-(defun my-string-inflection-cycle-auto ()
-  "switching by major-mode"
-  (interactive)
-  (cond
-   ;; for emacs-lisp-mode
-   ((eq major-mode 'emacs-lisp-mode)
-    (string-inflection-all-cycle))
-   ;; for java
-   ((eq major-mode 'java-mode)
-    (string-inflection-java-style-cycle))
-   (t
-    ;; default
-    (string-inflection-ruby-style-cycle))))
+;; (require 'string-inflection)
+;; (global-unset-key (kbd "C-q"))
+;; (global-set-key (kbd "C-q C-u") 'my-string-inflection-cycle-auto)
+;; (defun my-string-inflection-cycle-auto ()
+;;   "switching by major-mode"
+;;   (interactive)
+;;   (cond
+;;    ;; for emacs-lisp-mode
+;;    ((eq major-mode 'emacs-lisp-mode)
+;;     (string-inflection-all-cycle))
+;;    ;; for java
+;;    ((eq major-mode 'java-mode)
+;;     (string-inflection-java-style-cycle))
+;;    (t
+;;     ;; default
+;;     (string-inflection-ruby-style-cycle))))
 
 ; avoid extreme pauses on long compilation lines
 (require 'truncated-compilation-mode)
@@ -803,10 +804,10 @@
 ; https://lorefnon.me/2014/02/02/configuring-emacs-for-rails.html
 
 ; auto syntax error check
-(unless (ignore-errors
-          (require 'flymake-ruby)
-          (add-hook 'ruby-mode-hook 'flymake-ruby-load))
-  (message "Warning: error loading flymake-ruby, ignoring"))
+;; (unless (ignore-errors
+;;           (require 'flymake-ruby)
+;;           (add-hook 'ruby-mode-hook 'flymake-ruby-load))
+;;   (message "Warning: error loading flymake-ruby, ignoring"))
 
 ; ruby shell
 (global-set-key (kbd "C-c r r") 'inf-ruby-console-auto)
@@ -870,6 +871,21 @@
 (global-set-key (kbd "<home>") 'move-beginning-of-line)
 (global-set-key (kbd "<end>") 'move-end-of-line)
 
+; display errors on the fly
+(add-hook 'after-init-hook #'global-flycheck-mode)
+(add-hook 'flycheck-mode-hook 'flycheck-indicator-mode)  ; little ".21 .2" for warnings/errors etc.
+;(global-flycheck-mode 1)
+
+; deinstall: (add-hook 'flycheck-mode-hook 'flycheck-color-mode-line-mode)
+;(with-eval-after-load 'flycheck
+;  (flycheck-pos-tip-mode))
+
+(with-eval-after-load 'flycheck
+  (add-hook 'flycheck-mode-hook #'flycheck-pycheckers-setup))
+
 ; run server
 
 (server-start)
+
+(provide 'init)
+;;; init.el ends here
