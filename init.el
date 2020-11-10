@@ -815,6 +815,8 @@
 ;;;;;; projectile
 
 (projectile-global-mode)
+(define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+(define-key projectile-mode-map (kbd "C-c p g") #'projectile-grep)
 
 ; many commands like C-c r m  (Model...)
 (unless (ignore-errors
