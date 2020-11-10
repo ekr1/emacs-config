@@ -1,3 +1,5 @@
+;;; package --- Summary
+                                        ;
 ; If this does not load at all (no error message), maybe remove ~/.emacs.
 
 ; vimacs (emacs mode for vim)
@@ -131,7 +133,7 @@
  '(mouse-highlight t)
  '(package-selected-packages
    (quote
-    (magit magit-filenotify flycheck flycheck-color-mode-line flycheck-indicator flycheck-pos-tip flycheck-pycheckers flycheck-yamllint multiple-cursors inhibit-startup-screen t)))
+    (sqlformat magit magit-filenotify flycheck flycheck-indicator flycheck-pos-tip flycheck-pycheckers flycheck-yamllint multiple-cursors inhibit-startup-screen t)))
  '(projectile-globally-ignored-files (quote ("TAGS" "#*#")))
  '(ruby-insert-encoding-magic-comment nil)
  '(safe-local-variable-values
@@ -143,6 +145,7 @@
  '(show-paren-mode t)
  '(smerge-command-prefix "d")
  '(split-width-threshold 140)
+ '(sqlformat-command (quote pgformatter))
  '(tool-bar-mode nil)
  '(tooltip-mode nil)
  '(tramp-copy-size-limit 102400)
