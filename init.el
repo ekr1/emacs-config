@@ -876,14 +876,12 @@
 ; display errors on the fly
 (add-hook 'after-init-hook #'global-flycheck-mode)
 (add-hook 'flycheck-mode-hook 'flycheck-indicator-mode)  ; little ".21 .2" for warnings/errors etc.
-;(global-flycheck-mode 1)
+(with-eval-after-load 'flycheck (flycheck-pos-tip-mode)) ; GUI popups below cursor
 
 ; deinstall: (add-hook 'flycheck-mode-hook 'flycheck-color-mode-line-mode)
-;(with-eval-after-load 'flycheck
-;  (flycheck-pos-tip-mode))
 
-(with-eval-after-load 'flycheck
-  (add-hook 'flycheck-mode-hook #'flycheck-pycheckers-setup))
+
+(with-eval-after-load 'flycheck (add-hook 'flycheck-mode-hook #'flycheck-pycheckers-setup))
 
 ; run server
 
