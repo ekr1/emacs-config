@@ -13,6 +13,7 @@
         orgtbl-hijacker-command-101
         orgtbl-hijacker-command-103
         orgtbl-self-insert-command
+        recentf-open-files
         sh-assignment
         yaml-electric-backspace
         yaml-electric-dash-and-dot
