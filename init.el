@@ -297,6 +297,8 @@
 (global-set-key (kbd "C-M-p") 'ekr-previous-scenario)
 (global-set-key (kbd "C-/") 'comment-or-uncomment-region)
 
+(global-unset-key (kbd "M-q"))  ; avoid mistaken fill-paragraph when accidentally tying M-q on Mac
+
 (defun ask-before-closing ()
   "Ask whether or not to close, and then close if y was pressed"
   (interactive)
