@@ -133,8 +133,8 @@
  '(mouse-highlight t)
  '(package-selected-packages
    (quote
-    (sqlformat magit magit-filenotify flycheck flycheck-indicator flycheck-pos-tip flycheck-pycheckers flycheck-yamllint multiple-cursors inhibit-startup-screen t)))
- '(projectile-globally-ignored-files (quote ("TAGS" "#*#")))
+    (realgud robe projectile-rails projectile groovy-mode json-mode lua-mode sqlformat magit magit-filenotify multiple-cursors inhibit-startup-screen t)))
+ '(projectile-completion-system (quote ido))
  '(ruby-insert-encoding-magic-comment nil)
  '(safe-local-variable-values
    (quote
@@ -859,19 +859,19 @@
 
 ;;;;;; projectile
 
-(projectile-global-mode)
+(projectile-mode +1)
 (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
 (define-key projectile-mode-map (kbd "C-c p g") #'projectile-grep)
 
 ; many commands like C-c r m  (Model...)
 (unless (ignore-errors
-          (projectile-rails-global-mode))
-  (message "Warning: ignoring errors loading projectile-rails-global-mode"))
+         (projectile-rails-global-mode))
+ (message "Warning: ignoring errors loading projectile-rails-global-mode"))
 
 (unless (ignore-errors
-          (require 'robe)
-          (add-hook 'ruby-mode-hook 'robe-mode))
-  (message "Warning: ignoring errors loading robe"))
+         (require 'robe)
+         (add-hook 'ruby-mode-hook 'robe-mode))
+ (message "Warning: ignoring errors loading robe"))
 
 ;;;;;;; Mac
 
@@ -918,15 +918,11 @@
 (global-set-key (kbd "<home>") 'move-beginning-of-line)
 (global-set-key (kbd "<end>") 'move-end-of-line)
 
-; display errors on the fly
-(add-hook 'after-init-hook #'global-flycheck-mode)
-(add-hook 'flycheck-mode-hook 'flycheck-indicator-mode)  ; little ".21 .2" for warnings/errors etc.
-(with-eval-after-load 'flycheck (flycheck-pos-tip-mode)) ; GUI popups below cursor
-
-; deinstall: (add-hook 'flycheck-mode-hook 'flycheck-color-mode-line-mode)
-
-
-(with-eval-after-load 'flycheck (add-hook 'flycheck-mode-hook #'flycheck-pycheckers-setup))
+; display errors on the fly - too noisy
+; (add-hook 'after-init-hook #'global-flycheck-mode)
+; (add-hook 'flycheck-mode-hook 'flycheck-indicator-mode)  ; little ".21 .2" for warnings/errors etc.
+; (with-eval-after-load 'flycheck (flycheck-pos-tip-mode)) ; GUI popups below cursor
+; (with-eval-after-load 'flycheck (add-hook 'flycheck-mode-hook #'flycheck-pycheckers-setup))
 
 ; run server
 

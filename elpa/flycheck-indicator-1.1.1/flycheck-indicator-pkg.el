@@ -1,2 +1,0 @@
-;;; -*- no-byte-compile: t -*-
-(define-package "flycheck-indicator" "1.1.1" "A fancy mode line indicator for `flycheck-mode'" '((flycheck "0.15")) :commit "e00d9a20cbc21d6814c27cc9206296da394478e8" :keywords '("convenience" "language" "tools") :authors '(("Eder Elorriaga" . "gexplorer8@gmail.com")) :maintainer '("Eder Elorriaga" . "gexplorer8@gmail.com") :url "https://github.com/gexplorer/flycheck-indicator")
