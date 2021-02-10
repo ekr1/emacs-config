@@ -61,7 +61,7 @@
  '(compilation-auto-jump-to-first-error nil)
  '(compilation-context-lines 3)
  '(compilation-mode-hook nil)
- '(compilation-scroll-output nil)
+ '(compilation-scroll-output t)
  '(cperl-autoindent-on-semi t)
  '(cperl-brace-offset -2)
  '(cperl-extra-newline-before-brace t)
@@ -144,6 +144,7 @@
  '(server-mode t)
  '(show-paren-mode t)
  '(smerge-command-prefix "d")
+ '(special-display-buffer-names nil)
  '(split-width-threshold 140)
  '(sqlformat-command (quote pgformatter))
  '(tool-bar-mode nil)
@@ -231,7 +232,12 @@
   "Save all files, wait a little bit, then call (recompile). For compilations that watch file-change-times (RotTestHelper...)"
   (progn (save-some-buffers t)
 	 ;(sleep-for 1.5)
-	 (recompile)
+	 ; (recompile)
+
+         ; use comint-mode (the "t" of compilation-start)
+         (let ((default-directory compilation-directory))
+           (apply 'compilation-start (list compile-command t)))
+
          ;; if *compilation* is open in another frame (which is
          ;; visible and raised), then close it in "this" window
          (if (string= "t"
@@ -556,6 +562,17 @@
   (setq buffer-read-only t))
 (add-hook 'compilation-filter-hook 'ff/ansi-colorize-buffer)
 
+; ANSI coloring for any buffer
+(require 'tty-format)
+;; M-x display-ansi-colors to explicitly decode ANSI color escape sequences
+(defun display-ansi-colors ()
+  (interactive)
+  (format-decode-buffer 'ansi-colors))
+;; decode ANSI color escape sequences for *.txt or README files
+(add-hook 'find-file-hooks 'tty-format-guess)
+;; decode ANSI color escape sequences for .log files
+(add-to-list 'auto-mode-alist '("\\.log\\'" . display-ansi-colors))
+
 ;;;;;;;;;;;;;;;;;;; PUTTY
 
 ;; starten mit "TERM=xterm-256color emacs -nw"
@@ -874,11 +891,11 @@
 ;; naybe start docker-machine first ("docker-machine start default")
 (if (file-directory-p "/Users/KRAEME/.docker/machine")
     (progn
+      (shell-command "docker-machine start")
       (setenv "DOCKER_HOST" (shell-command-to-string "docker-machine env default | grep DOCKER_HOST | sed -e 's/export DOCKER_HOST=.//' -e 's/.$//' | tr -d '\n'"))
       (setenv "DOCKER_TLS_VERIFY" "1")
       (setenv "DOCKER_CERT_PATH" "/Users/KRAEME/.docker/machine/machines/default")
       (setenv "DOCKER_MACHINE_NAME" "default")))
-
 
 ;;; folding in xml
 
