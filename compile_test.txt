@@ -1,9 +1,11 @@
-##### Nothing
+##### Nothing/ignore
 
 You can implement step definitions for undefined steps with these snippets:
       stmt.c:243:in oci8lib_230.bundle
     [  1] "/Users/KRAEME/.rbenv/versions/2.3.3/lib/ruby/gems/2.3.0/gems/actionpack-4.0.6/lib/action_controller/metal/mime_responds.rb:191:in `respond_to'",
 -e:1:in `<main>'
+/usr/local/lib/python3.7/site-packages/urllib3/connection.py:170:
+
 
 ##### Info
 
@@ -25,3 +27,5 @@ cucumber -p rerun /Users/KRAEME/Documents/src/akp/acnneu/features/api_mobilfunk_
         <h2>/Users/KRAEME/Documents/src/akp/acnneu/app/views/doculife_api/akte_index.json.jbuilder:14: syntax error, unexpected keyword_ensure, expecting end-of-input</h2>
           Showing <i>/Users/KRAEME/Documents/src/akp/acnneu/app/views/doculife_api/akte_index.json.jbuilder</i> where line <b>#5</b> raised:
 #13 3.878 test_main.py:79:4: E0602: Undefined variable '_clear_all' (undefined-variable)
+file /app/tests/test_basics.py, line 14
+  File "/app/application/routes/halerium.py", line 28

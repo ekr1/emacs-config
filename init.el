@@ -358,12 +358,33 @@
  	     '(ekr-container-remove-app "^/app/\\(.+?\\):\\([0-9]+\\):"
                                      1 2 nil 2))
 
+; pytest/stacktrace
+; file /app/tests/test_basics.py, line 14
+(add-to-list 'compilation-error-regexp-alist 'ekr-pytest-container-trace)
+(add-to-list 'compilation-error-regexp-alist-alist
+ 	     '(ekr-pytest-container-trace "^file /app/\\(.+?\\), line \\([0-9]+\\)$"
+                                     1 2 nil 2))
+
+; pytest / yet another format
+;  File "/app/application/routes/halerium.py", line 28
+(add-to-list 'compilation-error-regexp-alist 'ekr-pytest-app-error)
+(add-to-list 'compilation-error-regexp-alist-alist
+ 	     '(ekr-pytest-app-error "^ *File \"/app/\\(.+?\\)\", line \\([0-9]+\\)$"
+                                     1 2 nil 2))
+
 ; ignore pytest timing
 ; #13 3.878 test_main.py:79:4: E0602: Undefined variable '_clear_all' (undefined-variable)
 (add-to-list 'compilation-error-regexp-alist 'ekr-pytest-timing)
 (add-to-list 'compilation-error-regexp-alist-alist
  	     '(ekr-pytest-timing "^#[0-9]+ [0-9]+.[0-9]+ \\(.+?\\):\\([0-9]+\\):"
                                      1 2 nil 2))
+
+; ignore /usr/local...
+; /usr/local/lib/python3.7/site-packages/urllib3/connection.py:170:
+(add-to-list 'compilation-error-regexp-alist 'ekr-ignore-usr-local)
+(add-to-list 'compilation-error-regexp-alist-alist
+ 	     '(ekr-ignore-usr-local "^/usr/local/"
+                                     nil nil nil 0))
 
 ; also jump between Szenarios...
 ;  Szenario: xxxxx           # /home/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.feature:242
