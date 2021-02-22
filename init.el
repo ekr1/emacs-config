@@ -924,6 +924,10 @@
 ; (with-eval-after-load 'flycheck (flycheck-pos-tip-mode)) ; GUI popups below cursor
 ; (with-eval-after-load 'flycheck (add-hook 'flycheck-mode-hook #'flycheck-pycheckers-setup))
 
+(savehist-mode 1)
+(add-to-list 'savehist-additional-variables 'compile-command)
+(add-to-list 'savehist-additional-variables 'compile-history)
+
 ; run server
 
 (server-start)
