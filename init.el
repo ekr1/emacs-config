@@ -133,7 +133,7 @@
  '(mouse-highlight t)
  '(package-selected-packages
    (quote
-    (realgud robe projectile-rails projectile groovy-mode json-mode lua-mode sqlformat magit magit-filenotify multiple-cursors inhibit-startup-screen t)))
+    (kubel kubernetes realgud robe projectile-rails projectile groovy-mode json-mode lua-mode sqlformat magit magit-filenotify multiple-cursors inhibit-startup-screen t)))
  '(projectile-completion-system (quote ido))
  '(ruby-insert-encoding-magic-comment nil)
  '(safe-local-variable-values
