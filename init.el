@@ -897,6 +897,9 @@
       (setenv "DOCKER_CERT_PATH" "/Users/KRAEME/.docker/machine/machines/default")
       (setenv "DOCKER_MACHINE_NAME" "default")))
 
+; DOCKER_BUILDKIT does not look good in *compilation* buffers...
+(setenv "DOCKER_BUILDKIT" "0")
+
 ;;; folding in xml
 
 (require 'hideshow)
@@ -927,6 +930,8 @@
 (savehist-mode 1)
 (add-to-list 'savehist-additional-variables 'compile-command)
 (add-to-list 'savehist-additional-variables 'compile-history)
+(add-to-list 'savehist-additional-variables 'compilation-directory)
+(add-to-list 'savehist-additional-variables 'shell-command-history)
 
 ; run server
 
