@@ -1,5 +1,65 @@
 ;;; package --- Summary
-                                        ;
+
+;; Initialization 'straight
+
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 6))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+
+;; Straight packages
+
+(straight-use-package 'csv-mode)
+(straight-use-package 'with-editor)
+(straight-use-package 'php-mode)
+(straight-use-package 'org-jira)
+(straight-use-package 'json-navigator)
+(straight-use-package 'go-eldoc)
+(straight-use-package 'typescript-mode)
+(straight-use-package 'go-mode)
+(straight-use-package 'origami-predef)
+(straight-use-package 'dockerfile-mode)
+;(straight-use-package 'org-plus-contrib) -> nongnu-elpa
+(straight-use-package 'markdown-mode)
+(straight-use-package 'kubel)
+(straight-use-package 'kubernetes)
+(straight-use-package 'realgud)
+(straight-use-package 'robe)
+(straight-use-package 'projectile-rails)
+(straight-use-package 'projectile)
+(straight-use-package 'groovy-mode)
+(straight-use-package 'json-mode)
+(straight-use-package 'lua-mode)
+(straight-use-package 'sqlformat)
+(straight-use-package 'magit)
+(straight-use-package 'magit-filenotify)
+(straight-use-package 'multiple-cursors)
+;(straight-use-package 'inhibit-startup-screen) -> nongnu-elpa
+(straight-use-package 'feature-mode) ; todo, remove "~/.emacs.d/elisp/feature-mode"
+(straight-use-package 'emmet-mode) ; todo, "~/.emacs.d/elisp/emmet-mode"
+(straight-use-package 'realgud-byebug) ; todo, "~/.emacs.d/elisp/realgud-byebug"
+(straight-use-package 'use-package)
+
+(use-package chatgpt
+  :straight (:host github :repo "joshcho/ChatGPT.el" :files ("dist" "*.el"))
+  :init
+  (require 'python)
+  (unless (boundp 'python-interpreter)
+    (defvaralias 'python-interpreter 'python-shell-interpreter))
+  (setq chatgpt-repo-path "~/.emacs.d/straight/repos/ChatGPT.el/")
+  :bind ("C-c q" . chatgpt-query))
+
+(use-package forge
+  :after magit)
+
 ; If this does not load at all (no error message), maybe remove ~/.emacs.
 
 ; vimacs (emacs mode for vim)
@@ -43,20 +103,22 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(ahk-indentation 4)
+ '(ansi-color-bold-is-bright t)
+ '(ansi-color-for-comint-mode t)
  '(ansi-color-names-vector
    ["black" "#d55e00" "#009e73" "#f8ec59" "#0072b2" "#cc79a7" "#56b4e9" "white"])
  '(auto-hscroll-mode t)
  '(auto-save-default t)
  '(auto-save-file-name-transforms
-   (quote
-    (("\\`/[^/]*:\\([^/]*/\\)*\\([^/]*\\)\\'" "d:/DOCUME~1/ekraemer/LOCALS~1/Temp/\\2" t)
-     (".*plink:\\(.*\\)" "d:/DOCUME~1/ekraemer/LOCALS~1/Temp/\\1" t))))
+   '(("\\`/[^/]*:\\([^/]*/\\)*\\([^/]*\\)\\'" "d:/DOCUME~1/ekraemer/LOCALS~1/Temp/\\2" t)
+     (".*plink:\\(.*\\)" "d:/DOCUME~1/ekraemer/LOCALS~1/Temp/\\1" t)))
  '(backup-by-copying t)
- '(backup-directory-alist (quote (("." . "/home/ekr/.emacs.d/backups"))))
+ '(backup-directory-alist '(("." . "/home/ekr/.emacs.d/backups")))
  '(c-basic-offset 4)
- '(c-default-style (quote ((awk-mode . "awk") (other . "ellemtel"))))
+ '(c-default-style '((awk-mode . "awk") (other . "ellemtel")))
  '(column-number-mode t)
  '(comment-empty-lines t)
+ '(comment-style 'multi-line)
  '(compilation-ask-about-save nil)
  '(compilation-auto-jump-to-first-error nil)
  '(compilation-context-lines 3)
@@ -71,28 +133,26 @@
  '(cperl-indent-level 4)
  '(cperl-indent-parens-as-block nil)
  '(cperl-indent-wrt-brace t)
- '(cperl-invalid-face (quote default))
+ '(cperl-invalid-face 'default)
  '(cperl-merge-trailing-else nil)
- '(custom-enabled-themes (quote (tango-dark)))
- '(desktop-files-not-to-save (quote "xyzzy (will crash if this is nil)"))
+ '(custom-enabled-themes '(tango-dark))
+ '(desktop-files-not-to-save '"xyzzy (will crash if this is nil)")
  '(desktop-globals-to-clear
-   (quote
-    (kill-ring-yank-pointer search-ring search-ring-yank-pointer regexp-search-ring regexp-search-ring-yank-pointer kill-ring)))
+   '(kill-ring-yank-pointer search-ring search-ring-yank-pointer regexp-search-ring regexp-search-ring-yank-pointer kill-ring))
  '(desktop-globals-to-save
-   (quote
-    (desktop-missing-file-warning tags-file-name tags-table-list search-ring regexp-search-ring register-alist file-name-history compile-command compilation-directory shell-command-history kill-ring search-ring \.\.\.)))
+   '(desktop-missing-file-warning tags-file-name tags-table-list search-ring regexp-search-ring register-alist file-name-history compile-command compilation-directory shell-command-history kill-ring search-ring \.\.\.))
  '(desktop-missing-file-warning nil)
- '(desktop-path (quote ("~/.emacs.d/")))
+ '(desktop-path '("~/.emacs.d/"))
  '(desktop-restore-eager t)
  '(desktop-save nil)
  '(desktop-save-mode nil)
  '(display-buffer-alist nil)
  '(display-buffer-reuse-frames t)
- '(feature-cucumber-command
-   "time bin/rake cucumber:rerun_nodb CUCUMBER_OPTS=\"{options}\" FEATURE=\"{feature}\" ")
+ '(display-line-numbers t)
+ '(feature-cucumber-command "cucumber {options} {feature}")
+ '(feature-rake-command "cucumber {options} {feature}")
  '(file-coding-system-alist
-   (quote
-    (("\\.dz\\'" no-conversion . no-conversion)
+   '(("\\.dz\\'" no-conversion . no-conversion)
      ("\\.txz\\'" no-conversion . no-conversion)
      ("\\.xz\\'" no-conversion . no-conversion)
      ("\\.lzma\\'" no-conversion . no-conversion)
@@ -114,11 +174,11 @@
      ("\\.rb\\'" . utf-8)
      ("\\.yml\\'" . utf-8)
      ("\\.erb\\'" . utf-8)
-     ("\\.feature\\'" . utf-8))))
+     ("\\.feature\\'" . utf-8)))
  '(git-commit-summary-max-length 2000)
+ '(global-so-long-mode t)
  '(grep-find-ignored-files
-   (quote
-    (".#*" "*.o" "*~" "*.bin" "*.lbin" "*.so" "*.a" "*.ln" "*.blg" "*.bbl" "*.elc" "*.lof" "*.glo" "*.idx" "*.lot" "*.fmt" "*.tfm" "*.class" "*.fas" "*.lib" "*.mem" "*.x86f" "*.sparcf" "*.dfsl" "*.pfsl" "*.d64fsl" "*.p64fsl" "*.lx64fsl" "*.lx32fsl" "*.dx64fsl" "*.dx32fsl" "*.fx64fsl" "*.fx32fsl" "*.sx64fsl" "*.sx32fsl" "*.wx64fsl" "*.wx32fsl" "*.fasl" "*.ufsl" "*.fsl" "*.dxl" "*.lo" "*.la" "*.gmo" "*.mo" "*.toc" "*.aux" "*.cp" "*.fn" "*.ky" "*.pg" "*.tp" "*.vr" "*.cps" "*.fns" "*.kys" "*.pgs" "*.tps" "*.vrs" "*.pyc" "*.pyo" "*.gz" "cucumber.json")))
+   '(".#*" "*.o" "*~" "*.bin" "*.lbin" "*.so" "*.a" "*.ln" "*.blg" "*.bbl" "*.elc" "*.lof" "*.glo" "*.idx" "*.lot" "*.fmt" "*.tfm" "*.class" "*.fas" "*.lib" "*.mem" "*.x86f" "*.sparcf" "*.dfsl" "*.pfsl" "*.d64fsl" "*.p64fsl" "*.lx64fsl" "*.lx32fsl" "*.dx64fsl" "*.dx32fsl" "*.fx64fsl" "*.fx32fsl" "*.sx64fsl" "*.sx32fsl" "*.wx64fsl" "*.wx32fsl" "*.fasl" "*.ufsl" "*.fsl" "*.dxl" "*.lo" "*.la" "*.gmo" "*.mo" "*.toc" "*.aux" "*.cp" "*.fn" "*.ky" "*.pg" "*.tp" "*.vr" "*.cps" "*.fns" "*.kys" "*.pgs" "*.tps" "*.vrs" "*.pyc" "*.pyo" "*.gz" "cucumber.json"))
  '(grep-find-template "find . <X> -type f <F> -print0 | xargs -0 grep <C> -n <R>")
  '(icicle-guess-commands-in-path nil)
  '(icicle-redefine-standard-commands-flag nil)
@@ -127,46 +187,61 @@
  '(ido-everywhere t)
  '(indent-tabs-mode nil)
  '(jit-lock-stealth-verbose t)
+ '(kubernetes-kubectl-executable "/usr/local/bin/oc")
  '(make-pointer-invisible nil)
  '(max-mini-window-height 1)
  '(max-specpdl-size 10000)
  '(mouse-highlight t)
- '(package-selected-packages
-   (quote
-    (kubel kubernetes realgud robe projectile-rails projectile groovy-mode json-mode lua-mode sqlformat magit magit-filenotify multiple-cursors inhibit-startup-screen t)))
- '(projectile-completion-system (quote ido))
+ '(mouse-wheel-down-event 'wheel-up)
+ '(mouse-wheel-mode t)
+ '(mouse-wheel-progressive-speed nil)
+ '(mouse-wheel-up-event 'wheel-down)
+ '(mpc-browser-tags '(Album|Playlist))
+ '(mpc-mpd-music-directory "~/Music/Loop")
+ '(org-export-backends '(ascii html md odt))
+ '(org-jira-boards-default-limit 200)
+ '(org-jira-custom-jqls
+   '((:jql " assignee = currentUser() and createdDate < '2022-01-01' order by created DESC " :limit 100 :filename "last-years-work")
+     (:jql " assignee = currentUser() and createdDate >= '2022-01-01' order by created DESC " :limit 100 :filename "this-years-work")))
+ '(projectile-completion-system 'ido)
  '(ruby-insert-encoding-magic-comment nil)
  '(safe-local-variable-values
-   (quote
-    ((buffer-file-coding-system . iso-8859-1)
-     (buffer-file-coding-system . utf-8))))
+   '((buffer-file-coding-system . iso-8859-1)
+     (buffer-file-coding-system . utf-8)))
+ '(save-interprogram-paste-before-kill t)
  '(scroll-error-top-bottom t)
  '(server-mode t)
  '(show-paren-mode t)
  '(smerge-command-prefix "d")
  '(special-display-buffer-names nil)
  '(split-width-threshold 140)
- '(sqlformat-command (quote pgformatter))
+ '(sqlformat-command 'pgformatter)
  '(tool-bar-mode nil)
  '(tooltip-mode nil)
  '(tramp-copy-size-limit 102400)
  '(tramp-default-method "ssh")
  '(tramp-remote-process-environment
-   (quote
-    ("HISTFILE=$HOME/.tramp_history" "HISTSIZE=1" "LC_ALL=C" "TERM=dumb" "EMACS=t" "INSIDE_EMACS=23.1.1,tramp:2.1.15" "CDPATH=" "HISTORY=" "MAIL=" "MAILCHECK=" "MAILPATH=" "autocorrect=" \.\.\.)))
+   '("HISTFILE=$HOME/.tramp_history" "HISTSIZE=1" "LC_ALL=C" "TERM=dumb" "EMACS=t" "INSIDE_EMACS=23.1.1,tramp:2.1.15" "CDPATH=" "HISTORY=" "MAIL=" "MAILCHECK=" "MAILPATH=" "autocorrect=" \.\.\.))
  '(tramp-verbose 2)
  '(truncate-lines t)
  '(undo-limit 12000000)
  '(undo-strong-limit 12000000)
- '(uniquify-buffer-name-style (quote post-forward-angle-brackets) nil (uniquify))
+ '(uniquify-buffer-name-style 'post-forward-angle-brackets nil (uniquify))
  '(url-proxy-services nil)
  '(use-file-dialog nil)
- '(vc-handled-backends (quote (RCS SVN SCCS Bzr Git Hg Arch)))
+ '(vc-handled-backends '(RCS SVN SCCS Bzr Git Hg Arch))
  '(vc-svn-diff-switches "-x -b")
+ '(whitespace-global-modes '(yaml-mode))
+ '(whitespace-line-column 80)
+ '(whitespace-style
+   '(face trailing tabs empty indentation space-after-tab space-before-tab space-mark tab-mark newline-mark))
  '(with-editor-emacsclient-executable nil)
- '(xslt-process-fop-log-level (quote (debug)))
+ '(xslt-process-fop-log-level '(debug))
  '(xslt-process-xml-xslt-associations nil)
  '(xterm-mouse-mode t))
+
+ ;; '(feature-cucumber-command
+ ;;   "time bin/rake cucumber:rerun_nodb CUCUMBER_OPTS=\"{options}\" FEATURE=\"{feature}\" ")
 
 ;; (defun arrange-frame (w h x y)
 ;;   "Set the width, height, and x/y position of the current frame"
@@ -259,6 +334,11 @@
                                  (delete-window win)))))
          ))
 
+(defun ekr-compilation-finished (buf result)
+  (async-start-process "*Compilation Finished Beep*" "afplay" nil "/Users/KRAEME/.emacs.d/short_beep.m4a"))
+(remove-hook 'compilation-finish-functions 'ekr-compilation-finished)
+(add-hook 'compilation-finish-functions 'ekr-compilation-finished)
+
 (defun ekr-read-ssh-agent ()
   (interactive)
   "Set the ssh-agent environment"
@@ -302,6 +382,7 @@
 (global-set-key (kbd "C-M-n") 'ekr-next-scenario)
 (global-set-key (kbd "C-M-p") 'ekr-previous-scenario)
 (global-set-key (kbd "C-/") 'comment-or-uncomment-region)
+(global-set-key (kbd "C-#") 'comment-or-uncomment-region)
 
 ;(global-unset-key (kbd "M-q"))  ; avoid mistaken fill-paragraph when accidentally tying M-q on Mac
 (define-key key-translation-map (kbd "M-q") (kbd "@"))
@@ -449,6 +530,61 @@
  	     '(ekr-ignore-minuse "^-e:1:in"
 		     nil nil nil 0))
 
+; saxon / xslt errors
+; Error at xsl:param on line 770 of ipp_measurement.xsl:
+(add-to-list 'compilation-error-regexp-alist 'ekr-saxon-error)
+(add-to-list 'compilation-error-regexp-alist-alist
+ 	     '(ekr-saxon-error "^Error at .*? on line \\([0-9]+\\) of \\(.+\\):$"
+                                     2 1 nil 2))
+
+; saxon / xslt error with column
+; Error at xsl:call-template on line 598 column 78 of ipp_measurement.xsl:
+(add-to-list 'compilation-error-regexp-alist 'ekr-saxon-error-col)
+(add-to-list 'compilation-error-regexp-alist-alist
+ 	     '(ekr-saxon-error-col "^Error at .*? on line \\([0-9]+\\) column \\([0-9]+\\) of \\(.+\\):$"
+                                     3 1 2 2))
+
+; saxon / backtrace
+;  at xsl:call-template name="tolerances" (file:/Users/KRAEME/Documents/src/doorfitting/process-adapter/config/ipp_measurement.xsl#598)
+(add-to-list 'compilation-error-regexp-alist 'ekr-saxon-backtrace)
+(add-to-list 'compilation-error-regexp-alist-alist
+ 	     '(ekr-saxon-backtrace " at .*? (file:\\(.+\\)#\\([0-9]+\\))$"
+                                     1 2 nil 2))
+
+; PHP with docker prefix
+; #1 /opt/app-root/src/webroot/php/application/AjaxConnector.php(2063): Tools::convertTimestampToDate('@1662716581', false)
+(add-to-list 'compilation-error-regexp-alist 'ekr-php-approot)
+(add-to-list 'compilation-error-regexp-alist-alist
+ 	     '(ekr-php-approot "#[0-9]+ /opt/app-root/src/\\(.+?.php\\)(\\([0-9]+\\)): "
+                                     1 2 nil 2))
+
+; PHP Codeception snapshots
+;  [Snapshot Saved] file:///opt/app-root/src/tests/_output/debug/2023-01-18_14-02-03_63c7fbdb9f1029.50598734.html
+(add-to-list 'compilation-error-regexp-alist 'ekr-php-codeception-snapshot)
+(add-to-list 'compilation-error-regexp-alist-alist
+ 	     '(ekr-php-codeception-snapshot ".*\\[Snapshot Saved\\] file:///opt/app-root/src/\\(.+?.html\\)"
+                                     1 nil nil 2))
+
+; PHP Codeception HTML
+;Html: /opt/app-root/src/tests/_output/ArchivedMeasurementPlanCest.showListOfArchivedPlans.fail.html
+(add-to-list 'compilation-error-regexp-alist 'ekr-php-codeception-html)
+(add-to-list 'compilation-error-regexp-alist-alist
+ 	     '(ekr-php-codeception-html "Html: /opt/app-root/src/\\(.+?.html\\)"
+                                     1 nil nil 2))
+
+; PHP Codeception Response
+;Response: /opt/app-root/src/tests/_output/ArchivedMeasurementPlanCest.showListOfArchivedPlans.fail.html
+(add-to-list 'compilation-error-regexp-alist 'ekr-php-codeception-response)
+(add-to-list 'compilation-error-regexp-alist-alist
+ 	     '(ekr-php-codeception-response "Response: /opt/app-root/src/\\(.+?.html\\)"
+                                     1 nil nil 2))
+
+; PHP Codeception Png
+;Png: /opt/app-root/src/tests/_output/ArchivedMeasurementPlanCest.showListOfArchivedPlans.fail.png
+(add-to-list 'compilation-error-regexp-alist 'ekr-php-codeception-png)
+(add-to-list 'compilation-error-regexp-alist-alist
+ 	     '(ekr-php-codeception-png "Png: /opt/app-root/src/\\(.+?.png\\)"
+                                     1 nil nil 2))
 
 ; erstes (also letztes ;) ) entfernen, beim Entwickeln
 ;(setq compilation-error-regexp-alist-alist (cdr compilation-error-regexp-alist-alist))
@@ -531,7 +667,7 @@
 ;;;; obsolete X mode ;;;;; </fontconfig>
 
 ; cucumber mode
-(add-to-list 'load-path "~/.emacs.d/elisp/feature-mode")
+;(add-to-list 'load-path "~/.emacs.d/elisp/feature-mode")
 ;(setq feature-default-i18n-file "/path/to/gherkin/gem/i18n.yml")
 (require 'feature-mode)
 (setq feature-default-language "fi")
@@ -554,13 +690,18 @@
 ;(prefer-coding-system 'utf-8)
 ; ... wird aber in .dir-locals.el eingestellt (auf andere Weise - genügt das?)
 
+;; included in 28.2, not required anymore
 ;; ANSI coloring in compilation buffers
-(require 'ansi-color)
-(defun ff/ansi-colorize-buffer ()
-  (setq buffer-read-only nil)
-  (ansi-color-apply-on-region (point-min) (point-max))
-  (setq buffer-read-only t))
-(add-hook 'compilation-filter-hook 'ff/ansi-colorize-buffer)
+;; (require 'ansi-color)
+;; (defun ff/ansi-colorize-buffer ()
+;; ;  (setq buffer-read-only nil)
+;; ;  (ansi-color-apply-on-region (point-min) (point-max))
+;; ;  (setq buffer-read-only t)
+;;   )
+;; (add-hook 'compilation-filter-hook 'ff/ansi-colorize-buffer)
+
+;; ; ANSI coloring in compilation buffers
+(add-hook 'compilation-filter-hook 'ansi-color-compilation-filter)
 
 ; ANSI coloring for any buffer
 (require 'tty-format)
@@ -626,13 +767,17 @@
 ;;  '(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face :foreground "gray55"))))
 ;;  '(font-lock-comment-face ((t (:foreground "gray55")))))
 
-(require 'package)
-(add-to-list 'package-archives
-             '("melpa-stable" . "http://stable.melpa.org/packages/") t)
-(when (< emacs-major-version 24)
-  ;; For important compatibility libraries like cl-lib
-  (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/")))
-(package-initialize) ;; You might already have this line
+;; (require 'package)
+;; (add-to-list 'package-archives
+;;              '("melpa-stable" . "http://stable.melpa.org/packages/") t)
+;; (when (< emacs-major-version 24)
+;;   ;; For important compatibility libraries like cl-lib
+;;   (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/")))
+;;
+;; ; for package org-plus-contrib -> ox-confluence
+;; (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
+;;
+;; (package-initialize) ;; You might already have this line
 
 ;;;;;;;;;;;;;;;;;;; mintty xterm-mouse mode (cut, paste, windows clipboard...)
 ;;; clipboard is via VcXsrv
@@ -699,10 +844,11 @@
 (require 'web-mode)
 (add-to-list 'auto-mode-alist '("\.erb$" . web-mode))
 (add-to-list 'auto-mode-alist '("\.jsp$" . web-mode))
-(add-to-list 'auto-mode-alist '("\.php$" . web-mode))
 
 (add-to-list 'auto-mode-alist '("\.builder$" . ruby-mode))
 (add-to-list 'auto-mode-alist '("\.axlsx$" . ruby-mode))
+
+(add-to-list 'auto-mode-alist '("\.sql" . sql-mode))
 
 (load-library "sql-indent/sql-indent")
 ;(eval-after-load "sql"
@@ -717,7 +863,7 @@
 (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
 
 ; Ctrl-j etc. für "div" => "<div></div>"
-(add-to-list 'load-path "~/.emacs.d/elisp/emmet-mode")
+;(add-to-list 'load-path "~/.emacs.d/elisp/emmet-mode")
 (require 'emmet-mode)
 (add-hook 'web-mode-hook 'emmet-mode)
 
@@ -795,7 +941,7 @@
 ; debugger
 (unless (ignore-errors
           (require 'realgud)
-          (add-to-list 'load-path "~/.emacs.d/elisp/realgud-byebug")
+          ;(add-to-list 'load-path "~/.emacs.d/elisp/realgud-byebug")
           (require 'realgud-byebug))
   (message "Warning: error loading realgud, ignoring"))
 
@@ -824,7 +970,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(line-number ((t (:inherit (shadow default) :foreground "gray32")))))
 
 
 ;; (defun notify-compilation-result(buffer msg)
@@ -932,6 +1078,55 @@
 (add-to-list 'savehist-additional-variables 'compile-history)
 (add-to-list 'savehist-additional-variables 'compilation-directory)
 (add-to-list 'savehist-additional-variables 'shell-command-history)
+
+; ox-confluence, export org to confluence/jira markup
+
+; (load-library "ox-confluence")
+
+;(when (version<= "26.0.50" emacs-version )
+;  (global-display-line-numbers-mode))
+
+; golang
+
+; https://andrewjamesjohnson.com/configuring-emacs-for-go-development/
+(defun go-mode-setup ()
+; (go-eldoc-setup)
+;  (setq gofmt-command "gofmt")  ; go install golang.org/x/tools/...@latest
+  (add-hook 'before-save-hook 'gofmt-before-save)
+;  (local-set-key (kbd "M-.") 'godef-jump)
+  )
+(add-hook 'go-mode-hook 'go-mode-setup)
+
+
+(if (file-directory-p "~/Documents/src")
+    (dolist (buffer (buffer-list))
+      (progn
+        (set-buffer buffer)
+        (cd "~/Documents/src"))))
+(run-at-time "2 sec" nil (lambda () (progn
+                                      (set-buffer "*GNU Emacs*")
+                                      (cd "~/Documents/src"))))
+
+;; org-jira
+
+(setq jiralib-url "https://jira-caps-ext.nttdata-emea.com")
+
+;; PHP
+
+(autoload 'php-mode "php-mode" "Major mode for editing PHP code." t)
+(add-to-list 'auto-mode-alist '("\.php$" . php-mode))
+
+; LUA
+
+(autoload 'lua-mode "lua-mode" "Major mode for editing LUA code." t)
+(add-to-list 'auto-mode-alist '("\.lua$" . lua-mode))
+
+; disable ctrl + mouse wheel text scaling
+
+(defun mouse-wheel-text-scale (event)
+  (interactive (list last-input-event))
+  (ignore))
+
 
 ; run server
 

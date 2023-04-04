@@ -6,12 +6,15 @@ You can implement step definitions for undefined steps with these snippets:
 -e:1:in `<main>'
 /usr/local/lib/python3.7/site-packages/urllib3/connection.py:170:
 
-
 ##### Info
 
 Wenn die REST-API für Mobilfunkverträge aufgerufen wird # features/step_definitions/api_mobilfunk_vertraege_steps.rb:17
 
 /app/src/emil/src/de/edag/fps/emil/AnwendungEMIL.java:54: warning: Signal is internal proprietary API and may be removed in a future release
+
+  [Snapshot Saved] file:///opt/app-root/src/tests/_output/debug/2023-01-18_14-02-03_63c7fbdb9f1029.50598734.html
+Html: /opt/app-root/src/tests/_output/ArchivedMeasurementPlanCest.showListOfArchivedPlans.fail.html
+Response: /opt/app-root/src/tests/_output/ArchivedMeasurementPlanCest.showListOfArchivedPlans.fail.html
 
 ##### Warnings
 
@@ -29,3 +32,11 @@ cucumber -p rerun /Users/KRAEME/Documents/src/akp/acnneu/features/api_mobilfunk_
 #13 3.878 test_main.py:79:4: E0602: Undefined variable '_clear_all' (undefined-variable)
 file /app/tests/test_basics.py, line 14
   File "/app/application/routes/halerium.py", line 28
+
+Error at xsl:param on line 770 of ipp_measurement.xsl:
+
+Error at xsl:call-template on line 598 column 78 of ipp_measurement.xsl:
+
+  at xsl:call-template name="tolerances" (file:/Users/KRAEME/Documents/src/doorfitting/process-adapter/config/ipp_measurement.xsl#598)
+
+#1 /opt/app-root/src/webroot/php/application/AjaxConnector.php(2063): Tools::convertTimestampToDate('@1662716581', false)
