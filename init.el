@@ -129,7 +129,10 @@
  '(max-mini-window-height 1)
  '(max-specpdl-size 10000)
  '(mouse-highlight t)
- '(package-selected-packages (quote (multiple-cursors inhibit-startup-screen t)))
+ '(org-startup-with-inline-images t)
+ '(package-selected-packages
+   (quote
+    (pdf-tools use-package marginalia embark go-mode markdown-mode powershell multiple-cursors inhibit-startup-screen t)))
  '(projectile-globally-ignored-files (quote ("TAGS" "#*#")))
  '(ruby-insert-encoding-magic-comment nil)
  '(safe-local-variable-values
@@ -762,7 +765,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(mode-line ((t (:background "#2e3436" :foreground "#d3d7cf" :box (:line-width -1 :style released-button))))))
 
 
 ;; (defun notify-compilation-result(buffer msg)
@@ -848,5 +851,44 @@
                nil))
 (add-hook 'nxml-mode-hook 'hs-minor-mode)
 (define-key nxml-mode-map (kbd "C-c h") 'hs-toggle-hiding)
+
+; Windows Powershell
+
+(require 'powershell)
+(add-to-list 'auto-mode-alist '("\.ps1$" . powershell-mode))
+(add-to-list 'auto-mode-alist '("\.ps2$" . powershell-mode))
+
+; dark mode
+
+(menu-bar-mode -1)
+(toggle-scroll-bar -1)
+
+;;;;;;;; embark & marginalia
+
+(use-package marginalia
+  :ensure t
+  :config
+  (marginalia-mode))
+
+(use-package embark
+  :ensure t
+
+  :bind
+  (("C-." . embark-act)         ;; pick some comfortable binding
+   ("C-;" . embark-dwim)        ;; good alternative: M-.
+   ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
+
+  :init
+
+  ;; Optionally replace the key help with a completing-read interface
+  (setq prefix-help-command #'embark-prefix-help-command)
+
+  :config
+
+  ;; Hide the mode line of the Embark live/completions buffers
+  (add-to-list 'display-buffer-alist
+               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                 nil
+                 (window-parameters (mode-line-format . none)))))
 
 (server-start)
