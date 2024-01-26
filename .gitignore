@@ -21,3 +21,4 @@ server
 /request/
 /straight/
 /elpa/
+transient/history.el
