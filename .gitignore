@@ -16,3 +16,8 @@ recentf
 tutorial/
 /#recentf#
 server
+/history
+/elpa/archives/
+/request/
+/straight/
+/elpa/

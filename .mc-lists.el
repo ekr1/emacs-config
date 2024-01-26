@@ -13,6 +13,7 @@
         orgtbl-hijacker-command-101
         orgtbl-hijacker-command-103
         orgtbl-self-insert-command
+        recentf-open-files
         sh-assignment
         yaml-electric-backspace
         yaml-electric-dash-and-dot
@@ -21,6 +22,7 @@
 (setq mc/cmds-to-run-once
       '(
         ekr-recompile
+        mouse-set-region
         projectile-find-file
         switch-to-buffer
         toggle-frame-fullscreen
