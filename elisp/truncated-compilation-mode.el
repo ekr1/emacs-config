@@ -29,7 +29,7 @@ truncates lines returned by the compilation process."
              (forward-line 1)
              (end-of-line)
              (when (= (point) (point-max))
-               (return)))))
+               (cl-return)))))
 
 ;;;###autoload
 (define-minor-mode truncated-compilation-mode

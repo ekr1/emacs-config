@@ -49,11 +49,14 @@
 (straight-use-package 'pdf-tools)
 (straight-use-package 'powershell)
 (straight-use-package 'ahk-mode)
+(straight-use-package 'tty-format)
+(straight-use-package 'scss-mode)
+(straight-use-package 'web-mode)
+(straight-use-package 'sql-indent)
+(straight-use-package 'marginalia)
 
 (use-package forge
   :after magit)
-
-; If this does not load at all (no error message), maybe remove ~/.emacs.
 
 (add-to-list 'load-path "~/.emacs.d/elisp")
 
@@ -384,12 +387,11 @@
                (string-equal (substring s 0 (length "ekr-")) "ekr-"))
               (t nil))))
 
-(require 'cl)
 (setq compilation-error-regexp-alist-alist
-      (remove-if (lambda (item) (starts-with-ekr (car item)))
+      (cl-remove-if (lambda (item) (starts-with-ekr (car item)))
                  compilation-error-regexp-alist-alist))
 (setq compilation-error-regexp-alist
-      (remove-if 'starts-with-ekr
+      (cl-remove-if 'starts-with-ekr
                  (mapcar 'car compilation-error-regexp-alist-alist)))
 
 ; M-x re-builder
@@ -826,7 +828,7 @@
 
 (add-to-list 'auto-mode-alist '("\.sql" . sql-mode))
 
-(load-library "sql-indent/sql-indent")
+;(load-library "sql-indent/sql-indent")
 ;(eval-after-load "sql"
 ;  '(load-library "sql-indent/sql-indent"))
 
@@ -1050,11 +1052,6 @@
 
 ;;;;;;;; embark & marginalia
 
-(use-package marginalia
-  :ensure t
-  :config
-  (marginalia-mode))
-
 (use-package embark
   :ensure t
 
@@ -1113,13 +1110,11 @@
 
 
 (if (file-directory-p "~/Documents/src")
-    (dolist (buffer (buffer-list))
-      (progn
-        (set-buffer buffer)
-        (cd "~/Documents/src"))))
-(run-at-time "2 sec" nil (lambda () (progn
-                                      (set-buffer "*GNU Emacs*")
-                                      (cd "~/Documents/src"))))
+  (run-at-time "2 sec" nil (lambda ()
+                             (dolist (buffer (buffer-list))
+                               (progn
+                                 (set-buffer buffer)
+                                 (cd "~/Documents/src"))))))
 
 ;; org-jira
 
