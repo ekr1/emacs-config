@@ -29,7 +29,6 @@
 (straight-use-package 'go-mode)
 (straight-use-package 'origami-predef)
 (straight-use-package 'dockerfile-mode)
-;(straight-use-package 'org-plus-contrib) -> nongnu-elpa
 (straight-use-package 'markdown-mode)
 (straight-use-package 'kubel)
 (straight-use-package 'kubernetes)
@@ -38,15 +37,14 @@
 (straight-use-package 'projectile-rails)
 (straight-use-package 'projectile)
 (straight-use-package 'groovy-mode)
-;;29;; (straight-use-package 'json-mode) - replaced by js-json-mode
 (straight-use-package 'lua-mode)
 (straight-use-package 'sqlformat)
 (straight-use-package 'magit)
 (straight-use-package 'magit-filenotify)
 (straight-use-package 'multiple-cursors)
-(straight-use-package 'feature-mode) ; todo, remove "~/.emacs.d/elisp/feature-mode"
-(straight-use-package 'emmet-mode) ; todo, "~/.emacs.d/elisp/emmet-mode"
-(straight-use-package 'realgud-byebug) ; todo, "~/.emacs.d/elisp/realgud-byebug"
+(straight-use-package 'feature-mode)
+(straight-use-package 'emmet-mode)
+(straight-use-package 'realgud-byebug)
 (straight-use-package 'use-package)
 (straight-use-package 'pdf-tools)
 (straight-use-package 'powershell)
@@ -56,24 +54,22 @@
 (straight-use-package 'web-mode)
 (straight-use-package 'sql-indent)
 (straight-use-package 'marginalia)
-
-; from mac:
 (straight-use-package 'forge)
 (straight-use-package 'yaml-mode)
 (straight-use-package 'recentf)
 (straight-use-package 'compile)
-; (straight-use-package  '(chat :type git :host github :repo "iwahbe/chat.el"))
 (straight-use-package 'highlight-indent-guides)
+(straight-use-package 'compile)
 
 ; from mac, probably delete all
 ;; (require 'cl)
 ;; (require 'uniquify)
-;; (require 'compile)
-;; (require 'flymake)
 
 (add-to-list 'load-path "~/.emacs.d/elisp")
 
-;; (require 'compile)
+; required since some compilation vars are used later
+(require 'compile)
+
 ; fix for very slow compiling:
 (setq process-adaptive-read-buffering nil)
 
@@ -839,9 +835,6 @@
 ;; (setq interprogram-cut-function nil)
 ;; (setq interprogram-paste-function nil)
 
-; messes with M-n...
-;(add-hook 'after-init-hook #'global-flycheck-mode)
-
 ;; .html.erb etc.
 
 ;(add-to-list 'auto-mode-alist '("\.html.erb$" . ruby-mode))
@@ -996,12 +989,6 @@
 ;;;;;;; special ruby stuff (packages installed specifically for that)
 ; https://lorefnon.me/2014/02/02/configuring-emacs-for-rails.html
 
-; auto syntax error check
-;; (unless (ignore-errors
-;;           (require 'flymake-ruby)
-;;           (add-hook 'ruby-mode-hook 'flymake-ruby-load))
-;;   (message "Warning: error loading flymake-ruby, ignoring"))
-
 ; ruby shell
 (global-set-key (kbd "C-c r r") 'inf-ruby-console-auto)
 
@@ -1102,12 +1089,6 @@
 
 (global-set-key (kbd "<home>") 'move-beginning-of-line)
 (global-set-key (kbd "<end>") 'move-end-of-line)
-
-; display errors on the fly - too noisy
-; (add-hook 'after-init-hook #'global-flycheck-mode)
-; (add-hook 'flycheck-mode-hook 'flycheck-indicator-mode)  ; little ".21 .2" for warnings/errors etc.
-; (with-eval-after-load 'flycheck (flycheck-pos-tip-mode)) ; GUI popups below cursor
-; (with-eval-after-load 'flycheck (add-hook 'flycheck-mode-hook #'flycheck-pycheckers-setup))
 
 (savehist-mode 1)
 (add-to-list 'savehist-additional-variables 'compile-command)
