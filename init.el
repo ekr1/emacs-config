@@ -60,12 +60,21 @@
 (straight-use-package 'compile)
 (straight-use-package 'highlight-indent-guides)
 (straight-use-package 'compile)
-
-; from mac, probably delete all
-;; (require 'cl)
-;; (require 'uniquify)
+(straight-use-package 'flycheck)
+; (straight-use-package 'flycheck-color-mode-line) ; https://github.com/flycheck/flycheck-color-mode-line (official) colors the mode line according to the Flycheck status.
+(straight-use-package 'flycheck-pos-tip) ; shows Flycheck error messages in a graphical popup.
+(straight-use-package 'flycheck-status-emoji) ; https://github.com/liblit/flycheck-status-emoji adds cute emoji (e.g. 😱 for errors) to Flycheck’s mode line status.
+(straight-use-package 'flycheck-checkbashisms)
+; Possible PHP flycheck extensions: https://github.com/emacs-php/phpstan.el, https://github.com/emacs-php/psalm.el
+; Possible Python checkers: https://github.com/msherry/flycheck-pycheckers, https://github.com/chocoelho/flycheck-prospector
 
 (add-to-list 'load-path "~/.emacs.d/elisp")
+
+; flycheck plus additional modules
+(global-flycheck-mode)
+(with-eval-after-load 'flycheck (flycheck-pos-tip-mode))
+(with-eval-after-load 'flycheck (flycheck-status-emoji-mode))
+(eval-after-load 'flycheck '(add-hook 'flycheck-mode-hook #'flycheck-checkbashisms-setup))
 
 ; required since some compilation vars are used later
 (require 'compile)
