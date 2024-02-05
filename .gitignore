@@ -22,3 +22,4 @@ server
 /straight/
 /elpa/
 transient/history.el
+compile_test.txt
