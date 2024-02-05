@@ -15,6 +15,8 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
+(straight-use-package 'use-package) ; Now use-package will use straight.el to automatically install missing packages if you provide :straight t
+
 ;; Straight packages
 
 (straight-use-package 'csv-mode)
@@ -36,7 +38,7 @@
 (straight-use-package 'projectile-rails)
 (straight-use-package 'projectile)
 (straight-use-package 'groovy-mode)
-(straight-use-package 'json-mode)
+;;29;; (straight-use-package 'json-mode) - replaced by js-json-mode
 (straight-use-package 'lua-mode)
 (straight-use-package 'sqlformat)
 (straight-use-package 'magit)
@@ -55,16 +57,25 @@
 (straight-use-package 'sql-indent)
 (straight-use-package 'marginalia)
 
-(use-package forge
-  :after magit)
+; from mac:
+(straight-use-package 'forge)
+(straight-use-package 'yaml-mode)
+(straight-use-package 'recentf)
+(straight-use-package 'compile)
+; (straight-use-package  '(chat :type git :host github :repo "iwahbe/chat.el"))
+(straight-use-package 'highlight-indent-guides)
+
+; from mac, probably delete all
+;; (require 'cl)
+;; (require 'uniquify)
+;; (require 'compile)
+;; (require 'flymake)
 
 (add-to-list 'load-path "~/.emacs.d/elisp")
 
-(require 'compile)
+;; (require 'compile)
 ; fix for very slow compiling:
 (setq process-adaptive-read-buffering nil)
-
-(require 'uniquify)
 
 ;(setq load-path (cons "~/.emacs.d/elisp/icicles" load-path))
 ;(require 'icicles)
@@ -117,7 +128,7 @@
  '(desktop-globals-to-clear
    '(kill-ring-yank-pointer search-ring search-ring-yank-pointer regexp-search-ring regexp-search-ring-yank-pointer kill-ring))
  '(desktop-globals-to-save
-   '(desktop-missing-file-warning tags-file-name tags-table-list search-ring regexp-search-ring register-alist file-name-history compile-command compilation-directory shell-command-history kill-ring search-ring \.\.\.))
+   '(desktop-missing-file-warning tags-file-name tags-table-list search-ring regexp-search-ring register-alist file-name-history compile-command compilation-directory shell-command-history kill-ring search-ring \...))
  '(desktop-missing-file-warning nil)
  '(desktop-path '("~/.emacs.d/"))
  '(desktop-restore-eager t)
@@ -152,11 +163,29 @@
      ("\\.yml\\'" . utf-8)
      ("\\.erb\\'" . utf-8)
      ("\\.feature\\'" . utf-8)))
+ '(forge-alist
+   '(("github.com" "api.github.com" "github.com" forge-github-repository)
+     ("gitlab.com" "gitlab.com/api/v4" "gitlab.com" forge-gitlab-repository)
+     ("salsa.debian.org" "salsa.debian.org/api/v4" "salsa.debian.org" forge-gitlab-repository)
+     ("framagit.org" "framagit.org/api/v4" "framagit.org" forge-gitlab-repository)
+     ("gitlab.gnome.org" "gitlab.gnome.org/api/v4" "gitlab.gnome.org" forge-gitlab-repository)
+     ("codeberg.org" "codeberg.org/api/v1" "codeberg.org" forge-gitea-repository)
+     ("code.orgmode.org" "code.orgmode.org/api/v1" "code.orgmode.org" forge-gogs-repository)
+     ("bitbucket.org" "api.bitbucket.org/2.0" "bitbucket.org" forge-bitbucket-repository)
+     ("git.savannah.gnu.org" nil "git.savannah.gnu.org" forge-cgit**-repository)
+     ("git.kernel.org" nil "git.kernel.org" forge-cgit-repository)
+     ("repo.or.cz" nil "repo.or.cz" forge-repoorcz-repository)
+     ("git.suckless.org" nil "git.suckless.org" forge-stagit-repository)
+     ("git.sr.ht" nil "git.sr.ht" forge-srht-repository)
+     ("atc-github.azure.cloud.bmw" "atc-github.azure.cloud.bmw/api/v3" "atc-github.azure.cloud.bmw" forge-github-repository)))
  '(git-commit-summary-max-length 2000)
- '(global-so-long-mode t)
  '(grep-find-ignored-files
    '(".#*" "*.o" "*~" "*.bin" "*.lbin" "*.so" "*.a" "*.ln" "*.blg" "*.bbl" "*.elc" "*.lof" "*.glo" "*.idx" "*.lot" "*.fmt" "*.tfm" "*.class" "*.fas" "*.lib" "*.mem" "*.x86f" "*.sparcf" "*.dfsl" "*.pfsl" "*.d64fsl" "*.p64fsl" "*.lx64fsl" "*.lx32fsl" "*.dx64fsl" "*.dx32fsl" "*.fx64fsl" "*.fx32fsl" "*.sx64fsl" "*.sx32fsl" "*.wx64fsl" "*.wx32fsl" "*.fasl" "*.ufsl" "*.fsl" "*.dxl" "*.lo" "*.la" "*.gmo" "*.mo" "*.toc" "*.aux" "*.cp" "*.fn" "*.ky" "*.pg" "*.tp" "*.vr" "*.cps" "*.fns" "*.kys" "*.pgs" "*.tps" "*.vrs" "*.pyc" "*.pyo" "*.gz" "cucumber.json"))
  '(grep-find-template "find . <X> -type f <F> -print0 | xargs -0 grep <C> -n <R>")
+ '(highlight-indent-guides-auto-character-face-perc 60)
+ '(highlight-indent-guides-method 'character)
+ '(highlight-indent-guides-responsive nil)
+ '(highlight-indent-guides-suppress-auto-error t)
  '(icicle-guess-commands-in-path nil)
  '(icicle-redefine-standard-commands-flag nil)
  '(ido-confirm-unique-completion t)
@@ -167,7 +196,7 @@
  '(kubernetes-kubectl-executable "/usr/local/bin/oc")
  '(make-pointer-invisible nil)
  '(max-mini-window-height 1)
- '(max-specpdl-size 10000)
+ '(max-specpdl-size 10000 t)
  '(mouse-highlight t)
  '(org-startup-with-inline-images t)
  '(projectile-globally-ignored-files (quote ("TAGS" "#*#")))
@@ -191,7 +220,7 @@
  '(scroll-error-top-bottom t)
  '(server-mode t)
  '(show-paren-mode t)
- '(smerge-command-prefix "d")
+ '(smerge-command-prefix "\3d")
  '(special-display-buffer-names nil)
  '(split-width-threshold 140)
  '(sqlformat-command 'pgformatter)
@@ -200,7 +229,7 @@
  '(tramp-copy-size-limit 102400)
  '(tramp-default-method "ssh")
  '(tramp-remote-process-environment
-   '("HISTFILE=$HOME/.tramp_history" "HISTSIZE=1" "LC_ALL=C" "TERM=dumb" "EMACS=t" "INSIDE_EMACS=23.1.1,tramp:2.1.15" "CDPATH=" "HISTORY=" "MAIL=" "MAILCHECK=" "MAILPATH=" "autocorrect=" \.\.\.))
+   '("HISTFILE=$HOME/.tramp_history" "HISTSIZE=1" "LC_ALL=C" "TERM=dumb" "EMACS=t" "INSIDE_EMACS=23.1.1,tramp:2.1.15" "CDPATH=" "HISTORY=" "MAIL=" "MAILCHECK=" "MAILPATH=" "autocorrect=" \...))
  '(tramp-verbose 2)
  '(truncate-lines t)
  '(undo-limit 12000000)
@@ -314,7 +343,7 @@
          ))
 
 (defun ekr-compilation-finished (buf result)
-  (async-start-process "*Compilation Finished Beep*" "afplay" nil "/Users/KRAEME/.emacs.d/short_beep.m4a"))
+  (start-process "*Compilation Finished Beep*" nil "afplay" "/Users/KRAEME/.emacs.d/short_beep.m4a"))
 (remove-hook 'compilation-finish-functions 'ekr-compilation-finished)
 (add-hook 'compilation-finish-functions 'ekr-compilation-finished)
 
@@ -536,6 +565,12 @@
  	     '(ekr-php-approot "#[0-9]+ /opt/app-root/src/\\(.+?.php\\)(\\([0-9]+\\)): "
                                      1 2 nil 2))
 
+; #2  /opt/app-root/src/tests/unit/KafkaTest.php:134
+(add-to-list 'compilation-error-regexp-alist 'ekr-php-codeception-backtrace)
+(add-to-list 'compilation-error-regexp-alist-alist
+ 	     '(ekr-php-codeception-backtrace "/opt/app-root/src/\\(.+?.php\\):\\([0-9]+\\)"
+                                     1 2 nil 2))
+
 ; PHP Codeception snapshots
 ;  [Snapshot Saved] file:///opt/app-root/src/tests/_output/debug/2023-01-18_14-02-03_63c7fbdb9f1029.50598734.html
 (add-to-list 'compilation-error-regexp-alist 'ekr-php-codeception-snapshot)
@@ -682,7 +717,7 @@
 (add-hook 'compilation-filter-hook 'ansi-color-compilation-filter)
 
 ; ANSI coloring for any buffer
-(require 'tty-format)
+;; (require 'tty-format)
 ;; M-x display-ansi-colors to explicitly decode ANSI color escape sequences
 (defun display-ansi-colors ()
   (interactive)
@@ -804,12 +839,6 @@
 ;; (setq interprogram-cut-function nil)
 ;; (setq interprogram-paste-function nil)
 
-(require 'yaml-mode)
-(add-to-list 'auto-mode-alist '("\.yml$" . yaml-mode))
-
-(require 'scss-mode)
-(add-to-list 'auto-mode-alist '("\.scss$" . scss-mode))
-
 ; messes with M-n...
 ;(add-hook 'after-init-hook #'global-flycheck-mode)
 
@@ -819,7 +848,7 @@
 ;(add-to-list 'auto-mode-alist '("\.xml.erb$" . xml-mode))
 ;(add-to-list 'auto-mode-alist '("\.js.erb$" . javascript-mode))
 
-(require 'web-mode)
+;; (require 'web-mode)
 (add-to-list 'auto-mode-alist '("\.erb$" . web-mode))
 (add-to-list 'auto-mode-alist '("\.jsp$" . web-mode))
 
@@ -834,7 +863,6 @@
 
 ; (require 'git)
 
-(require 'multiple-cursors)
 (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
 (global-set-key (kbd "C->") 'mc/mark-next-like-this)
 (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
@@ -842,15 +870,13 @@
 
 ; Ctrl-j etc. für "div" => "<div></div>"
 ;(add-to-list 'load-path "~/.emacs.d/elisp/emmet-mode")
-(require 'emmet-mode)
-(add-hook 'web-mode-hook 'emmet-mode)
-
+;; (require 'emmet-mode)
+;; (add-hook 'web-mode-hook 'emmet-mode)
 
 ;(setq electric-indent-functions-without-reindent (remove 'indent-line-function electric-indent-functions-without-reindent))
 
 (setq-default electric-indent-inhibit t)
 
-(require 'recentf)
 (recentf-mode 1)
 (setq recentf-max-menu-items 25)
 (global-set-key "\C-x\ \C-r" 'recentf-open-files)
@@ -909,8 +935,8 @@
 ;;     (string-inflection-ruby-style-cycle))))
 
 ; avoid extreme pauses on long compilation lines
-(require 'truncated-compilation-mode)
-(truncated-compilation-mode)
+;; (require 'truncated-compilation-mode)
+;; (truncated-compilation-mode)
 
 ; frame commands
 ;(require 'frame-cmds)
@@ -921,7 +947,6 @@
           ;(add-to-list 'load-path "~/.emacs.d/elisp/realgud-byebug")
           (require 'realgud-byebug))
   (message "Warning: error loading realgud, ignoring"))
-
 
 ;; default smerge bindings
 ;;
@@ -991,10 +1016,10 @@
          (projectile-rails-global-mode))
  (message "Warning: ignoring errors loading projectile-rails-global-mode"))
 
-(unless (ignore-errors
-         (require 'robe)
-         (add-hook 'ruby-mode-hook 'robe-mode))
- (message "Warning: ignoring errors loading robe"))
+;; (unless (ignore-errors
+;;          (require 'robe)
+;;          (add-hook 'ruby-mode-hook 'robe-mode))
+;;  (message "Warning: ignoring errors loading robe"))
 
 ;;;;;;; Mac
 
@@ -1025,19 +1050,19 @@
 
 ;;; folding in xml
 
-(require 'hideshow)
-(require 'sgml-mode)
-(require 'nxml-mode)
-(add-to-list 'hs-special-modes-alist
-             '(nxml-mode
-               "<!--\\|<[^/>]*[^/]>"
-               "-->\\|</[^/>]*[^/]>"
-
-               "<!--"
-               sgml-skip-tag-forward
-               nil))
-(add-hook 'nxml-mode-hook 'hs-minor-mode)
-(define-key nxml-mode-map (kbd "C-c h") 'hs-toggle-hiding)
+;; (require 'hideshow)
+;; (require 'sgml-mode)
+;; (require 'nxml-mode)
+;; (add-to-list 'hs-special-modes-alist
+;;              '(nxml-mode
+;;                "<!--\\|<[^/>]*[^/]>"
+;;                "-->\\|</[^/>]*[^/]>"
+;;
+;;                "<!--"
+;;                sgml-skip-tag-forward
+;;                nil))
+;; (add-hook 'nxml-mode-hook 'hs-minor-mode)
+;; (define-key nxml-mode-map (kbd "C-c h") 'hs-toggle-hiding)
 
 ; Windows Powershell
 
@@ -1108,7 +1133,6 @@
   )
 (add-hook 'go-mode-hook 'go-mode-setup)
 
-
 (if (file-directory-p "~/Documents/src")
   (run-at-time "2 sec" nil (lambda ()
                              (dolist (buffer (buffer-list))
@@ -1119,16 +1143,6 @@
 ;; org-jira
 
 (setq jiralib-url "https://jira-caps-ext.nttdata-emea.com")
-
-;; PHP
-
-(autoload 'php-mode "php-mode" "Major mode for editing PHP code." t)
-(add-to-list 'auto-mode-alist '("\.php$" . php-mode))
-
-; LUA
-
-(autoload 'lua-mode "lua-mode" "Major mode for editing LUA code." t)
-(add-to-list 'auto-mode-alist '("\.lua$" . lua-mode))
 
 ; disable ctrl + mouse wheel text scaling
 
@@ -1184,6 +1198,10 @@
       (insert-character-with-font "🧗" font)  ; 01F9D7 - only in Segoe UI Emoji
       (insert (prin1-to-string font))
       (insert "\n"))))
+
+; php
+
+(add-to-list 'auto-mode-alist '("\.php$" . php-mode))
 
 ; run server
 
