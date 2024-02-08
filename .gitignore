@@ -25,3 +25,4 @@ transient/history.el
 compile_test.txt
 /forge-database.sqlite
 /eln-cache/
+flycheck_init.el

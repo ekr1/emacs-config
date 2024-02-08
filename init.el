@@ -32,7 +32,8 @@
 (straight-use-package 'markdown-mode)
 (straight-use-package 'kubel)
 (straight-use-package 'kubernetes)
-(straight-use-package 'realgud)
+; (straight-use-package 'realgud)    ; compilation errors on WSL (only)
+; (straight-use-package 'realgud-byebug)
 (straight-use-package 'robe)
 (straight-use-package 'projectile-rails)
 (straight-use-package 'projectile)
@@ -44,7 +45,6 @@
 (straight-use-package 'multiple-cursors)
 (straight-use-package 'feature-mode)
 (straight-use-package 'emmet-mode)
-(straight-use-package 'realgud-byebug)
 (straight-use-package 'use-package)
 (straight-use-package 'pdf-tools)
 (straight-use-package 'powershell)
@@ -1190,6 +1190,10 @@
 ; php
 
 (add-to-list 'auto-mode-alist '("\.php$" . php-mode))
+
+; fonts
+
+(set-frame-font "-PfEd-Inconsolata-normal-normal-normal-*-18-*-*-*-m-0-iso10646-1" t t) ; WSL
 
 ; run server
 
