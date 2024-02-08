@@ -1194,10 +1194,13 @@
 ; fonts
 
 (cond ((eq system-type 'gnu/linux)
-       (set-frame-font "-*-Inconsolata-normal-normal-normal-*-18-*-*-*-m-0-iso10646-1" t t)
+       (set-frame-font "-*-Inconsolata-normal-normal-normal-*-18-*-*-*-m-0-iso10646-1")
+       (add-hook 'after-make-frame-functions
+          (lambda (frame)
+            (set-frame-size frame 111 46)))
        "WSL font")
       ((eq system-type 'windows-nt)
-       (set-frame-font "-*-Inconsolata-normal-normal-normal-*-16-*-*-*-m-0-iso10646-1" t t)
+       (set-frame-font "-*-Inconsolata-normal-normal-normal-*-16-*-*-*-m-0-iso10646-1")
        "Win font set")
       "Unknown system type")
 
