@@ -1193,7 +1193,8 @@
 
 ; fonts
 
-(set-frame-font "-PfEd-Inconsolata-normal-normal-normal-*-18-*-*-*-m-0-iso10646-1" t t) ; WSL
+(set-frame-font "-*-Inconsolata-normal-normal-normal-*-18-*-*-*-m-0-iso10646-1" t t) ; WSL
+(set-frame-font "-*-Inconsolata-normal-normal-normal-*-16-*-*-*-c-*-iso10646-1" t t) ; Win
 
 ; run server
 
