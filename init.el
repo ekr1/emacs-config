@@ -1193,8 +1193,14 @@
 
 ; fonts
 
-(set-frame-font "-*-Inconsolata-normal-normal-normal-*-18-*-*-*-m-0-iso10646-1" t t) ; WSL
-(set-frame-font "-*-Inconsolata-normal-normal-normal-*-16-*-*-*-c-*-iso10646-1" t t) ; Win
+(cond ((eq system-type 'gnu/linux)
+       (set-frame-font "-*-Inconsolata-normal-normal-normal-*-18-*-*-*-m-0-iso10646-1" t t)
+       "WSL font")
+      ((eq system-type 'windows-nt)
+      ; leave alone, the above config (with Segui, Unicode etc.) is fine
+      ; (set-frame-font "-*-Inconsolata-normal-normal-normal-*-16-*-*-*-m-0-iso10646-1" t t)
+       "Win font set")
+      "Unknown system type")
 
 ; run server
 
