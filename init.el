@@ -78,6 +78,7 @@
 
 ; required since some compilation vars are used later
 (require 'compile)
+(require 'feature-mode)
 
 ; fix for very slow compiling:
 (setq process-adaptive-read-buffering nil)
@@ -271,11 +272,11 @@
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
 
-(setq default-buffer-file-coding-system 'iso-latin-1-unix)
-
-;(setq special-display-buffer-names
+; (setq special-display-buffer-names
 ;           '("*Async Shell Command*" "*grep*" "*compilation*" "*vc-dir*"))
-(setq special-display-buffer-names nil)
+
+; note: special-display-buffer-names is deprecated, use display-buffer-alist instead
+; (setq special-display-buffer-names nil)
 
 ;; (defun ekr-wiki-update ()
 ;;   (interactive)
@@ -316,8 +317,8 @@
 ;;                       (file-name-nondirectory buffer-file-name))))))
 
 (defun ekr-recompile ()
+  "Save all files, wait a little bit, then call (recompile).  For compilations that watch file-change-times (RotTestHelper...)."
   (interactive)
-  "Save all files, wait a little bit, then call (recompile). For compilations that watch file-change-times (RotTestHelper...)"
   (progn (save-some-buffers t)
 	 ;(sleep-for 1.5)
 	 ; (recompile)
@@ -348,13 +349,14 @@
          ))
 
 (defun ekr-compilation-finished (buf result)
+  "Play a beep when compilation finishes."
   (start-process "*Compilation Finished Beep*" nil "afplay" "/Users/KRAEME/.emacs.d/short_beep.m4a"))
 (remove-hook 'compilation-finish-functions 'ekr-compilation-finished)
 (add-hook 'compilation-finish-functions 'ekr-compilation-finished)
 
 (defun ekr-read-ssh-agent ()
+  "Set the ssh-agent environment."
   (interactive)
-  "Set the ssh-agent environment"
   (ignore-errors
    (kill-buffer ".ekr-ssh-agent"))
   (with-current-buffer
@@ -365,21 +367,21 @@
     (message (getenv "SSH_AUTH_SOCK"))))
 
 (defun ekr-git-gui ()
+  "Run 'git gui' without a buffer."
   (interactive)
-  "Run 'git gui' without a buffer"
   (start-process "git gui" nil "git" "gui")
   (message "'git gui' started"))
 
 (defun ekr-next-scenario ()
+  "Jump to the next cucumber scenario in the compilation buffer."
   (interactive)
-  "Jump to the next cucumber scenario in the compilation buffer"
   (switch-to-buffer-other-window "*compilation*")
   (search-forward "Szenario:")
   (execute-kbd-macro (kbd "<return>")))
 
 (defun my-previous-scenario ()
+  "Jump to the previous cucumber scenario in the compilation buffer."
   (interactive)
-  "Jump to the previous cucumber scenario in the compilation buffer"
   (switch-to-buffer-other-window "*compilation*")
   (search-backward "Szenario:")
   (execute-kbd-macro (kbd "<return>")))
@@ -402,7 +404,7 @@
 (global-set-key (kbd "M-@") 'fill-paragraph)   ; this is ESC M-q for fill-paragraph
 
 (defun ask-before-closing ()
-  "Ask whether or not to close, and then close if y was pressed"
+  "Ask whether or not to close, and then close if y was pressed."
   (interactive)
   (if (y-or-n-p (format "Are you sure you want to exit Emacs? "))
       (if (< emacs-major-version 22)
@@ -415,7 +417,7 @@
 ;(find-file-noselect "/ekr@10.226.93.5:/opt")
 
 (defun starts-with-ekr (symb)
-      "returns non-nil if symbol symb starts with 'ekr-'.  Else nil."
+      "Returns non-nil if symbol symb starts with 'ekr-'.  Else nil."
       (let ((s (symbol-name symb)))
         (cond ((>= (length s) (length "ekr-"))
                (string-equal (substring s 0 (length "ekr-")) "ekr-"))
@@ -687,7 +689,6 @@
 ; cucumber mode
 ;(add-to-list 'load-path "~/.emacs.d/elisp/feature-mode")
 ;(setq feature-default-i18n-file "/path/to/gherkin/gem/i18n.yml")
-(require 'feature-mode)
 (setq feature-default-language "fi")
 (add-to-list 'auto-mode-alist '("\.feature$" . feature-mode))
 ;; Keybinding	Description
@@ -725,6 +726,7 @@
 ;; (require 'tty-format)
 ;; M-x display-ansi-colors to explicitly decode ANSI color escape sequences
 (defun display-ansi-colors ()
+  "Enable ANSI colors in the current buffer."
   (interactive)
   (format-decode-buffer 'ansi-colors))
 ;; decode ANSI color escape sequences for *.txt or README files
@@ -1114,12 +1116,9 @@
 
 ; golang
 
-; https://andrewjamesjohnson.com/configuring-emacs-for-go-development/
 (defun go-mode-setup ()
-; (go-eldoc-setup)
-;  (setq gofmt-command "gofmt")  ; go install golang.org/x/tools/...@latest
+  "Also see https://andrewjamesjohnson.com/configuring-emacs-for-go-development/ ."
   (add-hook 'before-save-hook 'gofmt-before-save)
-;  (local-set-key (kbd "M-.") 'godef-jump)
   )
 (add-hook 'go-mode-hook 'go-mode-setup)
 
@@ -1134,9 +1133,8 @@
 
 (setq jiralib-url "https://jira-caps-ext.nttdata-emea.com")
 
-; disable ctrl + mouse wheel text scaling
-
 (defun mouse-wheel-text-scale (event)
+  "Disable (ignore) ctrl + mouse wheel text scaling by overriding the same def in mwheel.el."
   (interactive (list last-input-event))
   (ignore))
 
