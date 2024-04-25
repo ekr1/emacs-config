@@ -67,6 +67,7 @@
 (straight-use-package 'flycheck-checkbashisms)
 ; Possible PHP flycheck extensions: https://github.com/emacs-php/phpstan.el, https://github.com/emacs-php/psalm.el
 ; Possible Python checkers: https://github.com/msherry/flycheck-pycheckers, https://github.com/chocoelho/flycheck-prospector
+(straight-use-package 'plantuml-mode)
 
 (add-to-list 'load-path "~/.emacs.d/elisp")
 
@@ -204,8 +205,6 @@
  '(max-mini-window-height 1)
  '(max-specpdl-size 10000 t)
  '(mouse-highlight t)
- '(org-startup-with-inline-images t)
- '(projectile-globally-ignored-files (quote ("TAGS" "#*#")))
  '(mouse-wheel-down-event 'wheel-up)
  '(mouse-wheel-mode t)
  '(mouse-wheel-progressive-speed nil)
@@ -217,7 +216,9 @@
  '(org-jira-custom-jqls
    '((:jql " assignee = currentUser() and createdDate < '2022-01-01' order by created DESC " :limit 100 :filename "last-years-work")
      (:jql " assignee = currentUser() and createdDate >= '2022-01-01' order by created DESC " :limit 100 :filename "this-years-work")))
+ '(org-startup-with-inline-images t)
  '(projectile-completion-system 'ido)
+ '(projectile-globally-ignored-files '("TAGS" "#*#"))
  '(ruby-insert-encoding-magic-comment nil)
  '(safe-local-variable-values
    '((buffer-file-coding-system . iso-8859-1)
@@ -976,8 +977,8 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(mode-line ((t (:background "#2e3436" :foreground "#d3d7cf" :box (:line-width -1 :style released-button)))))
- '(line-number ((t (:inherit (shadow default) :foreground "gray32")))))
+ '(line-number ((t (:inherit (shadow default) :foreground "gray32"))))
+ '(mode-line ((t (:background "#2e3436" :foreground "#d3d7cf" :box (:line-width -1 :style released-button))))))
 
 ;; (defun notify-compilation-result(buffer msg)
 ;;   "Notify that the compilation is finished,
@@ -1203,6 +1204,66 @@
        (set-frame-font "-*-Inconsolata-normal-normal-normal-*-16-*-*-*-m-0-iso10646-1")
        "Win font set")
       "Unknown system type")
+
+; plantuml
+
+(setq plantuml-jar-path "/usr/local/Cellar/plantuml/1.2024.3/libexec/plantuml.jar")
+(setq plantuml-default-exec-mode 'jar)
+
+; good-auto
+
+(defun ekr-run-good-auto ()
+   "Execute a Good-Auto query."
+  (interactive)
+  (delete-file "~/bin/good-auto/data/answer.txt")
+
+  ;; prompt for query and write it to input.txt
+
+  (let ((query (if (region-active-p)
+                   (buffer-substring (region-beginning) (region-end))
+                 (read-string "Enter query: "))))
+    (with-temp-buffer
+      (insert query)
+      (write-region (point-min) (point-max) "~/bin/good-auto/data/input.txt")))
+
+  ;; wait until the answer.txt exists, with timeout
+
+  (let ((file-exists nil)
+        (count 0))
+    (while (and (not file-exists) (< count 40))
+      (setq file-exists (file-exists-p "~/bin/good-auto/data/answer.txt"))
+      (sleep-for 0.25)
+      (setq count (1+ count)))
+    (if file-exists
+
+        ;; read answer and write to temp buf (or just message if short)
+
+        (let ((answer (with-temp-buffer
+                        (insert-file-contents "~/bin/good-auto/data/answer.txt")
+                        (buffer-string))))
+          (if (> (length answer) (window-width))
+              (with-output-to-temp-buffer "*GoodAuto Answer*"
+                (princ answer)
+                (with-current-buffer "*GoodAuto Answer*"
+
+                  (markdown-mode)
+
+                  ;; wrap all long lines
+
+                  (save-excursion
+                    (goto-char (point-min))
+                    (while (not (eobp))
+                      (when (> (line-end-position) fill-column)
+                        (fill-paragraph))
+                      (forward-line 1)))))
+
+            ;; short answer goes to message directly
+
+            (message answer)))
+      (message "Answer does not exist within 10 seconds."))))
+
+
+(global-set-key (kbd "©") 'ekr-run-good-auto)
 
 ; run server
 
