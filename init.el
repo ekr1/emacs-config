@@ -19,6 +19,8 @@
 
 ;; Straight packages
 
+;; write lockfile: straight-freeze-versions
+
 (straight-use-package 'csv-mode)
 (straight-use-package 'with-editor)
 (straight-use-package 'php-mode)
@@ -68,6 +70,20 @@
 ; Possible PHP flycheck extensions: https://github.com/emacs-php/phpstan.el, https://github.com/emacs-php/psalm.el
 ; Possible Python checkers: https://github.com/msherry/flycheck-pycheckers, https://github.com/chocoelho/flycheck-prospector
 (straight-use-package 'plantuml-mode)
+
+;; (use-package transient
+;;   :straight (transient
+;;              :type git
+;;              :host github
+;;              :repo "magit/transient"
+;;              :version 0.4.1))
+;; (use-package magit
+;;   :straight (magit
+;;              :type git
+;;              :host github
+;;              :repo "magit/magit"
+;;              :version 3.2.1)
+;;   :bind ("C-c 0" . magit-status))
 
 (add-to-list 'load-path "~/.emacs.d/elisp")
 
@@ -170,6 +186,7 @@
      ("\\.yml\\'" . utf-8)
      ("\\.erb\\'" . utf-8)
      ("\\.feature\\'" . utf-8)))
+ '(flycheck-ruby-rubocop-executable "bundle exec rubocop")
  '(forge-alist
    '(("github.com" "api.github.com" "github.com" forge-github-repository)
      ("gitlab.com" "gitlab.com/api/v4" "gitlab.com" forge-gitlab-repository)
@@ -1264,6 +1281,78 @@
 
 
 (global-set-key (kbd "©") 'ekr-run-good-auto)
+
+; bash-mode
+
+(add-to-list 'auto-mode-alist '("\.sh$" . bash-mode))
+
+; tree-sitter
+
+;; $ tree-sitter init-config
+;; -> Library/Application Support/tree-sitter/config.json
+
+;; ------- manual compile ------------------
+;; https://www.masteringemacs.org/article/how-to-get-started-tree-sitter
+;;
+
+(setq treesit-language-source-alist
+      '(
+        (bash "https://github.com/tree-sitter/tree-sitter-bash")
+        (cmake "https://github.com/uyha/tree-sitter-cmake")
+        (css "https://github.com/tree-sitter/tree-sitter-css")
+        (elisp "https://github.com/Wilfred/tree-sitter-elisp")
+        (go "https://github.com/tree-sitter/tree-sitter-go")
+        (html "https://github.com/tree-sitter/tree-sitter-html")
+        (java "https://github.com/tree-sitter/tree-sitter-java")
+        (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
+        (json "https://github.com/tree-sitter/tree-sitter-json")
+        (make "https://github.com/alemuller/tree-sitter-make")
+        (markdown "https://github.com/ikatyang/tree-sitter-markdown")
+        (python "https://github.com/tree-sitter/tree-sitter-python")
+        (ruby "https://github.com/tree-sitter/tree-sitter-ruby")
+        (c "https://github.com/tree-sitter/tree-sitter-c")
+        (cpp "https://github.com/tree-sitter/tree-sitter-cpp")
+        (yaml "https://github.com/ikatyang/tree-sitter-yaml")
+        (dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile")
+        ; (typescript "https://github.com/tree-sitter/tree-sitter-typescript") ; wont build
+        ))
+
+(defvar ekr-treesitter-timestamp-file "~/.emacs.d/tree-sitter/timestamp.txt"
+  "The path to the file containing the timestamp.")
+
+(when (or (not (file-exists-p ekr-treesitter-timestamp-file))
+          (time-less-p (time-add (file-attribute-modification-time (file-attributes ekr-treesitter-timestamp-file)) (* 7 86400))
+                       (current-time)))
+  (dolist (language-source
+           treesit-language-source-alist)
+    (let ((language-name (car language-source)))
+      (message
+       "Installing Treesitter grammar for %s" language-name)
+      (treesit-install-language-grammar language-name)))
+  (with-temp-file ekr-treesitter-timestamp-file (insert (format-time-string "%Y-%m-%d %H:%M:%S"))))
+
+(add-to-list 'major-mode-remap-alist '(bash-mode . bash-ts-mode))
+(add-to-list 'major-mode-remap-alist '(cmake-mode . cmake-ts-mode))
+(add-to-list 'major-mode-remap-alist '(css-mode . css-ts-mode))
+(add-to-list 'major-mode-remap-alist '(elisp-mode . elisp-ts-mode))
+(add-to-list 'major-mode-remap-alist '(go-mode . go-ts-mode))
+(add-to-list 'major-mode-remap-alist '(html-mode . html-ts-mode))
+(add-to-list 'major-mode-remap-alist '(java-mode . java-ts-mode))
+(add-to-list 'major-mode-remap-alist '(javascript-mode . javascript-ts-mode))
+(add-to-list 'major-mode-remap-alist '(js-mode . javascript-ts-mode))
+(add-to-list 'major-mode-remap-alist '(js-json-mode . json-ts-mode))
+(add-to-list 'major-mode-remap-alist '(json-mode . json-ts-mode))
+(add-to-list 'major-mode-remap-alist '(make-mode . make-ts-mode))
+(add-to-list 'major-mode-remap-alist '(markdown-mode . markdown-ts-mode))
+(add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))
+(add-to-list 'major-mode-remap-alist '(ruby-mode . ruby-ts-mode))
+(add-to-list 'major-mode-remap-alist '(yaml-mode . yaml-ts-mode))
+(add-to-list 'major-mode-remap-alist '(dockerfile-mode . dockerfile-ts-mode))
+(add-to-list 'major-mode-remap-alist '(c-mode . c-ts-mode))
+(add-to-list 'major-mode-remap-alist '(c++-mode . c++-ts-mode))
+(add-to-list 'major-mode-remap-alist '(c-or-c++-mode . c-or-c++-ts-mode))
+
+;; (add-to-list 'major-mode-remap-alist '(typescript-mode . typescript-ts-mode))
 
 ; run server
 

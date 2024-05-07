@@ -26,3 +26,8 @@ compile_test.txt
 /forge-database.sqlite
 /eln-cache/
 flycheck_init.el
+/projects
+/tree-sitter/*.dylib
+/tree-sitter/timestamp.txt
+/url/cache
+/ido.last
