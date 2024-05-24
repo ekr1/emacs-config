@@ -1156,6 +1156,13 @@
   (interactive (list last-input-event))
   (ignore))
 
+; default font
+
+;; Also: C-u C-x = to display the current font
+
+; (set-face-attribute 'default nil :font "-*-Menlo-regular-normal-normal-*-12-*-*-*-m-0-iso10646-1") ;; default on MacOS 05/2024, very nice
+; (set-face-attribute 'default nil :font "-*-0xProto-regular-normal-normal-*-*-*-*-*-m-0-iso10646-1") ;; not great
+
 ; set up unicode symbols (order matters!)
 
 (set-fontset-font
