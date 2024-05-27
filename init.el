@@ -1156,13 +1156,6 @@
   (interactive (list last-input-event))
   (ignore))
 
-; default font
-
-;; Also: C-u C-x = to display the current font
-
-; (set-face-attribute 'default nil :font "-*-Menlo-regular-normal-normal-*-12-*-*-*-m-0-iso10646-1") ;; default on MacOS 05/2024, very nice
-; (set-face-attribute 'default nil :font "-*-0xProto-regular-normal-normal-*-*-*-*-*-m-0-iso10646-1") ;; not great
-
 ; set up unicode symbols (order matters!)
 
 (set-fontset-font
@@ -1216,7 +1209,10 @@
 
 (add-to-list 'auto-mode-alist '("\.php$" . php-mode))
 
-; fonts
+; default font
+
+;; Also: C-u C-x = to display the current font
+;; Also: (set-face-attribute 'default nil :font "-*-Menlo-regular-normal-normal-*-12-*-*-*-m-0-iso10646-1") ;; default on MacOS 05/2024, very nice
 
 (cond ((eq system-type 'gnu/linux)
        (set-frame-font "-*-Inconsolata-normal-normal-normal-*-18-*-*-*-m-0-iso10646-1")
@@ -1227,7 +1223,10 @@
       ((eq system-type 'windows-nt)
        (set-frame-font "-*-Inconsolata-normal-normal-normal-*-16-*-*-*-m-0-iso10646-1")
        "Win font set")
-      "Unknown system type")
+      ((eq system-type 'darwin)
+       ; "-*-Menlo-regular-normal-normal-*-12-*-*-*-m-0-iso10646-1"
+       "MacOS font kept unchanged")
+      ("Unknown system type"))
 
 ; plantuml
 
@@ -1285,7 +1284,6 @@
 
             (message answer)))
       (message "Answer does not exist within 10 seconds."))))
-
 
 (global-set-key (kbd "©") 'ekr-run-good-auto)
 
