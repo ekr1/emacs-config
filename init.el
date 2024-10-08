@@ -1319,12 +1319,14 @@
                   ;; must make the buffer *and* the window active for some the following commands
                   (pop-to-buffer answer-buffer)
 
-                  ;; add new answer
+                  ;; add prompt as level-1 header, and shortened if necessary
                   (goto-char (point-max))
                   (insert "\n\n══════════════════════════════════════════════════════════════════════════════════════════════════════════════════\n\n")
                   (insert "# Prompt: " (replace-regexp-in-string "\n" " " (if (> (length query) 80)
                                                                               (concat (substring query 0 80) "...")
                                                                             query)) "\n\n")
+
+                  ;; add new answer, making sure there is no level-1 header
                   (insert (replace-regexp-in-string "\\(^\\|\n\\)#" "\\1##" answer))
                   (insert "\n")
 
