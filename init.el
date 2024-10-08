@@ -70,6 +70,30 @@
 ; Possible PHP flycheck extensions: https://github.com/emacs-php/phpstan.el, https://github.com/emacs-php/psalm.el
 ; Possible Python checkers: https://github.com/msherry/flycheck-pycheckers, https://github.com/chocoelho/flycheck-prospector
 (straight-use-package 'plantuml-mode)
+(straight-use-package 'deadgrep)
+(straight-use-package 'dumb-jump)
+
+(add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
+
+; git blame in status line...
+(straight-use-package 'emacs-async)
+(add-to-list 'load-path "~/.emacs.d/elisp/emsg-blame")
+(require 'emsg-blame)
+(setq emsg-blame-background t)
+(setq emsg-blame-background-color "#444444")
+(global-emsg-blame-mode)
+
+; (straight-use-package 'llm)
+; (straight-use-package 'ellama)
+(use-package ellama
+  :straight t
+  :init
+  (require 'llm-ollama)
+  (setopt ellama-provider
+	  (make-llm-ollama
+           ;; deepseek-coder:6.7b  ->  pretty ok?
+	   :chat-model "deepseek-coder-v2"
+	   :embedding-model "deepseek-coder-v2")))
 
 ;; (use-package transient
 ;;   :straight (transient
@@ -160,8 +184,11 @@
  '(display-buffer-alist nil)
  '(display-buffer-reuse-frames t)
  '(display-line-numbers t)
- '(feature-cucumber-command "cucumber {options} {feature}")
- '(feature-rake-command "cucumber {options} {feature}")
+ '(dumb-jump-debug t)
+ '(dumb-jump-force-searcher 'ag)
+ '(emsg-blame-idle-time 5)
+ '(feature-cucumber-command "bundle exec cucumber {options} {feature}")
+ '(feature-rake-command "bundle exec cucumber {options} {feature}")
  '(file-coding-system-alist
    '(("\\.dz\\'" no-conversion . no-conversion)
      ("\\.txz\\'" no-conversion . no-conversion)
@@ -234,6 +261,9 @@
    '((:jql " assignee = currentUser() and createdDate < '2022-01-01' order by created DESC " :limit 100 :filename "last-years-work")
      (:jql " assignee = currentUser() and createdDate >= '2022-01-01' order by created DESC " :limit 100 :filename "this-years-work")))
  '(org-startup-with-inline-images t)
+ '(plantuml-default-exec-mode 'executable t)
+ '(plantuml-jar-path
+   "/opt/homebrew/Cellar/plantuml/1.2024.6/libexec/plantuml.jar" t)
  '(projectile-completion-system 'ido)
  '(projectile-globally-ignored-files '("TAGS" "#*#"))
  '(ruby-insert-encoding-magic-comment nil)
@@ -548,6 +578,12 @@
 ;;  	     '(ekr-remove-hash "# \\(.+?\\):\\([0-9]+\\)$"
 ;;                                      1 2 nil 2))
 
+; Yet another style of ruby errors...
+;	 3: from /Users/ekkehard.kraemer/Documents/src/akp/acn_neu_tools/bin/acn_tools_jira.rb:146:in `add_watcher'
+(add-to-list 'compilation-error-regexp-alist 'ekr-ruby-acntools)
+(add-to-list 'compilation-error-regexp-alist-alist
+ 	     '(ekr-ruby-acntools "from \\([^:]+\\):\\([0-9]+\\):" 1 2 nil 2))
+
 ; ignore API warnings...
 ; /app/src/emil/src/de/edag/fps/emil/AnwendungEMIL.java:54: warning: Signal is internal proprietary API and may be removed in a future release
 (add-to-list 'compilation-error-regexp-alist 'ekr-ignore-sunapi)
@@ -741,14 +777,22 @@
 (add-hook 'compilation-filter-hook 'ansi-color-compilation-filter)
 
 ; ANSI coloring for any buffer
-;; (require 'tty-format)
+; (require 'tty-format)
 ;; M-x display-ansi-colors to explicitly decode ANSI color escape sequences
+
+; this accesses variable ansi-color-regexp in tty_format; the variable is undefined
+;; (defun display-ansi-colors ()
+;;   "Enable ANSI colors in the current buffer."
+;;   (interactive)
+;;   (format-decode-buffer 'ansi-colors))
+;; ;; decode ANSI color escape sequences for *.txt or README files
+;; (add-hook 'find-file-hooks 'tty-format-guess)
+
+(require 'ansi-color)
 (defun display-ansi-colors ()
-  "Enable ANSI colors in the current buffer."
   (interactive)
-  (format-decode-buffer 'ansi-colors))
-;; decode ANSI color escape sequences for *.txt or README files
-(add-hook 'find-file-hooks 'tty-format-guess)
+  (ansi-color-apply-on-region (point-min) (point-max)))
+
 ;; decode ANSI color escape sequences for .log files
 (add-to-list 'auto-mode-alist '("\\.log\\'" . display-ansi-colors))
 
@@ -1025,7 +1069,12 @@
 
 (projectile-mode +1)
 (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
-(define-key projectile-mode-map (kbd "C-c p g") #'projectile-grep)
+
+; deadgrep instead of projectile's search...
+; (define-key projectile-mode-map (kbd "C-c p g") #'projectile-grep)
+; (define-key projectile-mode-map (kbd "C-c p g") #'projectile-grep t) ; to remove previous def
+(define-key projectile-mode-map (kbd "C-c p g") #'deadgrep t) ; to remove previous def
+(global-set-key (kbd "C-c p g") #'deadgrep) ; doesnt work...
 
 ; many commands like C-c r m  (Model...)
 (unless (ignore-errors
@@ -1358,6 +1407,17 @@
 (add-to-list 'major-mode-remap-alist '(c-or-c++-mode . c-or-c++-ts-mode))
 
 ;; (add-to-list 'major-mode-remap-alist '(typescript-mode . typescript-ts-mode))
+
+; markdown-mode
+
+;; (autoload 'markdown-mode "markdown-mode"
+;;    "Major mode for editing Markdown files" t)
+(add-to-list 'auto-mode-alist
+             '("\\.\\(?:md\\|markdown\\|mkd\\|mdown\\|mkdn\\|mdwn\\)\\'" . markdown-mode))
+
+;; (autoload 'gfm-mode "markdown-mode"
+;;    "Major mode for editing GitHub Flavored Markdown files" t)
+(add-to-list 'auto-mode-alist '("README\\.md\\'" . gfm-mode))
 
 ; run server
 
