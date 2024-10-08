@@ -1287,130 +1287,84 @@
 (defun ekr-run-good-auto ()
   "Execute a Good-Auto query."
   (interactive)
-  (delete-file "~/bin/good-auto/data/answer.txt")
 
   ;; Prompt for query and write it to input.txt
   (let ((query (if (region-active-p)
                    (buffer-substring (region-beginning) (region-end))
                  (read-string "Enter query: "))))
-    (progn
-      (with-temp-buffer
-        (insert query)
-        (write-region (point-min) (point-max) "~/bin/good-auto/data/input.txt"))
 
-      ;; Wait until the answer.txt exists, with timeout
-      (let ((file-exists nil)
-            (count 0))
-        (while (and (not file-exists) (< count 40))
-          (setq file-exists (file-exists-p "~/bin/good-auto/data/answer.txt"))
-          (sleep-for 0.25)
-          (setq count (1+ count)))
+    ;; Delete existing answer file
+    (when (file-exists-p "~/bin/good-auto/data/answer.txt")
+    (delete-file "~/bin/good-auto/data/answer.txt"))
 
-        (if file-exists
-            ;; Read answer and append to existing buffer
-            (let ((answer (with-temp-buffer
-                            (insert-file-contents "~/bin/good-auto/data/answer.txt")
-                            (buffer-string)))
-                  (answer-buffer (get-buffer-create "*GoodAuto Answer*")))
+    (with-temp-buffer
+      (insert query)
+      (write-region (point-min) (point-max) "~/bin/good-auto/data/input.txt"))
 
-              (with-current-buffer answer-buffer
-                (let ((start-pos (point-max)))
+    ;; Wait until the answer.txt exists, with timeout
+    (let ((file-exists nil)
+          (count 0))
+      (while (and (not file-exists) (< count 40))
+        (setq file-exists (file-exists-p "~/bin/good-auto/data/answer.txt"))
+        (sleep-for 0.25)
+        (setq count (1+ count)))
 
-                  ;; must make the buffer *and* the window active for some the following commands
-                  (pop-to-buffer answer-buffer)
+      (if file-exists
+          ;; Read answer and append to existing buffer
+          (let ((answer (with-temp-buffer
+                          (insert-file-contents "~/bin/good-auto/data/answer.txt")
+                          (buffer-string)))
+                (answer-buffer (get-buffer-create "*GoodAuto Answer*")))
 
-                  ;; add prompt as level-1 header, and shortened if necessary
-                  (goto-char (point-max))
-                  (insert "\n\n══════════════════════════════════════════════════════════════════════════════════════════════════════════════════\n\n")
-                  (insert "# Prompt: " (replace-regexp-in-string "\n" " " (if (> (length query) 80)
-                                                                              (concat (substring query 0 80) "...")
-                                                                            query)) "\n\n")
+            (with-current-buffer answer-buffer
+              (let ((start-pos (point-max)))
 
-                  ;; add new answer, making sure there is no level-1 header
-                  (insert (replace-regexp-in-string "\\(^\\|\n\\)#" "\\1##" answer))
-                  (insert "\n")
+                ;; must make the buffer *and* the window active for some the following commands
+                (pop-to-buffer answer-buffer)
 
-                  ;; ansi could occur e.g. in error messages
-                  (display-ansi-colors)
+                ;; add prompt as level-1 header, and shortened if necessary
+                (goto-char start-pos)
+                (insert "\n\n══════════════════════════════════════════════════════════════════════════════════════════════════════════════════\n\n")
+                (insert "# Prompt: " (replace-regexp-in-string
+                                      "\n" " "
+                                      (if (> (length query) 80)
+                                          (concat (substring query 0 80) "...")
+                                        query)) "\n\n")
 
-                  ;; make sure markdown is active
-                  (markdown-mode)
-                  (markdown-toggle-markup-hiding 1)
+                ;; add new answer, making sure there is no level-1 header
+                (insert (replace-regexp-in-string "\\(^\\|\n\\)#" "\\1##" answer))
+                (insert "\n")
 
-                  ;; break long lines
-                  (goto-char start-pos)
-                  (while (not (eobp))
-                    (when (> (line-end-position) fill-column)
-                      (fill-paragraph))
-                    (forward-line 1))
+                ;; ansi could occur e.g. in error messages
+                (display-ansi-colors)
 
-                  (goto-char start-pos)
-                  (search-backward "# Prompt:" nil t)
-                  (markdown-cycle)
+                ;; make sure markdown is active
+                (markdown-mode)
+                (markdown-toggle-markup-hiding 1)
 
-                  ;; display in a controlled manner, vertically
-                  (goto-char start-pos)
-                  (search-forward "# Prompt:" nil t)
-                  (beginning-of-line)
-                  (markdown-enter-key)
-                  (recenter 7)
+                ;; break long lines
+                (goto-char start-pos)
+                (while (not (eobp))
+                  (when (> (line-end-position) fill-column)
+                    (fill-paragraph))
+                  (forward-line 1))
 
-                  ;; back to where we were
-                  (other-window 1))))
+                ;; fold away the previous answer
+                (goto-char start-pos)
+                (search-backward "# Prompt:" nil t)
+                (markdown-cycle)
 
-          (message "No answer file found."))))))
+                ;; redisplay in a controlled manner, vertically
+                (goto-char start-pos)
+                (search-forward "# Prompt:" nil t)
+                (beginning-of-line)
+                (markdown-enter-key)
+                (recenter 7)
 
-;; (defun ekr-run-good-auto ()
-;;    "Execute a Good-Auto query."
-;;   (interactive)
-;;   (delete-file "~/bin/good-auto/data/answer.txt")
-;;
-;;   ;; prompt for query and write it to input.txt
-;;
-;;   (let ((query (if (region-active-p)
-;;                    (buffer-substring (region-beginning) (region-end))
-;;                  (read-string "Enter query: "))))
-;;     (with-temp-buffer
-;;       (insert query)
-;;       (write-region (point-min) (point-max) "~/bin/good-auto/data/input.txt")))
-;;
-;;   ;; wait until the answer.txt exists, with timeout
-;;
-;;   (let ((file-exists nil)
-;;         (count 0))
-;;     (while (and (not file-exists) (< count 40))
-;;       (setq file-exists (file-exists-p "~/bin/good-auto/data/answer.txt"))
-;;       (sleep-for 0.25)
-;;       (setq count (1+ count)))
-;;     (if file-exists
-;;
-;;         ;; read answer and write to temp buf (or just message if short)
-;;
-;;         (let ((answer (with-temp-buffer
-;;                         (insert-file-contents "~/bin/good-auto/data/answer.txt")
-;;                         (buffer-string))))
-;;           ;; (if (> (length answer) (window-width))
-;;               (with-output-to-temp-buffer "*GoodAuto Answer*"
-;;                 (princ answer)
-;;                 ; ansi colors at least in error messages
-;;                 (display-ansi-colors)
-;;                 (with-current-buffer "*GoodAuto Answer*"
-;;
-;;                   (markdown-mode)
-;;                   (markdown-toggle-markup-hiding)
-;;
-;;                   ;; wrap all long lines
-;;
-;;                   (save-excursion
-;;                     (goto-char (point-min))
-;;                     (while (not (eobp))
-;;                       (when (> (line-end-position) fill-column)
-;;                         (fill-paragraph))
-;;                       (forward-line 1)))))))))
-;;
-;;             ;; short answer goes to message directly
-;;               ;; (message answer)
-;;       ;; (message "Answer does not exist within 10 seconds."))))
+                ;; back to where we were
+                (other-window 1))))
+
+        (message "No answer file found.")))))
 
 (global-set-key (kbd "©") 'ekr-run-good-auto)
 
