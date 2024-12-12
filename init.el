@@ -171,6 +171,7 @@
  '(cperl-invalid-face 'default)
  '(cperl-merge-trailing-else nil)
  '(custom-enabled-themes '(tango-dark))
+ '(deadgrep-extra-arguments '("--no-config" "--sort=path"))
  '(desktop-files-not-to-save '"xyzzy (will crash if this is nil)")
  '(desktop-globals-to-clear
    '(kill-ring-yank-pointer search-ring search-ring-yank-pointer regexp-search-ring regexp-search-ring-yank-pointer kill-ring))
@@ -261,9 +262,9 @@
    '((:jql " assignee = currentUser() and createdDate < '2022-01-01' order by created DESC " :limit 100 :filename "last-years-work")
      (:jql " assignee = currentUser() and createdDate >= '2022-01-01' order by created DESC " :limit 100 :filename "this-years-work")))
  '(org-startup-with-inline-images t)
- '(plantuml-default-exec-mode 'executable t)
+ '(plantuml-default-exec-mode 'executable)
  '(plantuml-jar-path
-   "/opt/homebrew/Cellar/plantuml/1.2024.6/libexec/plantuml.jar" t)
+   "/opt/homebrew/Cellar/plantuml/1.2024.6/libexec/plantuml.jar")
  '(projectile-completion-system 'ido)
  '(projectile-globally-ignored-files '("TAGS" "#*#"))
  '(ruby-insert-encoding-magic-comment nil)
@@ -757,7 +758,14 @@
 (defun ekr-feature-verify-dev-scenarios-in-buffer ()
   "Run all the @dev tagged scenarios defined in current buffer."
   (interactive)
-  (feature-run-cucumber '("--tags @dev") :feature-file (buffer-file-name)))
+  (let* ((abs-file-name (buffer-file-name))
+         ;; Cut off path elements up to and including "acnneu"
+         (relative-path (if (and abs-file-name
+                                  (string-match "\\(.*\\)/acnneu/\\(.*\\)" abs-file-name))
+                            (match-string 2 abs-file-name)
+                          abs-file-name))) ; Fallback to the absolute path if "acnneu" not found
+    ;; Run Cucumber with the relative path
+    (feature-run-cucumber '("--tags @dev") :feature-file relative-path)))
 
 ; hiermit erkennt u.a. der Compilation Buffer (=> cucumber) utf8 korrekt
 ;(prefer-coding-system 'utf-8)
@@ -1284,86 +1292,151 @@
 
 ; good-auto
 
+(defun ekr-open-chat-file ()
+  "Open or create a chat file with the name format chat-YYYYMMDD.md in ~/Documents/src/ai."
+  (let* ((current-date (format-time-string "%Y%m%d"))  ; Get current date in YYYYMMDD format
+         (file-name (concat "~/Documents/ai/chat-" current-date ".md"))  ; Construct file name
+         (file-path (expand-file-name file-name)))  ; Expand to full path
+    (find-file-noselect file-path)))  ; Open the file but don't switch to it
+
+(defun ekr-get-query ()
+  "Prompt the user for a query, returning the selected region,
+  user input, or the output of a shell command if the current buffer
+  is named COMMIT_EDITMSG."
+  (cond
+   ;; Check if the current buffer name is COMMIT_EDITMSG
+   ((string= (buffer-name) "COMMIT_EDITMSG")
+    ;; Get the name of the currently active Git branch
+    (let ((branch-name (string-trim (shell-command-to-string "git rev-parse --abbrev-ref HEAD 2>/dev/null"))))
+      ;; Create the prompt including the branch name and the git diff
+      (list (concat ;"Forget all previous context from this chat. "
+                    "Create a commit message, prefixed with the branch name '" branch-name ":'. "
+                    "Make sure it does not use more than 80 characters. "
+                    "Output *only* the message with no additional text. "
+                    "Do not output any markdown. "
+                    "Make sure the text is on one line with no newlines:\n"
+                    (shell-command-to-string "git diff --cached 2>&1")) t)))
+
+   ;; ;; Check if there is "TODO" in the current line
+   ;; ((string-match "TODO" (thing-at-point 'line t))
+   ;;  (let ((start (max (line-beginning-position -40) (point-min)))
+   ;;        (end (min (line-end-position 40) (point-max))))
+   ;;    ;; Fetch the context lines
+   ;;    (buffer-substring-no-properties start end)))
+
+   ;; Check if there is "TODO" in the current line
+   ((string-match "TODO" (thing-at-point 'line t))
+    (let ((current-line (line-number-at-pos))                  ; Get the current line number
+          (full-buffer (buffer-string)))                      ; Get the entire buffer content
+      ;; Prepare the full prompt with instructions
+      (concat "The actual prompt is on line " (number-to-string current-line) " and marked by the word 'TODO'. Please find the context below:\n\n"
+              full-buffer)))                                   ; Return the whole buffer contents
+
+   ;; Check if a region is active
+   ((region-active-p)
+    (buffer-substring (region-beginning) (region-end)))
+
+   ;; Otherwise, prompt the user for input
+   (t
+    (read-string "Enter query: "))))
+
+(defun ekr-process-answer (query answer)
+  "Process the provided ANSWER content and insert it into the buffer.
+QUERY is the original query used to generate the answer."
+  (let ((answer (with-temp-buffer
+                  (insert-file-contents "~/bin/good-auto/data/answer.txt")
+                  (buffer-string)))
+        (answer-buffer (ekr-open-chat-file)))
+
+    (with-current-buffer answer-buffer
+      (let ((start-pos (point-max)))
+
+        ;; Activate the answer buffer for following commands
+        (pop-to-buffer answer-buffer)
+
+        ;; Add prompt as level-1 header, ensuring it is shortened if necessary
+        (goto-char start-pos)
+        (insert "\n\n══════════════════════════════════════════════════════════════════════════════════════════════════════════════════\n\n")
+        (insert "# Prompt: " (replace-regexp-in-string
+                            "\n" " "
+                            (if (> (length query) 80)
+                                (concat (substring query 0 80) "...")
+                              query)) "\n\n")
+
+        ;; Add new answer, ensuring there is no level-1 header
+        (insert (replace-regexp-in-string "\\(^\\|\n\\)#" "\\1##" answer))
+        (insert "\n")
+
+        ;; Handle potential ANSI color codes
+        (display-ansi-colors)
+
+        ;; Ensure markdown is active
+        (markdown-mode)
+        (markdown-toggle-markup-hiding 1)
+
+        ;; Break long lines
+        (goto-char start-pos)
+        (while (not (eobp))
+          (when (> (line-end-position) fill-column)
+            (fill-paragraph))
+          (forward-line 1))
+
+        ;; Fold away the previous answer
+        (goto-char start-pos)
+        (search-backward "# Prompt:" nil t)
+        (markdown-cycle)
+
+        ;; Redisplay in a controlled manner, vertically
+        (goto-char start-pos)
+        (search-forward "# Prompt:" nil t)
+        (beginning-of-line)
+        (markdown-enter-key)
+        (recenter 7)
+
+        ;; Save to disk
+        (save-buffer)
+
+        ;; Return to previous window
+        (other-window 1)))))
+
 (defun ekr-run-good-auto ()
   "Execute a Good-Auto query."
   (interactive)
 
   ;; Prompt for query and write it to input.txt
-  (let ((query (if (region-active-p)
-                   (buffer-substring (region-beginning) (region-end))
-                 (read-string "Enter query: "))))
+
+  (let ((query (ekr-get-query)))
 
     ;; Delete existing answer file
     (when (file-exists-p "~/bin/good-auto/data/answer.txt")
     (delete-file "~/bin/good-auto/data/answer.txt"))
 
+    ;; TODO: query normally is a string. but sometimes it is an list. in this case, insert the first element of it (which will be a string)
     (with-temp-buffer
-      (insert query)
+      (insert (if (and (listp query) (not (null query)))
+                  (nth 0 query)  ;; If query is a list, take the first element
+                query))
       (write-region (point-min) (point-max) "~/bin/good-auto/data/input.txt"))
 
     ;; Wait until the answer.txt exists, with timeout
     (let ((file-exists nil)
           (count 0))
-      (while (and (not file-exists) (< count 40))
+      (while (and (not file-exists) (< count (* 4 60)))
         (setq file-exists (file-exists-p "~/bin/good-auto/data/answer.txt"))
         (sleep-for 0.25)
         (setq count (1+ count)))
 
       (if file-exists
-          ;; Read answer and append to existing buffer
+          ;; Read answer content from the file
           (let ((answer (with-temp-buffer
                           (insert-file-contents "~/bin/good-auto/data/answer.txt")
-                          (buffer-string)))
-                (answer-buffer (get-buffer-create "*GoodAuto Answer*")))
-
-            (with-current-buffer answer-buffer
-              (let ((start-pos (point-max)))
-
-                ;; must make the buffer *and* the window active for some the following commands
-                (pop-to-buffer answer-buffer)
-
-                ;; add prompt as level-1 header, and shortened if necessary
-                (goto-char start-pos)
-                (insert "\n\n══════════════════════════════════════════════════════════════════════════════════════════════════════════════════\n\n")
-                (insert "# Prompt: " (replace-regexp-in-string
-                                      "\n" " "
-                                      (if (> (length query) 80)
-                                          (concat (substring query 0 80) "...")
-                                        query)) "\n\n")
-
-                ;; add new answer, making sure there is no level-1 header
-                (insert (replace-regexp-in-string "\\(^\\|\n\\)#" "\\1##" answer))
-                (insert "\n")
-
-                ;; ansi could occur e.g. in error messages
-                (display-ansi-colors)
-
-                ;; make sure markdown is active
-                (markdown-mode)
-                (markdown-toggle-markup-hiding 1)
-
-                ;; break long lines
-                (goto-char start-pos)
-                (while (not (eobp))
-                  (when (> (line-end-position) fill-column)
-                    (fill-paragraph))
-                  (forward-line 1))
-
-                ;; fold away the previous answer
-                (goto-char start-pos)
-                (search-backward "# Prompt:" nil t)
-                (markdown-cycle)
-
-                ;; redisplay in a controlled manner, vertically
-                (goto-char start-pos)
-                (search-forward "# Prompt:" nil t)
-                (beginning-of-line)
-                (markdown-enter-key)
-                (recenter 7)
-
-                ;; back to where we were
-                (other-window 1))))
-
+                          (buffer-string))))
+              ;; If query is a list with the t flag, just paste
+              (if (and (listp query)
+                       (eq (nth 1 query) t))
+                  (insert answer)
+                ;; Process the answer content if it did not match the list case
+                (ekr-process-answer query answer)))
         (message "No answer file found.")))))
 
 (global-set-key (kbd "©") 'ekr-run-good-auto)
@@ -1450,6 +1523,38 @@
 ;; (autoload 'gfm-mode "markdown-mode"
 ;;    "Major mode for editing GitHub Flavored Markdown files" t)
 (add-to-list 'auto-mode-alist '("README\\.md\\'" . gfm-mode))
+
+;;;;;;;; github copilot ;;;;;;;;;;;;;;
+;
+; -> https://github.com/copilot-emacs/copilot.el
+;
+; - brew install node
+
+(use-package copilot
+  :straight (:host github :repo "copilot-emacs/copilot.el" :files ("*.el"))
+  :ensure t)
+
+(add-hook 'ruby-mode-hook 'copilot-mode)
+(add-hook 'yaml-mode-hook 'copilot-mode)
+(add-hook 'sh-mode-hook 'copilot-mode)
+(add-hook 'emacs-lisp-mode-hook 'copilot-mode)
+
+; freezes:
+; (global-copilot-mode &optional ARG)
+
+; M-x copilot-install-server
+; M-x copilot-login
+
+; change this to use keymap-set instead:
+(keymap-set copilot-completion-map "TAB" 'copilot-accept-completion)
+(keymap-set copilot-completion-map "C-<tab>" 'copilot-accept-completion-by-word)
+(keymap-set copilot-completion-map "S-<tab>" 'copilot-accept-completion-by-line)
+(keymap-set copilot-completion-map "C-g" 'copilot-clear-overlay)
+(keymap-set copilot-completion-map "C-<right>" 'copilot-next-completion)
+(keymap-set copilot-completion-map "C-<left>" 'copilot-previous-completion)
+(keymap-set copilot-completion-map "C-<return>" 'copilot-panel-complete)
+;; (define-key copilot-completion-map (kbd "") 'copilot-accept-completion-by-paragraph)
+;; (define-key copilot-mode-map (kbd "TAB") 'copilot-complete)
 
 ; run server
 
