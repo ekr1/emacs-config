@@ -1,0 +1,3 @@
+[submodule "elisp/emsg-blame"]
+	path = elisp/emsg-blame
+	url = https://github.com/ISouthRain/emsg-blame.git
