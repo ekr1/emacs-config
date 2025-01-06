@@ -72,6 +72,7 @@
 (straight-use-package 'plantuml-mode)
 (straight-use-package 'deadgrep)
 (straight-use-package 'dumb-jump)
+(straight-use-package 'load-env-vars)
 
 (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
 
@@ -83,17 +84,17 @@
 (setq emsg-blame-background-color "#444444")
 (global-emsg-blame-mode)
 
-; (straight-use-package 'llm)
-; (straight-use-package 'ellama)
-(use-package ellama
-  :straight t
-  :init
-  (require 'llm-ollama)
-  (setopt ellama-provider
-	  (make-llm-ollama
-           ;; deepseek-coder:6.7b  ->  pretty ok?
-	   :chat-model "deepseek-coder-v2"
-	   :embedding-model "deepseek-coder-v2")))
+;; (straight-use-package 'llm)
+;; (straight-use-package 'ellama)
+;; (use-package ellama
+;;   :straight t
+;;   :init
+;;   (require 'llm-ollama)
+;;   (setopt ellama-provider
+;; 	  (make-llm-ollama
+;;            ;; deepseek-coder:6.7b  ->  pretty ok?
+;; 	   :chat-model "deepseek-coder-v2"
+;; 	   :embedding-model "deepseek-coder-v2")))
 
 ;; (use-package transient
 ;;   :straight (transient
@@ -137,7 +138,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(ahk-indentation 4)
+ '(ahk-indentation 2)
  '(ansi-color-bold-is-bright t)
  '(ansi-color-for-comint-mode t)
  '(ansi-color-names-vector
@@ -176,7 +177,7 @@
  '(desktop-globals-to-clear
    '(kill-ring-yank-pointer search-ring search-ring-yank-pointer regexp-search-ring regexp-search-ring-yank-pointer kill-ring))
  '(desktop-globals-to-save
-   '(desktop-missing-file-warning tags-file-name tags-table-list search-ring regexp-search-ring register-alist file-name-history compile-command compilation-directory shell-command-history kill-ring search-ring \...))
+   '(desktop-missing-file-warning tags-file-name tags-table-list search-ring regexp-search-ring register-alist file-name-history compile-command compilation-directory shell-command-history kill-ring search-ring \.\.\.))
  '(desktop-missing-file-warning nil)
  '(desktop-path '("~/.emacs.d/"))
  '(desktop-restore-eager t)
@@ -248,12 +249,13 @@
  '(kubernetes-kubectl-executable "/usr/local/bin/oc")
  '(make-pointer-invisible nil)
  '(max-mini-window-height 1)
- '(max-specpdl-size 10000 t)
+ '(max-specpdl-size 10000)
  '(mouse-highlight t)
- '(mouse-wheel-down-event 'wheel-up)
+ '(mouse-wheel-down-event 'mouse-4)
  '(mouse-wheel-mode t)
  '(mouse-wheel-progressive-speed nil)
- '(mouse-wheel-up-event 'wheel-down)
+ '(mouse-wheel-scroll-amount '(5 ((shift) . hscroll) ((meta)) ((control) . text-scale)))
+ '(mouse-wheel-up-event 'mouse-5)
  '(mpc-browser-tags '(Album|Playlist))
  '(mpc-mpd-music-directory "~/Music/Loop")
  '(org-export-backends '(ascii html md odt))
@@ -262,20 +264,21 @@
    '((:jql " assignee = currentUser() and createdDate < '2022-01-01' order by created DESC " :limit 100 :filename "last-years-work")
      (:jql " assignee = currentUser() and createdDate >= '2022-01-01' order by created DESC " :limit 100 :filename "this-years-work")))
  '(org-startup-with-inline-images t)
- '(plantuml-default-exec-mode 'executable)
+ '(plantuml-default-exec-mode 'executable t)
  '(plantuml-jar-path
-   "/opt/homebrew/Cellar/plantuml/1.2024.6/libexec/plantuml.jar")
+   "/opt/homebrew/Cellar/plantuml/1.2024.6/libexec/plantuml.jar" t)
  '(projectile-completion-system 'ido)
  '(projectile-globally-ignored-files '("TAGS" "#*#"))
  '(ruby-insert-encoding-magic-comment nil)
  '(safe-local-variable-values
-   '((buffer-file-coding-system . iso-8859-1)
+   '((ahk-indentation . 2)
+     (buffer-file-coding-system . iso-8859-1)
      (buffer-file-coding-system . utf-8)))
  '(save-interprogram-paste-before-kill t)
  '(scroll-error-top-bottom t)
  '(server-mode t)
  '(show-paren-mode t)
- '(smerge-command-prefix "\3d")
+ '(smerge-command-prefix "d")
  '(special-display-buffer-names nil)
  '(split-width-threshold 140)
  '(sqlformat-command 'pgformatter)
@@ -284,7 +287,7 @@
  '(tramp-copy-size-limit 102400)
  '(tramp-default-method "ssh")
  '(tramp-remote-process-environment
-   '("HISTFILE=$HOME/.tramp_history" "HISTSIZE=1" "LC_ALL=C" "TERM=dumb" "EMACS=t" "INSIDE_EMACS=23.1.1,tramp:2.1.15" "CDPATH=" "HISTORY=" "MAIL=" "MAILCHECK=" "MAILPATH=" "autocorrect=" \...))
+   '("HISTFILE=$HOME/.tramp_history" "HISTSIZE=1" "LC_ALL=C" "TERM=dumb" "EMACS=t" "INSIDE_EMACS=23.1.1,tramp:2.1.15" "CDPATH=" "HISTORY=" "MAIL=" "MAILCHECK=" "MAILPATH=" "autocorrect=" \.\.\.))
  '(tramp-verbose 2)
  '(truncate-lines t)
  '(undo-limit 12000000)
@@ -305,18 +308,6 @@
 
  ;; '(feature-cucumber-command
  ;;   "time bin/rake cucumber:rerun_nodb CUCUMBER_OPTS=\"{options}\" FEATURE=\"{feature}\" ")
-
-;; (defun arrange-frame (w h x y)
-;;   "Set the width, height, and x/y position of the current frame"
-;;   (let ((frame (selected-frame)))
-;;     (delete-other-windows)
-;;     (set-frame-position frame x y)
-;;     (set-frame-size frame w h)))
-;; (defun arrange-my-frame ()
-;;   ""
-;;   (arrange-frame 148 68 494 22))
-;; (add-hook 'emacs-startup-hook 'arrange-my-frame)
-;; (arrange-my-frame)
 
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
@@ -1081,7 +1072,17 @@
 ; deadgrep instead of projectile's search...
 ; (define-key projectile-mode-map (kbd "C-c p g") #'projectile-grep)
 ; (define-key projectile-mode-map (kbd "C-c p g") #'projectile-grep t) ; to remove previous def
-(define-key projectile-mode-map (kbd "C-c p g") #'deadgrep t) ; to remove previous def
+;(define-key projectile-mode-map (kbd "C-c p g") #'deadgrep t) ; to remove previous def
+
+(let ((args (help-function-arglist #'define-key)))
+  (cond
+   ((and args (= (length args) 4))
+    (define-key projectile-mode-map (kbd "C-c p g") #'deadgrep t))
+   ((and args (= (length args) 3))
+    (define-key projectile-mode-map (kbd "C-c p g") #'deadgrep))
+   (t
+    (message "Warning: `define-key` does not take 3 or 4 parameters; skipping binding."))))
+
 (global-set-key (kbd "C-c p g") #'deadgrep) ; doesnt work...
 
 ; many commands like C-c r m  (Model...)
@@ -1271,19 +1272,25 @@
 ;; Also: C-u C-x = to display the current font
 ;; Also: (set-face-attribute 'default nil :font "-*-Menlo-regular-normal-normal-*-12-*-*-*-m-0-iso10646-1") ;; default on MacOS 05/2024, very nice
 
-(cond ((eq system-type 'gnu/linux)
-       (set-frame-font "-*-Inconsolata-normal-normal-normal-*-18-*-*-*-m-0-iso10646-1")
-       (add-hook 'after-make-frame-functions
-          (lambda (frame)
-            (set-frame-size frame 111 46)))
-       "WSL font")
-      ((eq system-type 'windows-nt)
-       (set-frame-font "-*-Inconsolata-normal-normal-normal-*-16-*-*-*-m-0-iso10646-1")
-       "Win font set")
-      ((eq system-type 'darwin)
-       ; "-*-Menlo-regular-normal-normal-*-12-*-*-*-m-0-iso10646-1"
-       "MacOS font kept unchanged")
-      ("Unknown system type"))
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (run-at-time "1 sec" nil
+                         (lambda ()
+                           (message (cond ((eq system-type 'gnu/linux)
+                                        (set-frame-font "-*-Inconsolata-normal-normal-normal-*-17-*-*-*-m-0-iso10646-1")
+                                        (set-frame-position (selected-frame) 3630 2)
+                                        (set-frame-size (selected-frame) 152 78)
+                                        "Font/windows setup: WSL")
+                                       ((eq system-type 'windows-nt)
+                                        (set-frame-font "-*-Inconsolata-normal-normal-normal-*-16-*-*-*-m-0-iso10646-1")
+                                        "Font/windows setup: Windows native")
+                                       ((eq system-type 'darwin)
+                                        ; "-*-Menlo-regular-normal-normal-*-12-*-*-*-m-0-iso10646-1"
+                                        "Font/windows setup: MacOS")
+                                       ("Font/windows setup: Unknown system type")))
+                           (let ((print-length 999)
+                                 (print-level 999))
+                             (pp (current-frame-configuration)))))))
 
 ; plantuml
 
@@ -1454,64 +1461,70 @@ QUERY is the original query used to generate the answer."
 ;; https://www.masteringemacs.org/article/how-to-get-started-tree-sitter
 ;;
 
-(setq treesit-language-source-alist
-      '(
-        (bash "https://github.com/tree-sitter/tree-sitter-bash")
-        (cmake "https://github.com/uyha/tree-sitter-cmake")
-        (css "https://github.com/tree-sitter/tree-sitter-css")
-        (elisp "https://github.com/Wilfred/tree-sitter-elisp")
-        (go "https://github.com/tree-sitter/tree-sitter-go")
-        (html "https://github.com/tree-sitter/tree-sitter-html")
-        (java "https://github.com/tree-sitter/tree-sitter-java")
-        (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
-        (json "https://github.com/tree-sitter/tree-sitter-json")
-        (make "https://github.com/alemuller/tree-sitter-make")
-        (markdown "https://github.com/ikatyang/tree-sitter-markdown")
-        (python "https://github.com/tree-sitter/tree-sitter-python")
-        (ruby "https://github.com/tree-sitter/tree-sitter-ruby")
-        (c "https://github.com/tree-sitter/tree-sitter-c")
-        (cpp "https://github.com/tree-sitter/tree-sitter-cpp")
-        (yaml "https://github.com/ikatyang/tree-sitter-yaml")
-        (dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile")
-        ; (typescript "https://github.com/tree-sitter/tree-sitter-typescript") ; wont build
-        ))
+(if (executable-find "tree-sitter")
+    (progn
+      (message "Tree-sitter binary is available.")
 
-(defvar ekr-treesitter-timestamp-file "~/.emacs.d/tree-sitter/timestamp.txt"
-  "The path to the file containing the timestamp.")
+      (setq treesit-language-source-alist
+            '(
+              (bash "https://github.com/tree-sitter/tree-sitter-bash")
+              (cmake "https://github.com/uyha/tree-sitter-cmake")
+              (css "https://github.com/tree-sitter/tree-sitter-css")
+              (elisp "https://github.com/Wilfred/tree-sitter-elisp")
+              (go "https://github.com/tree-sitter/tree-sitter-go")
+              (html "https://github.com/tree-sitter/tree-sitter-html")
+              (java "https://github.com/tree-sitter/tree-sitter-java")
+              (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
+              (json "https://github.com/tree-sitter/tree-sitter-json")
+              (make "https://github.com/alemuller/tree-sitter-make")
+              (markdown "https://github.com/ikatyang/tree-sitter-markdown")
+              (python "https://github.com/tree-sitter/tree-sitter-python")
+              (ruby "https://github.com/tree-sitter/tree-sitter-ruby")
+              (c "https://github.com/tree-sitter/tree-sitter-c")
+              (cpp "https://github.com/tree-sitter/tree-sitter-cpp")
+              (yaml "https://github.com/ikatyang/tree-sitter-yaml")
+              (dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile")
+                                        ; (typescript "https://github.com/tree-sitter/tree-sitter-typescript") ; wont build
+              ))
 
-(when (or (not (file-exists-p ekr-treesitter-timestamp-file))
-          (time-less-p (time-add (file-attribute-modification-time (file-attributes ekr-treesitter-timestamp-file)) (* 7 86400))
-                       (current-time)))
-  (dolist (language-source
-           treesit-language-source-alist)
-    (let ((language-name (car language-source)))
-      (message
-       "Installing Treesitter grammar for %s" language-name)
-      (treesit-install-language-grammar language-name)))
-  (with-temp-file ekr-treesitter-timestamp-file (insert (format-time-string "%Y-%m-%d %H:%M:%S"))))
+      (defvar ekr-treesitter-timestamp-file "~/.emacs.d/tree-sitter/timestamp.txt"
+        "The path to the file containing the timestamp.")
 
-(add-to-list 'major-mode-remap-alist '(bash-mode . bash-ts-mode))
-(add-to-list 'major-mode-remap-alist '(cmake-mode . cmake-ts-mode))
-(add-to-list 'major-mode-remap-alist '(css-mode . css-ts-mode))
-(add-to-list 'major-mode-remap-alist '(elisp-mode . elisp-ts-mode))
-(add-to-list 'major-mode-remap-alist '(go-mode . go-ts-mode))
-(add-to-list 'major-mode-remap-alist '(html-mode . html-ts-mode))
-(add-to-list 'major-mode-remap-alist '(java-mode . java-ts-mode))
-(add-to-list 'major-mode-remap-alist '(javascript-mode . javascript-ts-mode))
-(add-to-list 'major-mode-remap-alist '(js-mode . javascript-ts-mode))
-(add-to-list 'major-mode-remap-alist '(js-json-mode . json-ts-mode))
-(add-to-list 'major-mode-remap-alist '(json-mode . json-ts-mode))
-(add-to-list 'major-mode-remap-alist '(make-mode . make-ts-mode))
-(add-to-list 'major-mode-remap-alist '(markdown-mode . markdown-ts-mode))
-(add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))
-(add-to-list 'major-mode-remap-alist '(ruby-mode . ruby-ts-mode))
-(add-to-list 'major-mode-remap-alist '(yaml-mode . yaml-ts-mode))
-(add-to-list 'major-mode-remap-alist '(dockerfile-mode . dockerfile-ts-mode))
-(add-to-list 'major-mode-remap-alist '(c-mode . c-ts-mode))
-(add-to-list 'major-mode-remap-alist '(c++-mode . c++-ts-mode))
-(add-to-list 'major-mode-remap-alist '(c-or-c++-mode . c-or-c++-ts-mode))
+      (when (or (not (file-exists-p ekr-treesitter-timestamp-file))
+                (time-less-p (time-add (file-attribute-modification-time (file-attributes ekr-treesitter-timestamp-file)) (* 7 86400))
+                             (current-time)))
+        (dolist (language-source
+                 treesit-language-source-alist)
+          (let ((language-name (car language-source)))
+            (message
+             "Installing Treesitter grammar for %s" language-name)
+            (treesit-install-language-grammar language-name)))
+        (with-temp-file ekr-treesitter-timestamp-file (insert (format-time-string "%Y-%m-%d %H:%M:%S"))))
 
-;; (add-to-list 'major-mode-remap-alist '(typescript-mode . typescript-ts-mode))
+      (add-to-list 'major-mode-remap-alist '(bash-mode . bash-ts-mode))
+      (add-to-list 'major-mode-remap-alist '(cmake-mode . cmake-ts-mode))
+      (add-to-list 'major-mode-remap-alist '(css-mode . css-ts-mode))
+      (add-to-list 'major-mode-remap-alist '(elisp-mode . elisp-ts-mode))
+      (add-to-list 'major-mode-remap-alist '(go-mode . go-ts-mode))
+      (add-to-list 'major-mode-remap-alist '(html-mode . html-ts-mode))
+      (add-to-list 'major-mode-remap-alist '(java-mode . java-ts-mode))
+      (add-to-list 'major-mode-remap-alist '(javascript-mode . javascript-ts-mode))
+      (add-to-list 'major-mode-remap-alist '(js-mode . javascript-ts-mode))
+      (add-to-list 'major-mode-remap-alist '(js-json-mode . json-ts-mode))
+      (add-to-list 'major-mode-remap-alist '(json-mode . json-ts-mode))
+      (add-to-list 'major-mode-remap-alist '(make-mode . make-ts-mode))
+      (add-to-list 'major-mode-remap-alist '(markdown-mode . markdown-ts-mode))
+      (add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))
+      (add-to-list 'major-mode-remap-alist '(ruby-mode . ruby-ts-mode))
+      (add-to-list 'major-mode-remap-alist '(yaml-mode . yaml-ts-mode))
+      (add-to-list 'major-mode-remap-alist '(dockerfile-mode . dockerfile-ts-mode))
+      (add-to-list 'major-mode-remap-alist '(c-mode . c-ts-mode))
+      (add-to-list 'major-mode-remap-alist '(c++-mode . c++-ts-mode))
+      (add-to-list 'major-mode-remap-alist '(c-or-c++-mode . c-or-c++-ts-mode))
+
+      ;; (add-to-list 'major-mode-remap-alist '(typescript-mode . typescript-ts-mode))
+      )
+  (message "Tree-sitter binary is not available. Tree-sitter features will be disabled."))
 
 ; markdown-mode
 
@@ -1530,31 +1543,48 @@ QUERY is the original query used to generate the answer."
 ;
 ; - brew install node
 
-(use-package copilot
-  :straight (:host github :repo "copilot-emacs/copilot.el" :files ("*.el"))
-  :ensure t)
+(if (executable-find "node")
+    (progn
+      (use-package copilot
+        :straight (:host github :repo "copilot-emacs/copilot.el" :files ("*.el"))
+        :ensure t)
 
-(add-hook 'ruby-mode-hook 'copilot-mode)
-(add-hook 'yaml-mode-hook 'copilot-mode)
-(add-hook 'sh-mode-hook 'copilot-mode)
-(add-hook 'emacs-lisp-mode-hook 'copilot-mode)
+      (add-hook 'ruby-mode-hook 'copilot-mode)
+      (add-hook 'yaml-mode-hook 'copilot-mode)
+      (add-hook 'sh-mode-hook 'copilot-mode)
+      (add-hook 'emacs-lisp-mode-hook 'copilot-mode)
 
-; freezes:
-; (global-copilot-mode &optional ARG)
+                                        ; freezes:
+                                        ; (global-copilot-mode &optional ARG)
 
-; M-x copilot-install-server
-; M-x copilot-login
+                                        ; M-x copilot-install-server
+                                        ; M-x copilot-login
 
-; change this to use keymap-set instead:
-(keymap-set copilot-completion-map "TAB" 'copilot-accept-completion)
-(keymap-set copilot-completion-map "C-<tab>" 'copilot-accept-completion-by-word)
-(keymap-set copilot-completion-map "S-<tab>" 'copilot-accept-completion-by-line)
-(keymap-set copilot-completion-map "C-g" 'copilot-clear-overlay)
-(keymap-set copilot-completion-map "C-<right>" 'copilot-next-completion)
-(keymap-set copilot-completion-map "C-<left>" 'copilot-previous-completion)
-(keymap-set copilot-completion-map "C-<return>" 'copilot-panel-complete)
-;; (define-key copilot-completion-map (kbd "") 'copilot-accept-completion-by-paragraph)
-;; (define-key copilot-mode-map (kbd "TAB") 'copilot-complete)
+      (when (fboundp 'keymap-set)
+        (keymap-set copilot-completion-map "TAB" 'copilot-accept-completion)
+        (keymap-set copilot-completion-map "C-<tab>" 'copilot-accept-completion-by-word)
+        (keymap-set copilot-completion-map "S-<tab>" 'copilot-accept-completion-by-line)
+        (keymap-set copilot-completion-map "C-g" 'copilot-clear-overlay)
+        (keymap-set copilot-completion-map "C-<right>" 'copilot-next-completion)
+        (keymap-set copilot-completion-map "C-<left>" 'copilot-previous-completion)
+        ;; (define-key copilot-completion-map (kbd "") 'copilot-accept-completion-by-paragraph)
+        ;; (define-key copilot-mode-map (kbd "TAB") 'copilot-complete)
+        (keymap-set copilot-completion-map "C-<return>" 'copilot-panel-complete)))
+  (message "`node` not found, copilot not initialized"))
+
+; ssh-agent on WSL
+
+(unless (file-exists-p "/tmp/ssh-agent.sh")
+  (progn
+    (message "Starting ssh-agent...")
+    (call-process-shell-command "ssh-agent > /tmp/ssh-agent.sh" nil nil)))
+
+(if (file-exists-p "/tmp/ssh-agent.sh")
+    (progn
+      (message "Loading ssh-agent variables...")
+      (load-env-vars "/tmp/ssh-agent.sh")
+      (message "SSH_AGENT_PID: " (getenv "SSH_AGENT_PID"))
+      (message "SSH_AUTH_SOCK: " (getenv "SSH_AUTH_SOCK"))))
 
 ; run server
 
