@@ -1120,7 +1120,7 @@
       (setenv "DOCKER_MACHINE_NAME" "default")))
 
 ; DOCKER_BUILDKIT does not look good in *compilation* buffers...
-(setenv "DOCKER_BUILDKIT" "0")
+(setenv "BUILDKIT_PROGRESS" "plain")
 
 ;;; folding in xml
 
@@ -1549,16 +1549,21 @@ QUERY is the original query used to generate the answer."
         :straight (:host github :repo "copilot-emacs/copilot.el" :files ("*.el"))
         :ensure t)
 
-      (add-hook 'ruby-mode-hook 'copilot-mode)
-      (add-hook 'yaml-mode-hook 'copilot-mode)
-      (add-hook 'sh-mode-hook 'copilot-mode)
-      (add-hook 'emacs-lisp-mode-hook 'copilot-mode)
+; M-x copilot-install-server
+; M-x copilot-login
 
-                                        ; freezes:
-                                        ; (global-copilot-mode &optional ARG)
+; suppress ⛔ Warning (copilot): copilot--infer-indentation-offset found no mode-specific indentation offset.
+(add-to-list 'warning-suppress-log-types '(copilot))
 
-                                        ; M-x copilot-install-server
-                                        ; M-x copilot-login
+(dolist (mode '(ahk bash bash-ts c++ c++-ts c c-or-c++ c-or-c++-ts c-ts cmake cmake-ts css css-ts
+                csv dockerfile dockerfile-ts elisp elisp-ts emacs-lisp emmet feature fundamental
+                gfm go go-ts groovy html html-ts java java-ts javascript javascript-ts js-json js
+                json json-ts lua make make-ts markdown markdown-ts nxml php plantuml powershell
+                python python-ts ruby ruby-ts scss sgml sql typescript typescript-ts web xml
+                yaml yaml-ts))
+  (add-hook (intern (concat (symbol-name mode) "-mode-hook")) 'copilot-mode))
+
+;(add-hook 'after-change-major-mode-hook 'copilot-turn-on-unless-buffer-read-only)
 
       (when (fboundp 'keymap-set)
         (keymap-set copilot-completion-map "TAB" 'copilot-accept-completion)
@@ -1585,6 +1590,11 @@ QUERY is the original query used to generate the answer."
       (load-env-vars "/tmp/ssh-agent.sh")
       (message "SSH_AGENT_PID: " (getenv "SSH_AGENT_PID"))
       (message "SSH_AUTH_SOCK: " (getenv "SSH_AUTH_SOCK"))))
+
+; yaml-mode
+
+; .tpl = helm charts
+(add-to-list 'auto-mode-alist '("\\.tpl$" . yaml-mode))
 
 ; run server
 

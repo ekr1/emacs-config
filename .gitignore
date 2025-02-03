@@ -31,3 +31,5 @@ flycheck_init.el
 /tree-sitter/timestamp.txt
 /url/cache
 /ido.last
+/ellama-sessions/
+/.cache/
