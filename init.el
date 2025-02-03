@@ -1549,21 +1549,22 @@ QUERY is the original query used to generate the answer."
         :straight (:host github :repo "copilot-emacs/copilot.el" :files ("*.el"))
         :ensure t)
 
-; M-x copilot-install-server
-; M-x copilot-login
+      ;; first time:
+      ;; M-x copilot-install-server
+      ;; M-x copilot-login
 
-; suppress ⛔ Warning (copilot): copilot--infer-indentation-offset found no mode-specific indentation offset.
-(add-to-list 'warning-suppress-log-types '(copilot))
+                                        ; suppress ⛔ Warning (copilot): copilot--infer-indentation-offset found no mode-specific indentation offset.
+      (add-to-list 'warning-suppress-log-types '(copilot))
 
-(dolist (mode '(ahk bash bash-ts c++ c++-ts c c-or-c++ c-or-c++-ts c-ts cmake cmake-ts css css-ts
-                csv dockerfile dockerfile-ts elisp elisp-ts emacs-lisp emmet feature fundamental
-                gfm go go-ts groovy html html-ts java java-ts javascript javascript-ts js-json js
-                json json-ts lua make make-ts markdown markdown-ts nxml php plantuml powershell
-                python python-ts ruby ruby-ts scss sgml sql typescript typescript-ts web xml
-                yaml yaml-ts))
-  (add-hook (intern (concat (symbol-name mode) "-mode-hook")) 'copilot-mode))
+      (dolist (mode '(ahk bash bash-ts c++ c++-ts c c-or-c++ c-or-c++-ts c-ts cmake cmake-ts css css-ts
+                          csv dockerfile dockerfile-ts elisp elisp-ts emacs-lisp emmet feature fundamental
+                          gfm go go-ts groovy html html-ts java java-ts javascript javascript-ts js-json js
+                          json json-ts lua make make-ts markdown markdown-ts nxml php plantuml powershell
+                          python python-ts ruby ruby-ts scss sgml sql typescript typescript-ts web xml
+                          yaml yaml-ts))
+        (add-hook (intern (concat (symbol-name mode) "-mode-hook")) 'copilot-mode))
 
-;(add-hook 'after-change-major-mode-hook 'copilot-turn-on-unless-buffer-read-only)
+                                        ;(add-hook 'after-change-major-mode-hook 'copilot-turn-on-unless-buffer-read-only)
 
       (when (fboundp 'keymap-set)
         (keymap-set copilot-completion-map "TAB" 'copilot-accept-completion)
@@ -1575,6 +1576,9 @@ QUERY is the original query used to generate the answer."
         ;; (define-key copilot-completion-map (kbd "") 'copilot-accept-completion-by-paragraph)
         ;; (define-key copilot-mode-map (kbd "TAB") 'copilot-complete)
         (keymap-set copilot-completion-map "C-<return>" 'copilot-panel-complete)))
+
+  ;; else, if `node` not found (Windows...):
+
   (message "`node` not found, copilot not initialized"))
 
 ; ssh-agent on WSL
