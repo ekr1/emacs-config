@@ -15,69 +15,14 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
-(straight-use-package 'use-package) ; Now use-package will use straight.el to automatically install missing packages if you provide :straight t
-
 ;; Straight packages
 
 ;; M-x straight-pull-recipe-repositories
 ;; M-x straight-pull-all
 
-;; Recent updates:
-
-;; drwxr-xr-x   10 ekkehard.kraemer  staff    320 Feb  3 10:18 closql
-;; drwxr-xr-x   16 ekkehard.kraemer  staff    512 Feb  3 10:12 compat
-;; drwxr-xr-x@  12 ekkehard.kraemer  staff    384 Feb  3 10:18 copilot.el
-;; drwxr-xr-x    7 ekkehard.kraemer  staff    224 Feb  3 10:12 csv-mode
-;; drwxr-xr-x   18 ekkehard.kraemer  staff    576 Feb  3 10:17 cucumber.el
-;; drwxr-xr-x   20 ekkehard.kraemer  staff    640 Feb  3 10:12 dash.el
-;; drwxr-xr-x@  11 ekkehard.kraemer  staff    352 Feb  3 10:18 deadgrep
-;; drwxr-xr-x    7 ekkehard.kraemer  staff    224 Feb  3 10:12 dockerfile-mode
-;; drwxr-xr-x   18 ekkehard.kraemer  staff    576 Feb  3 10:18 emacs-async
-;; drwxr-xr-x@  13 ekkehard.kraemer  staff    416 Feb  3 10:06 emacs-load-env-vars
-;; drwxr-xr-x    9 ekkehard.kraemer  staff    288 Feb  3 10:17 emacs-reformatter
-;; drwxr-xr-x   19 ekkehard.kraemer  staff    608 Feb  3 10:18 emacsql
-;; drwxr-xr-x   11 ekkehard.kraemer  staff    352 Feb  3 10:17 emmet-mode
-;; drwxr-xr-x   18 ekkehard.kraemer  staff    576 Feb  3 10:17 f.el
-;; drwxr-xr-x   22 ekkehard.kraemer  staff    704 Feb  3 10:18 flycheck
-;; drwxr-xr-x   14 ekkehard.kraemer  staff    448 Feb  3 10:18 forge
-;; drwxr-xr-x   15 ekkehard.kraemer  staff    480 Feb  3 10:18 ghub
-;; drwxr-xr-x   16 ekkehard.kraemer  staff    512 Feb  3 10:12 go-mode.el
-;; drwxr-xr-x   14 ekkehard.kraemer  staff    448 Feb  3 10:17 groovy-emacs-modes
-;; drwxr-xr-x    9 ekkehard.kraemer  staff    288 Feb  3 10:18 highlight-indent-guides
-;; drwxr-xr-x    6 ekkehard.kraemer  staff    192 Feb  3 10:17 inf-ruby
-;; drwxr-xr-x   13 ekkehard.kraemer  staff    416 Feb  3 10:12 json-navigator
-;; drwxr-xr-x@   6 ekkehard.kraemer  staff    192 Feb  3 10:18 jsonrpc
-;; drwxr-xr-x   12 ekkehard.kraemer  staff    384 Feb  3 10:12 kubel
-;; drwxr-xr-x    6 ekkehard.kraemer  staff    192 Feb  3 10:17 let-alist
-;; drwxr-xr-x   19 ekkehard.kraemer  staff    608 Feb  3 10:17 lua-mode
-;; drwxr-xr-x   15 ekkehard.kraemer  staff    480 Feb  3 10:15 magit
-;; drwxr-xr-x   10 ekkehard.kraemer  staff    320 Feb  3 10:18 marginalia
-;; drwxr-xr-x   15 ekkehard.kraemer  staff    480 Feb  3 10:12 markdown-mode
-;; drwxr-xr-x   21 ekkehard.kraemer  staff    672 Feb  3 10:09 melpa
-;; drwxr-xr-x   20 ekkehard.kraemer  staff    640 Feb  3 10:17 multiple-cursors.el
-;; drwxr-xr-x   10 ekkehard.kraemer  staff    320 Feb  3 10:10 nongnu-elpa
-;; drwxr-xr-x   15 ekkehard.kraemer  staff    480 Feb  3 10:12 org-jira
-;; drwxr-xr-x   20 ekkehard.kraemer  staff    640 Feb  3 10:12 php-mode
-;; drwxr-xr-x   12 ekkehard.kraemer  staff    384 Feb  3 10:18 popup-el
-;; drwxr-xr-x    4 ekkehard.kraemer  staff    128 Feb  3 10:18 pos-tip
-;; drwxr-xr-x    6 ekkehard.kraemer  staff    192 Feb  3 10:17 powershell.el
-;; drwxr-xr-x   14 ekkehard.kraemer  staff    448 Feb  3 10:17 projectile
-;; drwxr-xr-x   16 ekkehard.kraemer  staff    512 Feb  3 10:17 robe
-;; drwxr-xr-x   10 ekkehard.kraemer  staff    320 Feb  3 10:18 spinner
-;; drwxr-xr-x   11 ekkehard.kraemer  staff    352 Feb  3 10:18 sql-indent
-;; drwxr-xr-x    7 ekkehard.kraemer  staff    224 Feb  3 10:17 sqlformat
-;; drwxr-xr-x   21 ekkehard.kraemer  staff    672 Feb  3 10:12 straight.el
-;; drwxr-xr-x   14 ekkehard.kraemer  staff    448 Feb  3 10:12 transient
-;; drwxr-xr-x   13 ekkehard.kraemer  staff    416 Feb  3 10:18 treepy.el
-;; drwxr-xr-x   17 ekkehard.kraemer  staff    544 Feb  3 10:12 typescript.el
-;; drwxr-xr-x   31 ekkehard.kraemer  staff    992 Feb  3 10:12 use-package
-;; drwxr-xr-x   11 ekkehard.kraemer  staff    352 Feb  3 10:18 web-mode
-;; drwxr-xr-x   14 ekkehard.kraemer  staff    448 Feb  3 10:12 with-editor
-;; drwxr-xr-x   13 ekkehard.kraemer  staff    416 Feb  3 10:12 yaml-mode
-;; drwxr-xr-x   12 ekkehard.kraemer  staff    384 Feb  3 10:18 yaml.el
-
 ;; write lockfile: straight-freeze-versions
 
+(straight-use-package 'use-package)
 (straight-use-package 'csv-mode)
 (straight-use-package 'with-editor)
 (straight-use-package 'php-mode)
@@ -104,7 +49,6 @@
 (straight-use-package 'multiple-cursors)
 (straight-use-package 'feature-mode)
 (straight-use-package 'emmet-mode)
-(straight-use-package 'use-package)
 (straight-use-package 'pdf-tools)
 (straight-use-package 'powershell)
 (straight-use-package 'ahk-mode)
@@ -119,13 +63,6 @@
 (straight-use-package 'compile)
 (straight-use-package 'highlight-indent-guides)
 (straight-use-package 'compile)
-(straight-use-package 'flycheck)
-; (straight-use-package 'flycheck-color-mode-line) ; https://github.com/flycheck/flycheck-color-mode-line (official) colors the mode line according to the Flycheck status.
-(straight-use-package 'flycheck-pos-tip) ; shows Flycheck error messages in a graphical popup.
-(straight-use-package 'flycheck-status-emoji) ; https://github.com/liblit/flycheck-status-emoji adds cute emoji (e.g. 😱 for errors) to Flycheck’s mode line status.
-(straight-use-package 'flycheck-checkbashisms)
-; Possible PHP flycheck extensions: https://github.com/emacs-php/phpstan.el, https://github.com/emacs-php/psalm.el
-; Possible Python checkers: https://github.com/msherry/flycheck-pycheckers, https://github.com/chocoelho/flycheck-prospector
 (straight-use-package 'plantuml-mode)
 (straight-use-package 'deadgrep)
 (straight-use-package 'dumb-jump)
@@ -169,11 +106,33 @@
 
 (add-to-list 'load-path "~/.emacs.d/elisp")
 
-; flycheck plus additional modules
-(global-flycheck-mode)
-(with-eval-after-load 'flycheck (flycheck-pos-tip-mode))
-(with-eval-after-load 'flycheck (flycheck-status-emoji-mode))
-(eval-after-load 'flycheck '(add-hook 'flycheck-mode-hook #'flycheck-checkbashisms-setup))
+;; ------------------------ flycheck plus additional modules
+
+(use-package flycheck
+  :straight t
+  :init (global-flycheck-mode)
+  :config
+  (use-package flycheck-pos-tip
+    :straight t
+    :config (flycheck-pos-tip-mode))
+  (use-package flycheck-status-emoji
+    :straight t
+    :config (flycheck-status-emoji-mode))
+  (use-package flycheck-checkbashisms
+    :straight t
+    :hook (flycheck-mode . flycheck-checkbashisms-setup)))
+
+;; (straight-use-package 'flycheck)
+;; ; (straight-use-package 'flycheck-color-mode-line) ; https://github.com/flycheck/flycheck-color-mode-line (official) colors the mode line according to the Flycheck status.
+;; (straight-use-package 'flycheck-pos-tip) ; shows Flycheck error messages in a graphical popup.
+;; (straight-use-package 'flycheck-status-emoji) ; https://github.com/liblit/flycheck-status-emoji adds cute emoji (e.g. 😱 for errors) to Flycheck’s mode line status.
+;; (straight-use-package 'flycheck-checkbashisms)
+;; ; Possible PHP flycheck extensions: https://github.com/emacs-php/phpstan.el, https://github.com/emacs-php/psalm.el
+;; ; Possible Python checkers: https://github.com/msherry/flycheck-pycheckers, https://github.com/chocoelho/flycheck-prospector
+;; (global-flycheck-mode)
+;; (with-eval-after-load 'flycheck (flycheck-pos-tip-mode))
+;; (with-eval-after-load 'flycheck (flycheck-status-emoji-mode))
+;; (eval-after-load 'flycheck '(add-hook 'flycheck-mode-hook #'flycheck-checkbashisms-setup))
 
 ; required since some compilation vars are used later
 (require 'compile)
@@ -217,6 +176,8 @@
  '(compilation-context-lines 3)
  '(compilation-mode-hook nil)
  '(compilation-scroll-output t)
+ '(copilot-chat-follow t)
+ '(copilot-chat-frontend 'shell-maker)
  '(cperl-autoindent-on-semi t)
  '(cperl-brace-offset -2)
  '(cperl-extra-newline-before-brace t)
@@ -234,7 +195,7 @@
  '(desktop-globals-to-clear
    '(kill-ring-yank-pointer search-ring search-ring-yank-pointer regexp-search-ring regexp-search-ring-yank-pointer kill-ring))
  '(desktop-globals-to-save
-   '(desktop-missing-file-warning tags-file-name tags-table-list search-ring regexp-search-ring register-alist file-name-history compile-command compilation-directory shell-command-history kill-ring search-ring \.\.\.))
+   '(desktop-missing-file-warning tags-file-name tags-table-list search-ring regexp-search-ring register-alist file-name-history compile-command compilation-directory shell-command-history kill-ring search-ring \...))
  '(desktop-missing-file-warning nil)
  '(desktop-path '("~/.emacs.d/"))
  '(desktop-restore-eager t)
@@ -306,7 +267,7 @@
  '(kubernetes-kubectl-executable "/usr/local/bin/oc")
  '(make-pointer-invisible nil)
  '(max-mini-window-height 1)
- '(max-specpdl-size 10000)
+ '(max-specpdl-size 10000 t)
  '(mouse-highlight t)
  '(mouse-wheel-down-event 'mouse-4)
  '(mouse-wheel-mode t)
@@ -335,7 +296,7 @@
  '(scroll-error-top-bottom t)
  '(server-mode t)
  '(show-paren-mode t)
- '(smerge-command-prefix "d")
+ '(smerge-command-prefix "\3d")
  '(special-display-buffer-names nil)
  '(split-width-threshold 140)
  '(sqlformat-command 'pgformatter)
@@ -344,7 +305,7 @@
  '(tramp-copy-size-limit 102400)
  '(tramp-default-method "ssh")
  '(tramp-remote-process-environment
-   '("HISTFILE=$HOME/.tramp_history" "HISTSIZE=1" "LC_ALL=C" "TERM=dumb" "EMACS=t" "INSIDE_EMACS=23.1.1,tramp:2.1.15" "CDPATH=" "HISTORY=" "MAIL=" "MAILCHECK=" "MAILPATH=" "autocorrect=" \.\.\.))
+   '("HISTFILE=$HOME/.tramp_history" "HISTSIZE=1" "LC_ALL=C" "TERM=dumb" "EMACS=t" "INSIDE_EMACS=23.1.1,tramp:2.1.15" "CDPATH=" "HISTORY=" "MAIL=" "MAILCHECK=" "MAILPATH=" "autocorrect=" \...))
  '(tramp-verbose 2)
  '(truncate-lines t)
  '(undo-limit 12000000)
@@ -708,6 +669,14 @@
 (add-to-list 'compilation-error-regexp-alist-alist
  	     '(ekr-php-codeception-png "Png: /opt/app-root/src/\\(.+?.png\\)"
                                      1 nil nil 2))
+
+; rspec error
+;     # ./spec/models/dtag_spec.rb:9:in `block (3 levels) in <top (required)>'
+(add-to-list 'compilation-error-regexp-alist 'ekr-rspec-error)
+(add-to-list 'compilation-error-regexp-alist-alist
+ 	     '(ekr-rspec-error "# \\(.+?\\):\\([0-9]+\\):"
+                                     1 2 nil 2))
+
 
 ; erstes (also letztes ;) ) entfernen, beim Entwickeln
 ;(setq compilation-error-regexp-alist-alist (cdr compilation-error-regexp-alist-alist))
@@ -1467,41 +1436,48 @@ QUERY is the original query used to generate the answer."
   "Execute a Good-Auto query."
   (interactive)
 
-  ;; Prompt for query and write it to input.txt
+  ;; if the current buffer is the git commit message, the run copilot-chat-insert-commit-message
+  (if (string= (buffer-name) "COMMIT_EDITMSG")
+      (copilot-chat-insert-commit-message)
+    (progn
 
-  (let ((query (ekr-get-query)))
+      ;; else, do the whole good-auto thing...
 
-    ;; Delete existing answer file
-    (when (file-exists-p "~/bin/good-auto/data/answer.txt")
-    (delete-file "~/bin/good-auto/data/answer.txt"))
+      ;; Prompt for query and write it to input.txt
 
-    ;; TODO: query normally is a string. but sometimes it is an list. in this case, insert the first element of it (which will be a string)
-    (with-temp-buffer
-      (insert (if (and (listp query) (not (null query)))
-                  (nth 0 query)  ;; If query is a list, take the first element
-                query))
-      (write-region (point-min) (point-max) "~/bin/good-auto/data/input.txt"))
+      (let ((query (ekr-get-query)))
 
-    ;; Wait until the answer.txt exists, with timeout
-    (let ((file-exists nil)
-          (count 0))
-      (while (and (not file-exists) (< count (* 4 60)))
-        (setq file-exists (file-exists-p "~/bin/good-auto/data/answer.txt"))
-        (sleep-for 0.25)
-        (setq count (1+ count)))
+        ;; Delete existing answer file
+        (when (file-exists-p "~/bin/good-auto/data/answer.txt")
+          (delete-file "~/bin/good-auto/data/answer.txt"))
 
-      (if file-exists
-          ;; Read answer content from the file
-          (let ((answer (with-temp-buffer
-                          (insert-file-contents "~/bin/good-auto/data/answer.txt")
-                          (buffer-string))))
-              ;; If query is a list with the t flag, just paste
-              (if (and (listp query)
-                       (eq (nth 1 query) t))
-                  (insert answer)
-                ;; Process the answer content if it did not match the list case
-                (ekr-process-answer query answer)))
-        (message "No answer file found.")))))
+        ;; TODO: query normally is a string. but sometimes it is an list. in this case, insert the first element of it (which will be a string)
+        (with-temp-buffer
+          (insert (if (and (listp query) (not (null query)))
+                      (nth 0 query)  ;; If query is a list, take the first element
+                    query))
+          (write-region (point-min) (point-max) "~/bin/good-auto/data/input.txt"))
+
+        ;; Wait until the answer.txt exists, with timeout
+        (let ((file-exists nil)
+              (count 0))
+          (while (and (not file-exists) (< count (* 4 60)))
+            (setq file-exists (file-exists-p "~/bin/good-auto/data/answer.txt"))
+            (sleep-for 0.25)
+            (setq count (1+ count)))
+
+          (if file-exists
+              ;; Read answer content from the file
+              (let ((answer (with-temp-buffer
+                              (insert-file-contents "~/bin/good-auto/data/answer.txt")
+                              (buffer-string))))
+                ;; If query is a list with the t flag, just paste
+                (if (and (listp query)
+                         (eq (nth 1 query) t))
+                    (insert answer)
+                  ;; Process the answer content if it did not match the list case
+                  (ekr-process-answer query answer)))
+            (message "No answer file found.")))))))
 
 (global-set-key (kbd "©") 'ekr-run-good-auto)
 
@@ -1637,6 +1613,31 @@ QUERY is the original query used to generate the answer."
   ;; else, if `node` not found (Windows...):
 
   (message "`node` not found, copilot not initialized"))
+
+; copilot chat
+
+(use-package copilot-chat
+  :straight (:host github :repo "chep/copilot-chat.el" :files ("*.el"))
+  :after (request org markdown-mode shell-maker))
+
+(global-set-key (kbd "Ì") 'copilot-chat-display)
+
+; create a key prefix "C-x c" for copilot-chat commands:
+(define-prefix-command 'copilot-chat-prefix)
+(global-set-key (kbd "C-x c") 'copilot-chat-prefix)
+(define-key copilot-chat-prefix (kbd "d") 'copilot-chat-display)
+(define-key copilot-chat-prefix (kbd "y") 'copilot-chat-yank)
+(define-key copilot-chat-prefix (kbd "a") 'copilot-chat-add-current-buffer)
+(define-key copilot-chat-prefix (kbd "l") 'copilot-chat-list)
+(define-key copilot-chat-prefix (kbd "e") 'copilot-chat-explain)
+(define-key copilot-chat-prefix (kbd "r") 'copilot-chat-review)
+(define-key copilot-chat-prefix (kbd "o") 'copilot-chat-doc)
+(define-key copilot-chat-prefix (kbd "f") 'copilot-chat-fix)
+(define-key copilot-chat-prefix (kbd "p") 'copilot-chat-optimize)
+(define-key copilot-chat-prefix (kbd "t") 'copilot-chat-test)
+(define-key copilot-chat-prefix (kbd "u") 'copilot-chat-explain-defun)
+(define-key copilot-chat-prefix (kbd "m") 'copilot-chat-insert-commit-message)
+;
 
 ; ssh-agent on WSL
 
