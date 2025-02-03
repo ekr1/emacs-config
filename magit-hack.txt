@@ -1,0 +1,319 @@
+Head:     main readme: Link to screencast page
+Merge:    origin/main manual: Drop a repeated paragraph
+Tags:     v3.3.0 (540), v4.0.0 (537)
+
+Unstaged changes (1)
+modified   lisp/magit-log.el
+@@ -433,9 +433,6 @@ commits before and half after."
+    (7 "/a" "Only commits existing directly on ancestry path" "--ancestry-path")
+    (6 "/f" "Do not prune history"                            "--full-history")
+    (7 "/m" "Prune some history"                              "--simplify-merges")]
+-  ["Commit ordering"
+-   (magit-log:--*-order)
+-   ("-r" "Reverse order" "--reverse")]
+   ["Formatting"
+    ("-g" "Show graph"          "--graph")          ;1
+    ("-c" "Show graph in color" "--color")          ;2
+@@ -494,9 +491,6 @@ commits before and half after."
+     (7 "/a" "Only commits existing directly on ancestry path" "--ancestry-path")
+     (6 "/f" "Do not prune history"                            "--full-history")
+     (7 "/m" "Prune some history"                              "--simplify-merges")]
+-   ["Commit ordering"
+-    (magit-log:--*-order)
+-    ("-r" "Reverse order" "--reverse")]
+    ["Formatting"
+     ("-g" "Show graph"              "--graph")
+     ("-c" "Show graph in color"     "--color")
+@@ -508,7 +502,6 @@ commits before and half after."
+   [:if-not-mode magit-log-mode
+    :description "Arguments"
+    (magit-log:-n)
+-   (magit-log:--*-order)
+    ("-g" "Show graph"               "--graph")
+    ("-c" "Show graph in color"      "--color")
+    ("-d" "Show refnames"            "--decorate")]
+@@ -573,14 +566,6 @@ commits before and half after."
+   :argument "--until="
+   :reader #'transient-read-date)
+
+-(transient-define-argument magit-log:--*-order ()
+-  :description "Order commits by"
+-  :class 'transient-switches
+-  :key "-o"
+-  :argument-format "--%s-order"
+-  :argument-regexp "\\(--\\(topo\\|author-date\\|date\\)-order\\)"
+-  :choices '("topo" "author-date" "date"))
+-
+ (transient-define-argument magit-log:--grep ()
+   :description "Search messages"
+   :class 'transient-option
+
+Recent commits
+28bb411a main readme: Link to screencast page
+97a95f70 magit-revision-fill-summary-line: Use revision buffer's window width
+76fe46c0 Place declare-function at top-level
+451cbe5c Inhibit use of libgit by default
+2c91c080 Revert "Ensure hashes and graphs in logs align despite variable-pitch default"
+30b0deba Don't use keymap-set and keymap-lookup in autoloaded code
+deb10e98 Use defvar-keymap for keymaps containing context menus
+2dd4b597 Use keymap-set-after from Emacs 29.1 or the Compat package
+98443296 Use keymap-set from Emacs 29.1 or the Compat package
+56581884 Use defvar-keymap from Emacs 29.1 or the Compat package
+
+Unpulled from origin/main (256+)
+be9b722e origin/main manual: Drop a repeated paragraph
+c6654e6c manual: Fix a typo
+bb11a56d magit-{diff,log}{,-refresh}: Pick up all buffer arguments
+0f46706c Move misplaced changelog entry
+e2aecc34 Use ## and -separate instead of --separate
+c12edf22 Use ## and seq-some instead of --some
+59ba18a0 Use ## and seq-some instead of --any-p
+c8b40b9b Use ## and seq-every-p instead of --all-p
+2d49dae6 Use ## and seq-find instead of --first
+277c632e Use ## and seq-keep instead of --keep
+502521dc Use ## and seq-remove instead of --remove
+da78e8ef Use ## and seq-filter instead of --filter
+8010ab4e Use ## and mapcan instead of --mapcat
+033aa10b Use ## and mapcar instead of --map
+0a649821 Prepare for the arrival of domesticated South American camelids
+e564dde6 Update changelog
+1734342f AUTHORS.md: Update list of contributors
+bbb52942 Next release will be 4.3.0
+8397a841 magit-hunk-section-map: Fix bug inherited from smerge.el
+04ee9727 magit:--gpg-sign: Set default level via prototype
+bfffb492 magit:--signoff: Set default level via prototype
+c06dd3ff magit-insert-untracked-files: Fix thinko and typo
+becbda10 magit-process-yes-or-no-prompt-regexp: Fix regexp for cli passphrases
+0564c0cd magit:--signoff: Speak of "trailer" instead of "line" in description
+c1ffff04 Make --signoff available in more menus
+5e364d2f Speed up Git's part in listing files in status buffer
+6654bd7b magit-branch-delete: Clarify confusing operation
+b241533a magit-commit-children: Cosmetics
+07f092ad Make magit-stash-index respect user configured function
+94002127 magit-remote-prune-refspecs: Remove redundant "or" from prompt
+0f835cea magit-clone-read-repository: Remove redundant "or" from prompt
+5ac6b4fe AUTHORS.md: Update list of contributors
+83d89ee5 Speed up and simplify listing files in status buffer
+2063435b magit-*-files: Somewhat increase signature consistency
+66b9d8e3 magit-ignored-files: No longer use --directory by default
+ed711da6 magit-ignored-files: Use magit-list-files
+2e042b90 magit-ignored-files: Return full file names
+bdbd8eb7 magit-untracked-files: Remove COMPACT argument again
+e9de48ba manual: Split up "Status Sections" section
+a5962c0b magit-insert-section: Fix indent declaration
+a43c1d8d magit-process-password-prompt-regexps: Increase flexibility
+bfc5ff4b magit-process-password-prompt-regexps: Split out a non-host regexp
+4e469096 magit-process-password-prompt-regexps: Split out a host regexp
+fd4fb4c9 magit-process-password-prompt-regexps: Match double-quotes
+c28ddcf1 magit-process-password-prompt-regexps: Move a newline
+7ac38964 magit-process-password-prompt-regexps: Group regexps by type
+50a3af91 magit-process-password-prompt-regexps: Remove redundant regexp
+1312f890 magit-process:password-prompt-regexps: New test
+889ec5bd magit-process:password-prompt: Cosmetics
+75988adc magit-process-match-prompt: Tweak docstring
+e9614a33 magit-commit-revise: Don't show diff in log-select
+4876f192 magit-branch-at-point: Cast more section types
+8f15054d manual: Fix pasto
+8b143848 manual: Fix introduction to committing
+a8d74606 manual: Categorize "Options used by commit commands" section
+778ad46f Improve documentation about commit commands
+0e624c6c Rearrange definitions and documentation of commit commands
+e275aaa8 magit-commit-squash-internal: Always add either --no-edit or --edit
+ae2218b3 magit-commit-{alter,revise}: New commands
+3a23ce5f magit-commit-squash-internal: Change parameter order
+797f9248 magit-commit-squash-internal: Do not inject = between option and commit
+c1f1da23 magit-commit: Change descriptions of "spread" commands
+99190f29 magit-commit: Use more columns and add titles to all
+20eb323b magit-commit: Disable magit-commit-reshelve
+5be42dfa magit-commit: Cosmetics
+bfadd410 magit-commit-{absorb,autofixup}: Explicitly set transient behavior
+3f7fcf07 magit-commit:--date: Define explicitly
+5e60aa72 magit-commit-create: No longer amend with a prefix argument
+b8341727 Update changelog
+ca5b7728 magit-worktree-delete: Fix confirmation prompt
+6efe13e7 Highlight amend! markers as well
+46c3d8b0 magit-insert-revision-{message,notes}: Set background for whole heading
+1836c8d8 Use magit-msg more
+d0e795f4 magit-blame-maybe-show-message: Protect against %-specs in format
+8b59775f magit-stash-mode: Add "--no-ext-diff" to magit-diff-default-arguments
+d6d1bcfe magit-commit-assert: Call magit-diff-unstaged with magit-diff-arguments
+8b6bb7c7 git-commit.el: Require magit-process
+1d13151c magit-file-region-line-numbers: New function
+3ec4a182 magit--{bolp,eolp,bol-position,eol-position}: New utility functions
+bb89386d magit-file-relative-name: Remove special handling of indirect buffers
+41ea0ff3 magit-file-relative-name: Cosmetics
+4d0a38ca magit-file-{line,lines}: Cosmetics
+cb120272 git-rebase-region-bounds: Cosmetics
+7f472995 Let the byte-compiler check more function references
+5e05d1b0 magit-maybe-save-repository-buffers: Add to hooks in their definition
+b86fe009 magit-log-wash-summary-hook: New hook
+53ad9e40 magit-log--wash-summary: New function
+b786614c magit-highlight-squash-markers: New function
+6427157e magit-highlight-bracket-keywords: New function
+f54fce0e magit-revision-wash-message-hook: Rename and define as an option
+4c524377 magit-revision--wash-message: Ignore values of wrapped hook functions
+93c0c684 magit-insert-{upstream,push}-branch-header: Remove stray code
+d3ff0928 magit-diff-section-base-map: Fix alias definition
+816fc35c Move definition of obsolete variable aliases
+92f6d57a magit-status-show-untracked-files: New option
+04535105 magit-insert-untracked-files: Fix use of status.showUntrackedFiles
+5c40aded git-commit-{prev,next}-message: Use term "messages" in docstrings
+929eb4dc magit--run-git-stash: Match all error message
+a08b4dd5 magit-stash--apply-1: Improve presentation of fallback methods
+365027db magit-stash--apply-1: New function
+90c6aa79 magit--run-git-stash: Match another expected error message
+42ed6c19 magit-refs-show-branch-descriptions: New option
+80194f23 magit-refs--format-local-branch: Rename local variable
+49359e4f magit-refs--format-local-{branches,branch}: Fix value exchange
+7dfebba5 v4.2.0 Release version 4.2.0
+a79efbdf Regenerate manual
+d080c814 Bump copyright years
+692cc5e7 magit-list-special-refnames: Fix broken function
+5cb34924 magit-format-ref-labels: Don't strip "heads/" if tag name conflicts
+30392f4a magit-format-ref-labels: Cosmetics
+e4e46a77 magit-format-ref-labels: Remove ancient kludge
+bfbab898 manual: Copyedit FAQ a bit
+2e38d102 manual: Fix two urls
+ec1f403a magit-toggle-subprocess-record: New command
+ee7a2499 magit-toggle-git-debug: Improve documentation
+fbb6adda Update changelog
+f4c9753d magit-submodule-list-mode: Remove more redundant settings
+5be78d2f magit-submodule-list-refresh: Use absolute paths as entry ids
+0d8bf92e Set tabulated-list-revert-hook using setq-local
+6f07b173 magit-submodule-list-mode: Derive from magit-repolist-mode
+f4c05e9c magit-commit-absorb: Don't hardcode -v argument
+31e462e1 magit-commit-autofixup: Support reducing verbosity
+f637dd18 magit-toggle-profiling: New command
+b91dc00e manual: Document magit-profile-refresh-buffer
+0e25bfce magit-profile-refresh-buffer: Declare used functions
+b34bb9e2 magit-profile-refresh-buffer: Print message
+f748702f Reapply "No longer use buffer-local-value as a generalized variable"
+bee964c5 magit-diff-dwim: Improve documentation
+96ecf745 Revert "No longer use buffer-local-value as a generalized variable"
+ef0c6dfa Use cl-pushnew instead of add-to-list where appropriate
+c8f5a93f magit-log{,-refresh}: Move shared arguments to new group variable
+3ecebe8d magit-log-refresh: Add missing arguments
+60527da2 magit-diff{,-refresh}: Move shared arguments to new group variable
+c8b23b76 magit-diff{,-refresh}: Cosmetics
+58cb6f40 Define more diff arguments using transient-define-argument
+569a6140 Expel dependabot
+c1a86066 Depend on Emacs >= 27.1
+139e0fcf git-commit-setup-changelog-support: Fix name of a used function
+873da4a6 magit-push-implicitly--desc: Cosmetics
+033a0c0c Depend on Git >= v2.25.0
+c50f7848 magit-subtree{,-import,-export}: Use more verbose menu headings
+5b4c4aea Fix regression in transient-init-value methods
+d7f1b6c7 Fix typo in changelog
+7adad8c8 v4.1.3 Release version 4.1.3
+cea06e4d Bump dependencies
+908de594 Update changelog
+961b966f Require magit-process for the benefit of magit-auto-revert-mode
+46824fb4 Fix typos in changelog
+e8b85e43 magit-stash-push: Move "--" after other arguments
+e52dedf0 magit-stash-{pop,apply}: Stop after successfully installing conflict
+98667fa8 magit-stash-{pop,apply}: Copy edit documentation
+70aa9eee Update changelog
+1e17181a Regenerate texi manual
+49c09672 magit-insert-untracked-files: Improve docs
+93a77528 magit-bookmark-name: Cosmetics
+3deaad3d Use mapcan instead of cl-mapcan
+621b67fc magit-list-special-refnames: Cosmetics
+8a6ca692 magit-process-password-prompt-regexps: Add another user@host lookup
+a98ebd27 magit-process-password-auth-source: Trim docstring
+fed38728 magit-submodule-populate: Support --recursive
+089f130f ci: Generate statistics weekly
+8cee789f magit-anything-staged-p: Extend comment about Git v2.46.{0,1} bugs
+15bf7dc5 magit--insert-log: Ignore magit--git-wash-keep-error again
+76253bda magit--git-wash-keep-error: Enable by default
+e254dda3 magit-diff-highlight-list: Fix case when showing an error
+1f17e515 magit--git-{insert,wash}: Potentially use complete error text
+f5f26b44 magit--git-wash: Insert empty line after error message
+230b91d8 magit--insert-{diff,log}: Respect magit--git-wash-keep-error
+1c30bb1f Use transient-scope
+b2b07b99 Silence checkdoc
+047ad22a make: Undeprecate if-let and when-let
+4992c3d1 v4.1.2 Release version 4.1.2
+f4114293 Update changelog
+f2a61334 magit-run-git-async: No longer clutter *Messages* buffer
+7c842b8a magit-{browse,visit}-thing: Only recognize true urls
+4424596d magit-process-mode-map: Override magit-refresh binding
+bba06845 magit-process-insert-section: Improve file-path comparision
+cd6cf89d Use different face for debug-only process sections
+b1152412 magit--git-insert: Optionally always log to process buffer
+5b30c05d magit--git-insert: Collapse process section if appropriate
+52777729 magit-process-finish-section: New function
+5d7cfc5f magit-git-insert: Update docstring
+874fb0fe magit--git-insert: When debugging always log errors
+11e13640 Better support inserting section into multiple buffers
+3b6298c8 No longer use cl-callf
+914285a5 No longer add global git arguments twice
+e28da38a Update changelog
+c479be87 magit-copy-section-value: Fix default case
+a659633b magit-wip-after-save-local-mode-turn-on: Reduce nesting
+26d0d82b magit-log-move-to-parent: Reduce nesting
+d2fa1af1 magit-branch-delete: Reduce scope of binding
+abb86c6a magit-commit-squash-internal: Reduce nesting
+06f3ffa8 Merge when-let and neighboring conditionals
+66731bda magit-start-process: Handle tramp-pipe-stty-settings being unbound
+2b6516e0 magit-blame-mode: Restore previous margin width
+93e86cec v4.1.1 Release version 4.1.1
+b0e6d02e magit-blame--update-heading-overlay: Reset all face properties
+53957983 magit-blame--format-string-1: Fix case when FACE is a list
+1625d767 magit--add-face-text-property: Better support string as OBJECT
+b172fa0c magit--minibuf-default-add-commit: Call using minibuffer-with-setup-hook
+6d0075f5 magit--minibuf-default-add-commit: Handle nil function
+7bbfc772 magit-read-branch-or-commit: Fallback to commit at point as default
+9fc2a6b9 Update changelog
+155b5364 magit-branch-reset: Use magit-read-branch-or-commit
+b0021f63 magit-read-branch-or-commit: Add EXCLUDE argument
+d83ad555 Fix typo in comment
+0aa2fcee Fix changelog
+bf738da2 manual: Fix a minor typo
+d8a6dbfe Update changelog
+ec031e94 magit-revert-rev-file-buffer: Adapt to upstream changes
+95c151cc gitignore: /lisp/*-pkg.el
+234a787b magit-revert-rev-file-buffer: Avoid Eglot
+9395de2c magit-section-maybe-remove-heading-map: Fix preserving section map
+3e755c48 git-commit-mode-map: Add more bindings in defvar-keymap
+32aa8ee5 Add workaround for regression in Git v2.46.0
+61c051ea magit-auto-revert-mode: Respect auto-revert-remote-files up front
+21a93170 magit-turn-on-auto-revert-mode-if-desired: Cosmetics
+05d7565f magit-tramp-pipe-stty-settings: Mention tramp-direct-async-process
+e11c71b5 Use ensure-list more
+4d054196 readme: Update link to Yann's homepage
+0bee5121 readme: Link to Yann's github page
+0aa26864 v4.1.0 Release version 4.1.0
+c170fcf3 Distribute git-commit.el as part of magit
+8d1a355b Update changelog
+fbcd6d67 git-commit-setup: Cosmetics
+62bd9696 git-commit-setup-font-lock: Fix comment
+2996e2f2 Track generated *.texi again
+b2a4da4d magit-insert-recent-commits: Only use explicit range with --graph
+c339b97e github: Update issue templates
+78e2ff07 magit-version: Suppress warning during startup
+0f53ad40 magit-version: Also show forge version
+461d5ba2 magit-completing-read-multiple: Show default in prompt if appropriate
+cd959c78 magit-tag-release: Increase consistency and separation of concerns
+2da34f13 Update .orgconfig
+9d8bf24b make: Make .orgconfig a prerequisite of %.texi
+1df14712 manual: Add workaround for too old Emacs on GNU ELPA build server
+0ea9a04a magit-submodule-list-columns: Reorder columns
+9de320df magit-{repolist,submodule-list}-columns: Cosmetics
+55656a31 magit-get{,-all,-boolean}: Get values from included files
+5a4950db Remove "It's Magit!" section from relnotes
+72080427 make: Clean clean target
+bc5149c8 Remove *-pkg.el
+85bffbbf Actually no longer track generated %.texi
+fecfa11e No longer track generated %.texi
+2374c34e make: Re-generate %.texi if HEAD changed since previous run
+e9e4233d make: Ensure documentation is cleaned up and regenerated when needed
+3f1b916f make dist: Re-generate all inputs
+31e5b9b1 make: Remove bump-versions and bump-snapshots targets
+772e3650 make dist: Remove magit-version.el
+a1a78e87 make dist: Include CHANGELOG in tarball
+05b2c5e6 make texi: Move definition
+07142e2b ci: Publish manual for tagged releases
+5a090e87 Add changelog file
+e2f2b85e relnotes: Fix date in url
+a2739d7d Reset Package-Requires for Melpa
+020aca7c v4.0.0 Release version 4.0.0

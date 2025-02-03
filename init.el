@@ -19,6 +19,63 @@
 
 ;; Straight packages
 
+;; M-x straight-pull-recipe-repositories
+;; M-x straight-pull-all
+
+;; Recent updates:
+
+;; drwxr-xr-x   10 ekkehard.kraemer  staff    320 Feb  3 10:18 closql
+;; drwxr-xr-x   16 ekkehard.kraemer  staff    512 Feb  3 10:12 compat
+;; drwxr-xr-x@  12 ekkehard.kraemer  staff    384 Feb  3 10:18 copilot.el
+;; drwxr-xr-x    7 ekkehard.kraemer  staff    224 Feb  3 10:12 csv-mode
+;; drwxr-xr-x   18 ekkehard.kraemer  staff    576 Feb  3 10:17 cucumber.el
+;; drwxr-xr-x   20 ekkehard.kraemer  staff    640 Feb  3 10:12 dash.el
+;; drwxr-xr-x@  11 ekkehard.kraemer  staff    352 Feb  3 10:18 deadgrep
+;; drwxr-xr-x    7 ekkehard.kraemer  staff    224 Feb  3 10:12 dockerfile-mode
+;; drwxr-xr-x   18 ekkehard.kraemer  staff    576 Feb  3 10:18 emacs-async
+;; drwxr-xr-x@  13 ekkehard.kraemer  staff    416 Feb  3 10:06 emacs-load-env-vars
+;; drwxr-xr-x    9 ekkehard.kraemer  staff    288 Feb  3 10:17 emacs-reformatter
+;; drwxr-xr-x   19 ekkehard.kraemer  staff    608 Feb  3 10:18 emacsql
+;; drwxr-xr-x   11 ekkehard.kraemer  staff    352 Feb  3 10:17 emmet-mode
+;; drwxr-xr-x   18 ekkehard.kraemer  staff    576 Feb  3 10:17 f.el
+;; drwxr-xr-x   22 ekkehard.kraemer  staff    704 Feb  3 10:18 flycheck
+;; drwxr-xr-x   14 ekkehard.kraemer  staff    448 Feb  3 10:18 forge
+;; drwxr-xr-x   15 ekkehard.kraemer  staff    480 Feb  3 10:18 ghub
+;; drwxr-xr-x   16 ekkehard.kraemer  staff    512 Feb  3 10:12 go-mode.el
+;; drwxr-xr-x   14 ekkehard.kraemer  staff    448 Feb  3 10:17 groovy-emacs-modes
+;; drwxr-xr-x    9 ekkehard.kraemer  staff    288 Feb  3 10:18 highlight-indent-guides
+;; drwxr-xr-x    6 ekkehard.kraemer  staff    192 Feb  3 10:17 inf-ruby
+;; drwxr-xr-x   13 ekkehard.kraemer  staff    416 Feb  3 10:12 json-navigator
+;; drwxr-xr-x@   6 ekkehard.kraemer  staff    192 Feb  3 10:18 jsonrpc
+;; drwxr-xr-x   12 ekkehard.kraemer  staff    384 Feb  3 10:12 kubel
+;; drwxr-xr-x    6 ekkehard.kraemer  staff    192 Feb  3 10:17 let-alist
+;; drwxr-xr-x   19 ekkehard.kraemer  staff    608 Feb  3 10:17 lua-mode
+;; drwxr-xr-x   15 ekkehard.kraemer  staff    480 Feb  3 10:15 magit
+;; drwxr-xr-x   10 ekkehard.kraemer  staff    320 Feb  3 10:18 marginalia
+;; drwxr-xr-x   15 ekkehard.kraemer  staff    480 Feb  3 10:12 markdown-mode
+;; drwxr-xr-x   21 ekkehard.kraemer  staff    672 Feb  3 10:09 melpa
+;; drwxr-xr-x   20 ekkehard.kraemer  staff    640 Feb  3 10:17 multiple-cursors.el
+;; drwxr-xr-x   10 ekkehard.kraemer  staff    320 Feb  3 10:10 nongnu-elpa
+;; drwxr-xr-x   15 ekkehard.kraemer  staff    480 Feb  3 10:12 org-jira
+;; drwxr-xr-x   20 ekkehard.kraemer  staff    640 Feb  3 10:12 php-mode
+;; drwxr-xr-x   12 ekkehard.kraemer  staff    384 Feb  3 10:18 popup-el
+;; drwxr-xr-x    4 ekkehard.kraemer  staff    128 Feb  3 10:18 pos-tip
+;; drwxr-xr-x    6 ekkehard.kraemer  staff    192 Feb  3 10:17 powershell.el
+;; drwxr-xr-x   14 ekkehard.kraemer  staff    448 Feb  3 10:17 projectile
+;; drwxr-xr-x   16 ekkehard.kraemer  staff    512 Feb  3 10:17 robe
+;; drwxr-xr-x   10 ekkehard.kraemer  staff    320 Feb  3 10:18 spinner
+;; drwxr-xr-x   11 ekkehard.kraemer  staff    352 Feb  3 10:18 sql-indent
+;; drwxr-xr-x    7 ekkehard.kraemer  staff    224 Feb  3 10:17 sqlformat
+;; drwxr-xr-x   21 ekkehard.kraemer  staff    672 Feb  3 10:12 straight.el
+;; drwxr-xr-x   14 ekkehard.kraemer  staff    448 Feb  3 10:12 transient
+;; drwxr-xr-x   13 ekkehard.kraemer  staff    416 Feb  3 10:18 treepy.el
+;; drwxr-xr-x   17 ekkehard.kraemer  staff    544 Feb  3 10:12 typescript.el
+;; drwxr-xr-x   31 ekkehard.kraemer  staff    992 Feb  3 10:12 use-package
+;; drwxr-xr-x   11 ekkehard.kraemer  staff    352 Feb  3 10:18 web-mode
+;; drwxr-xr-x   14 ekkehard.kraemer  staff    448 Feb  3 10:12 with-editor
+;; drwxr-xr-x   13 ekkehard.kraemer  staff    416 Feb  3 10:12 yaml-mode
+;; drwxr-xr-x   12 ekkehard.kraemer  staff    384 Feb  3 10:18 yaml.el
+
 ;; write lockfile: straight-freeze-versions
 
 (straight-use-package 'csv-mode)
