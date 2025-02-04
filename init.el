@@ -412,18 +412,6 @@
 (remove-hook 'compilation-finish-functions 'ekr-compilation-finished)
 (add-hook 'compilation-finish-functions 'ekr-compilation-finished)
 
-(defun ekr-read-ssh-agent ()
-  "Set the ssh-agent environment."
-  (interactive)
-  (ignore-errors
-   (kill-buffer ".ekr-ssh-agent"))
-  (with-current-buffer
-      (find-file-noselect "/tmp/.ekr-ssh-agent")
-    (buffer-string)
-    (string-match "tmp/ssh-[^;]+." (buffer-string))  ; ???!? match-string adds one char before and skips the last one?!
-    (setenv "SSH_AUTH_SOCK" (match-string 0))
-    (message (getenv "SSH_AUTH_SOCK"))))
-
 (defun ekr-git-gui ()
   "Run 'git gui' without a buffer."
   (interactive)
@@ -448,7 +436,6 @@
 (global-set-key (kbd "M-a") 'ekr-recompile)
 (global-set-key (kbd "M-c") 'ekr-recompile)
 ;; (global-set-key (kbd "<f3>") 'ekr-compile-plsql)
-(global-set-key (kbd "<f4>") 'ekr-read-ssh-agent)
 (global-set-key (kbd "<f5>") 'ekr-git-gui)
 (global-set-key (kbd "M-n") 'next-error)
 (global-set-key (kbd "M-p") 'previous-error)
@@ -1094,9 +1081,9 @@
 
 (projectile-mode +1)
 (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+(define-key projectile-mode-map (kbd "C-c p g") #'projectile-grep)
 
 ; deadgrep instead of projectile's search...
-; (define-key projectile-mode-map (kbd "C-c p g") #'projectile-grep)
 ; (define-key projectile-mode-map (kbd "C-c p g") #'projectile-grep t) ; to remove previous def
 ;(define-key projectile-mode-map (kbd "C-c p g") #'deadgrep t) ; to remove previous def
 
@@ -1593,7 +1580,7 @@ QUERY is the original query used to generate the answer."
                           csv dockerfile dockerfile-ts elisp elisp-ts emacs-lisp emmet feature fundamental
                           gfm go go-ts groovy html html-ts java java-ts javascript javascript-ts js-json js
                           json json-ts lua make make-ts markdown markdown-ts nxml php plantuml powershell
-                          python python-ts ruby ruby-ts scss sgml sql typescript typescript-ts web xml
+                          python python-ts ruby ruby-ts scss sgml shell-script sql typescript typescript-ts web xml
                           yaml yaml-ts))
         (add-hook (intern (concat (symbol-name mode) "-mode-hook")) 'copilot-mode))
 
@@ -1624,7 +1611,8 @@ QUERY is the original query used to generate the answer."
 
 ; create a key prefix "C-x c" for copilot-chat commands:
 (define-prefix-command 'copilot-chat-prefix)
-(global-set-key (kbd "C-x c") 'copilot-chat-prefix)
+(global-set-key (kbd "ç") 'copilot-chat-prefix)
+(define-key copilot-chat-prefix (kbd "ç") 'copilot-chat-transient)
 (define-key copilot-chat-prefix (kbd "d") 'copilot-chat-display)
 (define-key copilot-chat-prefix (kbd "y") 'copilot-chat-yank)
 (define-key copilot-chat-prefix (kbd "a") 'copilot-chat-add-current-buffer)
@@ -1637,7 +1625,6 @@ QUERY is the original query used to generate the answer."
 (define-key copilot-chat-prefix (kbd "t") 'copilot-chat-test)
 (define-key copilot-chat-prefix (kbd "u") 'copilot-chat-explain-defun)
 (define-key copilot-chat-prefix (kbd "m") 'copilot-chat-insert-commit-message)
-;
 
 ; ssh-agent on WSL
 
@@ -1649,9 +1636,19 @@ QUERY is the original query used to generate the answer."
 (if (file-exists-p "/tmp/ssh-agent.sh")
     (progn
       (message "Loading ssh-agent variables...")
-      (load-env-vars "/tmp/ssh-agent.sh")
-      (message "SSH_AGENT_PID: " (getenv "SSH_AGENT_PID"))
-      (message "SSH_AUTH_SOCK: " (getenv "SSH_AUTH_SOCK"))))
+
+      ; Example /tmp/ssh-agent.sh:
+      ; SSH_AUTH_SOCK=/var/folders/06/76_lm2ss1p77xqwf5xzggzf80000gp/T//ssh-aBcA9sNHvSTb/agent.33249; export SSH_AUTH_SOCK;
+      ; SSH_AGENT_PID=33250; export SSH_AGENT_PID;
+      ; echo Agent pid 33250;
+
+      (with-temp-buffer
+        (insert-file-contents "/tmp/ssh-agent.sh")
+        (goto-char (point-min))
+        (while (re-search-forward "\\([A-Z_]+\\)=\\([^;]*\\);" nil t)
+          (progn
+            (message "Setting %s to %s" (match-string 1) (match-string 2))
+            (setenv (match-string 1) (match-string 2)))))))
 
 ; yaml-mode
 
