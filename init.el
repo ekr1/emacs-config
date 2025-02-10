@@ -1645,15 +1645,35 @@ QUERY is the original query used to generate the answer."
       (with-temp-buffer
         (insert-file-contents "/tmp/ssh-agent.sh")
         (goto-char (point-min))
-        (while (re-search-forward "\\([A-Z_]+\\)=\\([^;]*\\);" nil t)
+        (while (re-search-forward "\\([A-Z_]+\\)=\\([^;\n]*\\);?" nil t)
           (progn
-            (message "Setting %s to %s" (match-string 1) (match-string 2))
+            (message "Setting %s to '%s'" (match-string 1) (match-string 2))
             (setenv (match-string 1) (match-string 2)))))))
 
 ; yaml-mode
 
 ; .tpl = helm charts
 (add-to-list 'auto-mode-alist '("\\.tpl$" . yaml-mode))
+
+; provide scrolling for the wheel-up/down events as well (MacOS)
+
+(defun my-scroll-up (amount)
+  "Scroll up by AMOUNT lines."
+  (interactive "p")
+  (scroll-up-line amount))
+
+(defun my-scroll-down (amount)
+  "Scroll down by AMOUNT lines."
+  (interactive "p")
+  (scroll-down-line amount))
+
+(global-set-key (kbd "<wheel-up>") (lambda () (interactive) (my-scroll-down 1)))
+(global-set-key (kbd "<double-wheel-up>") (lambda () (interactive) (my-scroll-down 2)))
+(global-set-key (kbd "<triple-wheel-up>") (lambda () (interactive) (my-scroll-down 3)))
+
+(global-set-key (kbd "<wheel-down>") (lambda () (interactive) (my-scroll-up 1)))
+(global-set-key (kbd "<double-wheel-down>") (lambda () (interactive) (my-scroll-up 2)))
+(global-set-key (kbd "<triple-wheel-down>") (lambda () (interactive) (my-scroll-up 3)))
 
 ; run server
 
