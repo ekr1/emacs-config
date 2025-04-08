@@ -1,3 +1,6 @@
 [submodule "elisp/emsg-blame"]
 	path = elisp/emsg-blame
 	url = https://github.com/ISouthRain/emsg-blame.git
+[submodule "elisp/ultra-scroll"]
+	path = elisp/ultra-scroll
+	url = https://github.com/jdtsmith/ultra-scroll
