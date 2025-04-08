@@ -158,11 +158,13 @@
  '(ansi-color-bold-is-bright t)
  '(ansi-color-for-comint-mode t)
  '(ansi-color-names-vector
-   ["black" "#d55e00" "#009e73" "#f8ec59" "#0072b2" "#cc79a7" "#56b4e9" "white"])
+   ["black" "#d55e00" "#009e73" "#f8ec59" "#0072b2" "#cc79a7" "#56b4e9"
+    "white"])
  '(auto-hscroll-mode t)
  '(auto-save-default t)
  '(auto-save-file-name-transforms
-   '(("\\`/[^/]*:\\([^/]*/\\)*\\([^/]*\\)\\'" "d:/DOCUME~1/ekraemer/LOCALS~1/Temp/\\2" t)
+   '(("\\`/[^/]*:\\([^/]*/\\)*\\([^/]*\\)\\'"
+      "d:/DOCUME~1/ekraemer/LOCALS~1/Temp/\\2" t)
      (".*plink:\\(.*\\)" "d:/DOCUME~1/ekraemer/LOCALS~1/Temp/\\1" t)))
  '(backup-by-copying t)
  '(backup-directory-alist '(("." . "/home/ekr/.emacs.d/backups")))
@@ -176,8 +178,11 @@
  '(compilation-context-lines 3)
  '(compilation-mode-hook nil)
  '(compilation-scroll-output t)
+ '(copilot-chat-commit-prompt
+   "Here is the result of running `git diff --cached`. Please suggest a commit message. Don't add anything else to the response. The following describes conventional commits.\12Do not use any markers around the commit message. Do not add the conventional commit prefix.\12\12Here is the result of `git diff --cached`:\12")
  '(copilot-chat-follow t)
  '(copilot-chat-frontend 'shell-maker)
+ '(copilot-indent-offset-warning-disable t)
  '(cperl-autoindent-on-semi t)
  '(cperl-brace-offset -2)
  '(cperl-extra-newline-before-brace t)
@@ -193,14 +198,22 @@
  '(deadgrep-extra-arguments '("--no-config" "--sort=path"))
  '(desktop-files-not-to-save '"xyzzy (will crash if this is nil)")
  '(desktop-globals-to-clear
-   '(kill-ring-yank-pointer search-ring search-ring-yank-pointer regexp-search-ring regexp-search-ring-yank-pointer kill-ring))
+   '(kill-ring-yank-pointer search-ring search-ring-yank-pointer
+                            regexp-search-ring
+                            regexp-search-ring-yank-pointer kill-ring))
  '(desktop-globals-to-save
-   '(desktop-missing-file-warning tags-file-name tags-table-list search-ring regexp-search-ring register-alist file-name-history compile-command compilation-directory shell-command-history kill-ring search-ring \...))
+   '(desktop-missing-file-warning tags-file-name tags-table-list
+                                  search-ring regexp-search-ring
+                                  register-alist file-name-history
+                                  compile-command
+                                  compilation-directory
+                                  shell-command-history kill-ring
+                                  search-ring \...))
  '(desktop-missing-file-warning nil)
  '(desktop-path '("~/.emacs.d/"))
  '(desktop-restore-eager t)
- '(desktop-save nil)
- '(desktop-save-mode nil)
+ '(desktop-save t)
+ '(desktop-save-mode t)
  '(display-buffer-alist nil)
  '(display-buffer-reuse-frames t)
  '(display-line-numbers t)
@@ -220,38 +233,53 @@
      ("\\.tbz2?\\'" no-conversion . no-conversion)
      ("\\.bz2\\'" no-conversion . no-conversion)
      ("\\.Z\\'" no-conversion . no-conversion)
-     ("\\.elc\\'" . utf-8-emacs)
-     ("\\.el\\'" . prefer-utf-8)
+     ("\\.elc\\'" . utf-8-emacs) ("\\.el\\'" . prefer-utf-8)
      ("\\.utf\\(-8\\)?\\'" . utf-8)
      ("\\.xml\\'" . xml-find-file-coding-system)
      ("\\(\\`\\|/\\)loaddefs.el\\'" raw-text . raw-text-unix)
      ("\\.tar\\'" no-conversion . no-conversion)
      ("\\.po[tx]?\\'\\|\\.po\\." . po-find-file-coding-system)
-     ("\\.\\(tex\\|ltx\\|dtx\\|drv\\)\\'" . latexenc-find-file-coding-system)
-     ("" undecided)
-     ("\\.rb\\'" . utf-8)
-     ("\\.yml\\'" . utf-8)
-     ("\\.erb\\'" . utf-8)
-     ("\\.feature\\'" . utf-8)))
+     ("\\.\\(tex\\|ltx\\|dtx\\|drv\\)\\'"
+      . latexenc-find-file-coding-system)
+     ("" undecided) ("\\.rb\\'" . utf-8) ("\\.yml\\'" . utf-8)
+     ("\\.erb\\'" . utf-8) ("\\.feature\\'" . utf-8)))
  '(flycheck-ruby-rubocop-executable "bundle exec rubocop")
  '(forge-alist
    '(("github.com" "api.github.com" "github.com" forge-github-repository)
-     ("gitlab.com" "gitlab.com/api/v4" "gitlab.com" forge-gitlab-repository)
-     ("salsa.debian.org" "salsa.debian.org/api/v4" "salsa.debian.org" forge-gitlab-repository)
-     ("framagit.org" "framagit.org/api/v4" "framagit.org" forge-gitlab-repository)
-     ("gitlab.gnome.org" "gitlab.gnome.org/api/v4" "gitlab.gnome.org" forge-gitlab-repository)
-     ("codeberg.org" "codeberg.org/api/v1" "codeberg.org" forge-gitea-repository)
-     ("code.orgmode.org" "code.orgmode.org/api/v1" "code.orgmode.org" forge-gogs-repository)
-     ("bitbucket.org" "api.bitbucket.org/2.0" "bitbucket.org" forge-bitbucket-repository)
-     ("git.savannah.gnu.org" nil "git.savannah.gnu.org" forge-cgit**-repository)
+     ("gitlab.com" "gitlab.com/api/v4" "gitlab.com"
+      forge-gitlab-repository)
+     ("salsa.debian.org" "salsa.debian.org/api/v4" "salsa.debian.org"
+      forge-gitlab-repository)
+     ("framagit.org" "framagit.org/api/v4" "framagit.org"
+      forge-gitlab-repository)
+     ("gitlab.gnome.org" "gitlab.gnome.org/api/v4" "gitlab.gnome.org"
+      forge-gitlab-repository)
+     ("codeberg.org" "codeberg.org/api/v1" "codeberg.org"
+      forge-gitea-repository)
+     ("code.orgmode.org" "code.orgmode.org/api/v1" "code.orgmode.org"
+      forge-gogs-repository)
+     ("bitbucket.org" "api.bitbucket.org/2.0" "bitbucket.org"
+      forge-bitbucket-repository)
+     ("git.savannah.gnu.org" nil "git.savannah.gnu.org"
+      forge-cgit**-repository)
      ("git.kernel.org" nil "git.kernel.org" forge-cgit-repository)
      ("repo.or.cz" nil "repo.or.cz" forge-repoorcz-repository)
-     ("git.suckless.org" nil "git.suckless.org" forge-stagit-repository)
+     ("git.suckless.org" nil "git.suckless.org"
+      forge-stagit-repository)
      ("git.sr.ht" nil "git.sr.ht" forge-srht-repository)
-     ("atc-github.azure.cloud.bmw" "atc-github.azure.cloud.bmw/api/v3" "atc-github.azure.cloud.bmw" forge-github-repository)))
+     ("atc-github.azure.cloud.bmw" "atc-github.azure.cloud.bmw/api/v3"
+      "atc-github.azure.cloud.bmw" forge-github-repository)))
  '(git-commit-summary-max-length 2000)
  '(grep-find-ignored-files
-   '(".#*" "*.o" "*~" "*.bin" "*.lbin" "*.so" "*.a" "*.ln" "*.blg" "*.bbl" "*.elc" "*.lof" "*.glo" "*.idx" "*.lot" "*.fmt" "*.tfm" "*.class" "*.fas" "*.lib" "*.mem" "*.x86f" "*.sparcf" "*.dfsl" "*.pfsl" "*.d64fsl" "*.p64fsl" "*.lx64fsl" "*.lx32fsl" "*.dx64fsl" "*.dx32fsl" "*.fx64fsl" "*.fx32fsl" "*.sx64fsl" "*.sx32fsl" "*.wx64fsl" "*.wx32fsl" "*.fasl" "*.ufsl" "*.fsl" "*.dxl" "*.lo" "*.la" "*.gmo" "*.mo" "*.toc" "*.aux" "*.cp" "*.fn" "*.ky" "*.pg" "*.tp" "*.vr" "*.cps" "*.fns" "*.kys" "*.pgs" "*.tps" "*.vrs" "*.pyc" "*.pyo" "*.gz" "cucumber.json"))
+   '(".#*" "*.o" "*~" "*.bin" "*.lbin" "*.so" "*.a" "*.ln" "*.blg"
+     "*.bbl" "*.elc" "*.lof" "*.glo" "*.idx" "*.lot" "*.fmt" "*.tfm"
+     "*.class" "*.fas" "*.lib" "*.mem" "*.x86f" "*.sparcf" "*.dfsl"
+     "*.pfsl" "*.d64fsl" "*.p64fsl" "*.lx64fsl" "*.lx32fsl"
+     "*.dx64fsl" "*.dx32fsl" "*.fx64fsl" "*.fx32fsl" "*.sx64fsl"
+     "*.sx32fsl" "*.wx64fsl" "*.wx32fsl" "*.fasl" "*.ufsl" "*.fsl"
+     "*.dxl" "*.lo" "*.la" "*.gmo" "*.mo" "*.toc" "*.aux" "*.cp"
+     "*.fn" "*.ky" "*.pg" "*.tp" "*.vr" "*.cps" "*.fns" "*.kys"
+     "*.pgs" "*.tps" "*.vrs" "*.pyc" "*.pyo" "*.gz" "cucumber.json"))
  '(grep-find-template "find . <X> -type f <F> -print0 | xargs -0 grep <C> -n <R>")
  '(highlight-indent-guides-auto-character-face-perc 60)
  '(highlight-indent-guides-method 'character)
@@ -279,8 +307,12 @@
  '(org-export-backends '(ascii html md odt))
  '(org-jira-boards-default-limit 200)
  '(org-jira-custom-jqls
-   '((:jql " assignee = currentUser() and createdDate < '2022-01-01' order by created DESC " :limit 100 :filename "last-years-work")
-     (:jql " assignee = currentUser() and createdDate >= '2022-01-01' order by created DESC " :limit 100 :filename "this-years-work")))
+   '((:jql
+      " assignee = currentUser() and createdDate < '2022-01-01' order by created DESC "
+      :limit 100 :filename "last-years-work")
+     (:jql
+      " assignee = currentUser() and createdDate >= '2022-01-01' order by created DESC "
+      :limit 100 :filename "this-years-work")))
  '(org-startup-with-inline-images t)
  '(plantuml-default-exec-mode 'executable t)
  '(plantuml-jar-path
@@ -289,8 +321,7 @@
  '(projectile-globally-ignored-files '("TAGS" "#*#"))
  '(ruby-insert-encoding-magic-comment nil)
  '(safe-local-variable-values
-   '((ahk-indentation . 2)
-     (buffer-file-coding-system . iso-8859-1)
+   '((ahk-indentation . 2) (buffer-file-coding-system . iso-8859-1)
      (buffer-file-coding-system . utf-8)))
  '(save-interprogram-paste-before-kill t)
  '(scroll-error-top-bottom t)
@@ -305,7 +336,9 @@
  '(tramp-copy-size-limit 102400)
  '(tramp-default-method "ssh")
  '(tramp-remote-process-environment
-   '("HISTFILE=$HOME/.tramp_history" "HISTSIZE=1" "LC_ALL=C" "TERM=dumb" "EMACS=t" "INSIDE_EMACS=23.1.1,tramp:2.1.15" "CDPATH=" "HISTORY=" "MAIL=" "MAILCHECK=" "MAILPATH=" "autocorrect=" \...))
+   '("HISTFILE=$HOME/.tramp_history" "HISTSIZE=1" "LC_ALL=C" "TERM=dumb"
+     "EMACS=t" "INSIDE_EMACS=23.1.1,tramp:2.1.15" "CDPATH=" "HISTORY="
+     "MAIL=" "MAILCHECK=" "MAILPATH=" "autocorrect=" \...))
  '(tramp-verbose 2)
  '(truncate-lines t)
  '(undo-limit 12000000)
@@ -318,7 +351,8 @@
  '(whitespace-global-modes '(yaml-mode))
  '(whitespace-line-column 80)
  '(whitespace-style
-   '(face trailing tabs empty indentation space-after-tab space-before-tab space-mark tab-mark newline-mark))
+   '(face trailing tabs empty indentation space-after-tab
+          space-before-tab space-mark tab-mark newline-mark))
  '(with-editor-emacsclient-executable nil)
  '(xslt-process-fop-log-level '(debug))
  '(xslt-process-xml-xslt-associations nil)
@@ -664,6 +698,46 @@
  	     '(ekr-rspec-error "# \\(.+?\\):\\([0-9]+\\):"
                                      1 2 nil 2))
 
+; "helm template" error
+; Error: template: legacy-webserver-backup/templates/pvc.yaml:10:25:
+(add-to-list 'compilation-error-regexp-alist 'ekr-helm-template-error)
+(add-to-list 'compilation-error-regexp-alist-alist
+ 	     '(ekr-helm-template-error "Error: template: .*/\\(templates/.+?\\):\\([0-9]+\\):\\([0-9]+\\):"
+                                     1 2 3 2))
+
+; "helm YAML parse" error
+; Error: YAML parse error on legacy-webserver-backup/templates/cronjob.yaml: error converting YAML to JSON: yaml: line 28: did not find expected '-' indicator
+(add-to-list 'compilation-error-regexp-alist 'ekr-helm-yaml-parse-error)
+(add-to-list 'compilation-error-regexp-alist-alist
+ 	     '(ekr-helm-yaml-parse-error "Error: YAML parse error on .*/\\(templates/.+?\\): error converting YAML to JSON: yaml: line \\([0-9]+\\):"
+                                     1 2 nil 2))
+
+; internal helm go errors, ignore
+; install.go:222: [debug] Original chart version: ""
+(add-to-list 'compilation-error-regexp-alist 'ekr-helm-ignore-go)
+(add-to-list 'compilation-error-regexp-alist-alist
+ 	     '(ekr-helm-ignore-go "[^.:]+\\.go:[0-9]+:"
+                                     nil nil nil 0))
+
+; yaml image tag, ignore
+;            image: mtr.devops.telekom.de/akp/legacy-webserver-backup:1.0.0
+(add-to-list 'compilation-error-regexp-alist 'ekr-yaml-image-tag-ignore)
+(add-to-list 'compilation-error-regexp-alist-alist
+ 	     '(ekr-yaml-image-tag-ignore "[\t ]image:[\t ]"
+                                     nil nil nil 0))
+
+; Dockerfiles
+; Dockerfile.akp-web:98
+(add-to-list 'compilation-error-regexp-alist 'ekr-dockerfile)
+(add-to-list 'compilation-error-regexp-alist-alist
+ 	     '(ekr-dockerfile "^\\(Dockerfile[^:]+\\):\\([0-9]+\\)$"
+                                     1 2 nil 2))
+
+; undo the last add-to-list:
+; (setq compilation-error-regexp-alist-alist (cdr compilation-error-regexp-alist-alist))
+
+; REGEXP FILE [LINE COLUMN TYPE HYPERLINK HIGHLIGHT...]
+; TYPE is 2 or nil for a real error or 1 for warning or 0 for info.
 
 ; erstes (also letztes ;) ) entfernen, beim Entwickeln
 ;(setq compilation-error-regexp-alist-alist (cdr compilation-error-regexp-alist-alist))
@@ -1222,11 +1296,6 @@
 
 (setq jiralib-url "https://jira-caps-ext.nttdata-emea.com")
 
-(defun mouse-wheel-text-scale (event)
-  "Disable (ignore) ctrl + mouse wheel text scaling by overriding the same def in mwheel.el."
-  (interactive (list last-input-event))
-  (ignore))
-
 ; set up unicode symbols (order matters!)
 
 (set-fontset-font
@@ -1324,8 +1393,9 @@
   user input, or the output of a shell command if the current buffer
   is named COMMIT_EDITMSG."
   (cond
-   ;; Check if the current buffer name is COMMIT_EDITMSG
-   ((string= (buffer-name) "COMMIT_EDITMSG")
+   ;; Check if the current buffer name begins with "COMMIT_EDITMSG":
+   ((string-prefix-p "COMMIT_EDITMSG" (buffer-name))
+
     ;; Get the name of the currently active Git branch
     (let ((branch-name (string-trim (shell-command-to-string "git rev-parse --abbrev-ref HEAD 2>/dev/null"))))
       ;; Create the prompt including the branch name and the git diff
@@ -1334,7 +1404,9 @@
                     "Make sure it does not use more than 80 characters. "
                     "Output *only* the message with no additional text. "
                     "Do not output any markdown. "
-                    "Make sure the text is on one line with no newlines:\n"
+                    "Make sure the text is on one line with no newlines. "
+                    "If you feel the need, you can add a newline separated bullet point list with more details. "
+                    "Here is the diff:\n"
                     (shell-command-to-string "git diff --cached 2>&1")) t)))
 
    ;; ;; Check if there is "TODO" in the current line
@@ -1423,9 +1495,12 @@ QUERY is the original query used to generate the answer."
   "Execute a Good-Auto query."
   (interactive)
 
-  ;; if the current buffer is the git commit message, the run copilot-chat-insert-commit-message
-  (if (string= (buffer-name) "COMMIT_EDITMSG")
-      (copilot-chat-insert-commit-message)
+  ;; if the current buffer is the git commit message, then run copilot-chat-insert-commit-message
+  (if (string-prefix-p "COMMIT_EDITMSG" (buffer-name))
+      (let ((branch-name (string-trim (shell-command-to-string "git rev-parse --abbrev-ref HEAD 2>/dev/null"))))
+        (copilot-mode -1)
+        (insert (concat branch-name ": "))
+        (copilot-chat-insert-commit-message))
     (progn
 
       ;; else, do the whole good-auto thing...
@@ -1464,6 +1539,7 @@ QUERY is the original query used to generate the answer."
                     (insert answer)
                   ;; Process the answer content if it did not match the list case
                   (ekr-process-answer query answer)))
+
             (message "No answer file found.")))))))
 
 (global-set-key (kbd "©") 'ekr-run-good-auto)
@@ -1576,12 +1652,12 @@ QUERY is the original query used to generate the answer."
                                         ; suppress ⛔ Warning (copilot): copilot--infer-indentation-offset found no mode-specific indentation offset.
       (add-to-list 'warning-suppress-log-types '(copilot))
 
-      (dolist (mode '(ahk bash bash-ts c++ c++-ts c c-or-c++ c-or-c++-ts c-ts cmake cmake-ts css css-ts
+      (dolist (mode '(ahk bash-ts c++ c++-ts c c-or-c++ c-or-c++-ts c-ts cmake cmake-ts css css-ts
                           csv dockerfile dockerfile-ts elisp elisp-ts emacs-lisp emmet feature fundamental
                           gfm go go-ts groovy html html-ts java java-ts javascript javascript-ts js-json js
-                          json json-ts lua make make-ts markdown markdown-ts nxml php plantuml powershell
-                          python python-ts ruby ruby-ts scss sgml shell-script sql typescript typescript-ts web xml
-                          yaml yaml-ts))
+                          json json-ts lua make make-ts markdown markdown-ts nxml perl php plantuml powershell
+                          python python-ts ruby ruby-ts scss sgml sh sh-script shell-script sql text typescript
+                          typescript-ts web xml yaml yaml-ts))
         (add-hook (intern (concat (symbol-name mode) "-mode-hook")) 'copilot-mode))
 
                                         ;(add-hook 'after-change-major-mode-hook 'copilot-turn-on-unless-buffer-read-only)
@@ -1657,23 +1733,61 @@ QUERY is the original query used to generate the answer."
 
 ; provide scrolling for the wheel-up/down events as well (MacOS)
 
-(defun my-scroll-up (amount)
-  "Scroll up by AMOUNT lines."
-  (interactive "p")
-  (scroll-up-line amount))
+(defun mouse-wheel-text-scale (event)
+  "Disable (ignore) ctrl + mouse wheel text scaling by overriding the same def in mwheel.el."
+  (interactive (list last-input-event))
+  (ignore))
 
-(defun my-scroll-down (amount)
-  "Scroll down by AMOUNT lines."
-  (interactive "p")
-  (scroll-down-line amount))
+;; The following is not necessary on MacOS Emacs 30.1, scrolling just
+;; worked out of the box.
+;;
+;; (defun my-scroll-up (amount)
+;;   "Scroll up by AMOUNT lines."
+;;   (interactive "p")
+;;   (scroll-up-line amount))
+;;
+;; (defun my-scroll-down (amount)
+;;   "Scroll down by AMOUNT lines."
+;;   (interactive "p")
+;;   (scroll-down-line amount))
+;;
+;; (global-set-key (kbd "<wheel-up>") (lambda () (interactive) (my-scroll-down 1)))
+;; (global-set-key (kbd "<double-wheel-up>") (lambda () (interactive) (my-scroll-down 2)))
+;; (global-set-key (kbd "<triple-wheel-up>") (lambda () (interactive) (my-scroll-down 3)))
+;;
+;; (global-set-key (kbd "<wheel-down>") (lambda () (interactive) (my-scroll-up 1)))
+;; (global-set-key (kbd "<double-wheel-down>") (lambda () (interactive) (my-scroll-up 2)))
+;; (global-set-key (kbd "<triple-wheel-down>") (lambda () (interactive) (my-scroll-up 3)))
 
-(global-set-key (kbd "<wheel-up>") (lambda () (interactive) (my-scroll-down 1)))
-(global-set-key (kbd "<double-wheel-up>") (lambda () (interactive) (my-scroll-down 2)))
-(global-set-key (kbd "<triple-wheel-up>") (lambda () (interactive) (my-scroll-down 3)))
+; tab-bar-mode
 
-(global-set-key (kbd "<wheel-down>") (lambda () (interactive) (my-scroll-up 1)))
-(global-set-key (kbd "<double-wheel-down>") (lambda () (interactive) (my-scroll-up 2)))
-(global-set-key (kbd "<triple-wheel-down>") (lambda () (interactive) (my-scroll-up 3)))
+(tab-bar-mode 1)
+
+; editorconfig-mode to apply options from .editorconfig files
+
+(editorconfig-mode 1)
+
+; which-key-mode displays a table of key bindings upon entering a
+; partial key chord and waiting for a moment
+
+(which-key-mode 1)
+
+; completion-preview-mode automatically shows and updates the
+; completion preview according to the text around point
+
+(completion-preview-mode 1)
+
+; ultra-scroll scrolls the display precisely using full trackpad or
+; modern mouse capabilities
+
+(use-package ultra-scroll
+  :load-path "~/.emacs.d/elisp/ultra-scroll" ; if you git clone'd instead of using vc
+  ; :vc (:url "https://github.com/jdtsmith/ultra-scroll") ; For Emacs>=30
+  :init
+  (setq scroll-conservatively 101 ; important!
+        scroll-margin 0)
+  :config
+  (ultra-scroll-mode 1))
 
 ; run server
 
