@@ -209,6 +209,16 @@
                                   compilation-directory
                                   shell-command-history kill-ring
                                   search-ring \...))
+ '(desktop-locals-to-save
+   '(desktop-locals-to-save truncate-lines case-fold-search case-replace
+                            fill-column overwrite-mode
+                            change-log-default-name line-number-mode
+                            column-number-mode size-indication-mode
+                            buffer-file-coding-system
+                            buffer-display-time indent-tabs-mode
+                            tab-width indicate-buffer-boundaries
+                            indicate-empty-lines
+                            show-trailing-whitespace))
  '(desktop-missing-file-warning nil)
  '(desktop-path '("~/.emacs.d/"))
  '(desktop-restore-eager t)
@@ -1788,6 +1798,25 @@ QUERY is the original query used to generate the answer."
         scroll-margin 0)
   :config
   (ultra-scroll-mode 1))
+
+; fix local working directory for desktop-loaded files
+
+(defun set-default-directory-for-all-buffers ()
+  "Set the default directory for all buffers to their respective file directories."
+  (dolist (buffer (buffer-list))
+    (with-current-buffer buffer
+      (when (and (buffer-file-name)
+                 (file-directory-p (file-name-directory (buffer-file-name))))
+        (progn
+          (message "Setting default-directory for buffer %s to %s" (buffer-name) (file-name-directory (buffer-file-name)))
+          (setq-local default-directory (file-name-directory (buffer-file-name)))))))
+  (message "default-directories fixed for desktop-loaded files"))
+
+(defun set-default-directory-for-all-buffers-delayed ()
+  "Set the default directory for all buffers to their respective file directories after a delay."
+  (run-at-time "4 sec" nil 'set-default-directory-for-all-buffers))
+;(set-default-directory-for-all-buffers-delayed)
+(add-hook 'desktop-after-read-hook 'set-default-directory-for-all-buffers-delayed)
 
 ; run server
 
