@@ -1508,8 +1508,6 @@
 (defun ekr-try-insert-branch-name (branch-name reps commit-buffer)
   "Wait until copilot has finished (by busy waiting on the *Messages* buffer) and insert the BRANCH-NAME into the commit message.  REPS is the countdown to timeout."
 
-  (message "ekr-try-insert-branch-name...")
-
   (if (< reps 0)
       (message "ekr-try-insert-branch-name: did not find completion message, giving up.")
     (progn
