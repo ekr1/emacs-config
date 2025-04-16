@@ -1505,8 +1505,10 @@
 ;;         ;; Return to previous window
 ;;         (other-window 1)))))
 
-(defun ekr-try-insert-branch-name (branch-name reps)
+(defun ekr-try-insert-branch-name (branch-name reps commit-buffer)
   "Wait until copilot has finished (by busy waiting on the *Messages* buffer) and insert the BRANCH-NAME into the commit message.  REPS is the countdown to timeout."
+
+  (message "ekr-try-insert-branch-name...")
 
   (if (< reps 0)
       (message "ekr-try-insert-branch-name: did not find completion message, giving up.")
@@ -1525,22 +1527,24 @@
                                   (buffer-substring-no-properties (point) (point-max)))
                     (setq finished t)))))
           (if finished
-              (let ((commit-buffer (get-buffer "COMMIT_EDITMSG")))
-                (if commit-buffer
-                    (with-current-buffer commit-buffer
-                      ;; insert the branch name at the beginning of the buffer
-                      (goto-char (point-min))
-                      (insert (concat branch-name ": ")))))´
+              (with-current-buffer commit-buffer
+                ;; insert the branch name at the beginning of the buffer
+                (goto-char (point-min))
+                (insert (concat branch-name ": ")))
             (progn
-              (run-at-time "0.5 sec" nil 'ekr-try-insert-branch-name branch-name (- reps 1)))))))))
+              (run-at-time "0.5 sec" nil 'ekr-try-insert-branch-name branch-name (- reps 1) commit-buffer))))))))
 
 (defun ekr-insert-commit-msg ()
   "Run copilot to figure out a commit message.  Make sure the branch name is included."
   (copilot-mode -1)
-  ;; (copilot-chat-insert-commit-message)   ; has a 1 sec timer
-  (copilot-chat-insert-commit-message-when-ready)   ; is async with aio
   (let ((branch-name (string-trim (shell-command-to-string "git rev-parse --abbrev-ref HEAD 2>/dev/null"))))
-    (run-at-time "0.5 sec" nil 'ekr-try-insert-branch-name branch-name 20)))
+    (message "flush 1")
+    (message "flush 2")
+    (message "flush 3")
+    (message "flush 4")
+    ;; (copilot-chat-insert-commit-message)   ; has a 1 sec timer
+    (copilot-chat-insert-commit-message-when-ready)   ; is async with aio
+    (run-at-time "0.5 sec" nil 'ekr-try-insert-branch-name branch-name 20 (current-buffer))))
 
 (defun ekr-run-good-auto ()
   "Execute a Good-Auto query."
