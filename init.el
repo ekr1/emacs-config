@@ -180,8 +180,10 @@
  '(compilation-scroll-output t)
  '(copilot-chat-commit-prompt
    "Here is the result of running `git diff --cached`. Please suggest a commit message. Don't add anything else to the response. The following describes conventional commits.\12Do not use any markers around the commit message. Do not add the conventional commit prefix.\12\12Here is the result of `git diff --cached`:\12")
- '(copilot-chat-follow t)
+ '(copilot-chat-debug t)
+ '(copilot-chat-follow nil)
  '(copilot-chat-frontend 'shell-maker)
+ '(copilot-chat-model-ignore-picker t)
  '(copilot-indent-offset-warning-disable t)
  '(cperl-autoindent-on-semi t)
  '(cperl-brace-offset -2)
@@ -253,6 +255,7 @@
       . latexenc-find-file-coding-system)
      ("" undecided) ("\\.rb\\'" . utf-8) ("\\.yml\\'" . utf-8)
      ("\\.erb\\'" . utf-8) ("\\.feature\\'" . utf-8)))
+ '(flycheck-highlighting-mode 'lines)
  '(flycheck-ruby-rubocop-executable "bundle exec rubocop")
  '(forge-alist
    '(("github.com" "api.github.com" "github.com" forge-github-repository)
@@ -331,7 +334,8 @@
  '(projectile-globally-ignored-files '("TAGS" "#*#"))
  '(ruby-insert-encoding-magic-comment nil)
  '(safe-local-variable-values
-   '((ahk-indentation . 2) (buffer-file-coding-system . iso-8859-1)
+   '((package-lint-main-file . "copilot-chat.el") (ahk-indentation . 2)
+     (buffer-file-coding-system . iso-8859-1)
      (buffer-file-coding-system . utf-8)))
  '(save-interprogram-paste-before-kill t)
  '(scroll-error-top-bottom t)
@@ -1391,115 +1395,152 @@
 
 ; good-auto
 
-(defun ekr-open-chat-file ()
-  "Open or create a chat file with the name format chat-YYYYMMDD.md in ~/Documents/src/ai."
-  (let* ((current-date (format-time-string "%Y%m%d"))  ; Get current date in YYYYMMDD format
-         (file-name (concat "~/Documents/ai/chat-" current-date ".md"))  ; Construct file name
-         (file-path (expand-file-name file-name)))  ; Expand to full path
-    (find-file-noselect file-path)))  ; Open the file but don't switch to it
+;; (defun ekr-open-chat-file ()
+;;   "Open or create a chat file with the name format chat-YYYYMMDD.md in ~/Documents/src/ai."
+;;   (let* ((current-date (format-time-string "%Y%m%d"))  ; Get current date in YYYYMMDD format
+;;          (file-name (concat "~/Documents/ai/chat-" current-date ".md"))  ; Construct file name
+;;          (file-path (expand-file-name file-name)))  ; Expand to full path
+;;     (find-file-noselect file-path)))  ; Open the file but don't switch to it
 
-(defun ekr-get-query ()
-  "Prompt the user for a query, returning the selected region,
-  user input, or the output of a shell command if the current buffer
-  is named COMMIT_EDITMSG."
-  (cond
-   ;; Check if the current buffer name begins with "COMMIT_EDITMSG":
-   ((string-prefix-p "COMMIT_EDITMSG" (buffer-name))
+;; (defun ekr-get-query ()
+;;   "Prompt the user for a query, returning the selected region,
+;;   user input, or the output of a shell command if the current buffer
+;;   is named COMMIT_EDITMSG."
+;;   (cond
+;;    ;; Check if the current buffer name begins with "COMMIT_EDITMSG":
+;;    ((string-prefix-p "COMMIT_EDITMSG" (buffer-name))
+;;
+;;     ;; Get the name of the currently active Git branch
+;;     (let ((branch-name (string-trim (shell-command-to-string "git rev-parse --abbrev-ref HEAD 2>/dev/null"))))
+;;       ;; Create the prompt including the branch name and the git diff
+;;       (list (concat ;"Forget all previous context from this chat. "
+;;                     "Create a commit message, prefixed with the branch name '" branch-name ":'. "
+;;                     "Make sure it does not use more than 80 characters. "
+;;                     "Output *only* the message with no additional text. "
+;;                     "Do not output any markdown. "
+;;                     "Make sure the text is on one line with no newlines. "
+;;                     "If you feel the need, you can add a newline separated bullet point list with more details. "
+;;                     "Here is the diff:\n"
+;;                     (shell-command-to-string "git diff --cached 2>&1")) t)))
+;;
+;;    ;; ;; Check if there is "TODO" in the current line
+;;    ;; ((string-match "TODO" (thing-at-point 'line t))
+;;    ;;  (let ((start (max (line-beginning-position -40) (point-min)))
+;;    ;;        (end (min (line-end-position 40) (point-max))))
+;;    ;;    ;; Fetch the context lines
+;;    ;;    (buffer-substring-no-properties start end)))
+;;
+;;    ;; Check if there is "TODO" in the current line
+;;    ((string-match "TODO" (thing-at-point 'line t))
+;;     (let ((current-line (line-number-at-pos))                  ; Get the current line number
+;;           (full-buffer (buffer-string)))                      ; Get the entire buffer content
+;;       ;; Prepare the full prompt with instructions
+;;       (concat "The actual prompt is on line " (number-to-string current-line) " and marked by the word 'TODO'. Please find the context below:\n\n"
+;;               full-buffer)))                                   ; Return the whole buffer contents
+;;
+;;    ;; Check if a region is active
+;;    ((region-active-p)
+;;     (buffer-substring (region-beginning) (region-end)))
+;;
+;;    ;; Otherwise, prompt the user for input
+;;    (t
+;;     (read-string "Enter query: "))))
 
-    ;; Get the name of the currently active Git branch
-    (let ((branch-name (string-trim (shell-command-to-string "git rev-parse --abbrev-ref HEAD 2>/dev/null"))))
-      ;; Create the prompt including the branch name and the git diff
-      (list (concat ;"Forget all previous context from this chat. "
-                    "Create a commit message, prefixed with the branch name '" branch-name ":'. "
-                    "Make sure it does not use more than 80 characters. "
-                    "Output *only* the message with no additional text. "
-                    "Do not output any markdown. "
-                    "Make sure the text is on one line with no newlines. "
-                    "If you feel the need, you can add a newline separated bullet point list with more details. "
-                    "Here is the diff:\n"
-                    (shell-command-to-string "git diff --cached 2>&1")) t)))
+;; (defun ekr-process-answer (query answer)
+;;   "Process the provided ANSWER content and insert it into the buffer.
+;; QUERY is the original query used to generate the answer."
+;;   (let ((answer (with-temp-buffer
+;;                   (insert-file-contents "~/bin/good-auto/data/answer.txt")
+;;                   (buffer-string)))
+;;         (answer-buffer (ekr-open-chat-file)))
+;;
+;;     (with-current-buffer answer-buffer
+;;       (let ((start-pos (point-max)))
+;;
+;;         ;; Activate the answer buffer for following commands
+;;         (pop-to-buffer answer-buffer)
+;;
+;;         ;; Add prompt as level-1 header, ensuring it is shortened if necessary
+;;         (goto-char start-pos)
+;;         (insert "\n\n══════════════════════════════════════════════════════════════════════════════════════════════════════════════════\n\n")
+;;         (insert "# Prompt: " (replace-regexp-in-string
+;;                             "\n" " "
+;;                             (if (> (length query) 80)
+;;                                 (concat (substring query 0 80) "...")
+;;                               query)) "\n\n")
+;;
+;;         ;; Add new answer, ensuring there is no level-1 header
+;;         (insert (replace-regexp-in-string "\\(^\\|\n\\)#" "\\1##" answer))
+;;         (insert "\n")
+;;
+;;         ;; Handle potential ANSI color codes
+;;         (display-ansi-colors)
+;;
+;;         ;; Ensure markdown is active
+;;         (markdown-mode)
+;;         (markdown-toggle-markup-hiding 1)
+;;
+;;         ;; Break long lines
+;;         (goto-char start-pos)
+;;         (while (not (eobp))
+;;           (when (> (line-end-position) fill-column)
+;;             (fill-paragraph))
+;;           (forward-line 1))
+;;
+;;         ;; Fold away the previous answer
+;;         (goto-char start-pos)
+;;         (search-backward "# Prompt:" nil t)
+;;         (markdown-cycle)
+;;
+;;         ;; Redisplay in a controlled manner, vertically
+;;         (goto-char start-pos)
+;;         (search-forward "# Prompt:" nil t)
+;;         (beginning-of-line)
+;;         (markdown-enter-key)
+;;         (recenter 7)
+;;
+;;         ;; Save to disk
+;;         (save-buffer)
+;;
+;;         ;; Return to previous window
+;;         (other-window 1)))))
 
-   ;; ;; Check if there is "TODO" in the current line
-   ;; ((string-match "TODO" (thing-at-point 'line t))
-   ;;  (let ((start (max (line-beginning-position -40) (point-min)))
-   ;;        (end (min (line-end-position 40) (point-max))))
-   ;;    ;; Fetch the context lines
-   ;;    (buffer-substring-no-properties start end)))
+(defun ekr-try-insert-branch-name (branch-name reps)
+  "Wait until copilot has finished (by busy waiting on the *Messages* buffer) and insert the BRANCH-NAME into the commit message.  REPS is the countdown to timeout."
 
-   ;; Check if there is "TODO" in the current line
-   ((string-match "TODO" (thing-at-point 'line t))
-    (let ((current-line (line-number-at-pos))                  ; Get the current line number
-          (full-buffer (buffer-string)))                      ; Get the entire buffer content
-      ;; Prepare the full prompt with instructions
-      (concat "The actual prompt is on line " (number-to-string current-line) " and marked by the word 'TODO'. Please find the context below:\n\n"
-              full-buffer)))                                   ; Return the whole buffer contents
+  (if (< reps 0)
+      (message "ekr-try-insert-branch-name: did not find completion message, giving up.")
+    (progn
+      ;; extract the last 3 lines from the buffer *Messages* into a string
+      (let ((messages-buffer (get-buffer "*Messages*"))
+            (finished nil))
+        (progn
+          ;; check if copilot is finished
+          (when messages-buffer
+            (with-current-buffer messages-buffer
+              (save-excursion
+                (goto-char (point-max))
+                (forward-line -3)
+                (if (string-match "Commit message generation completed."
+                                  (buffer-substring-no-properties (point) (point-max)))
+                    (setq finished t)))))
+          (if finished
+              (let ((commit-buffer (get-buffer "COMMIT_EDITMSG")))
+                (if commit-buffer
+                    (with-current-buffer commit-buffer
+                      ;; insert the branch name at the beginning of the buffer
+                      (goto-char (point-min))
+                      (insert (concat branch-name ": ")))))´
+            (progn
+              (run-at-time "0.5 sec" nil 'ekr-try-insert-branch-name branch-name (- reps 1)))))))))
 
-   ;; Check if a region is active
-   ((region-active-p)
-    (buffer-substring (region-beginning) (region-end)))
-
-   ;; Otherwise, prompt the user for input
-   (t
-    (read-string "Enter query: "))))
-
-(defun ekr-process-answer (query answer)
-  "Process the provided ANSWER content and insert it into the buffer.
-QUERY is the original query used to generate the answer."
-  (let ((answer (with-temp-buffer
-                  (insert-file-contents "~/bin/good-auto/data/answer.txt")
-                  (buffer-string)))
-        (answer-buffer (ekr-open-chat-file)))
-
-    (with-current-buffer answer-buffer
-      (let ((start-pos (point-max)))
-
-        ;; Activate the answer buffer for following commands
-        (pop-to-buffer answer-buffer)
-
-        ;; Add prompt as level-1 header, ensuring it is shortened if necessary
-        (goto-char start-pos)
-        (insert "\n\n══════════════════════════════════════════════════════════════════════════════════════════════════════════════════\n\n")
-        (insert "# Prompt: " (replace-regexp-in-string
-                            "\n" " "
-                            (if (> (length query) 80)
-                                (concat (substring query 0 80) "...")
-                              query)) "\n\n")
-
-        ;; Add new answer, ensuring there is no level-1 header
-        (insert (replace-regexp-in-string "\\(^\\|\n\\)#" "\\1##" answer))
-        (insert "\n")
-
-        ;; Handle potential ANSI color codes
-        (display-ansi-colors)
-
-        ;; Ensure markdown is active
-        (markdown-mode)
-        (markdown-toggle-markup-hiding 1)
-
-        ;; Break long lines
-        (goto-char start-pos)
-        (while (not (eobp))
-          (when (> (line-end-position) fill-column)
-            (fill-paragraph))
-          (forward-line 1))
-
-        ;; Fold away the previous answer
-        (goto-char start-pos)
-        (search-backward "# Prompt:" nil t)
-        (markdown-cycle)
-
-        ;; Redisplay in a controlled manner, vertically
-        (goto-char start-pos)
-        (search-forward "# Prompt:" nil t)
-        (beginning-of-line)
-        (markdown-enter-key)
-        (recenter 7)
-
-        ;; Save to disk
-        (save-buffer)
-
-        ;; Return to previous window
-        (other-window 1)))))
+(defun ekr-insert-commit-msg ()
+  "Run copilot to figure out a commit message.  Make sure the branch name is included."
+  (copilot-mode -1)
+  ;; (copilot-chat-insert-commit-message)   ; has a 1 sec timer
+  (copilot-chat-insert-commit-message-when-ready)   ; is async with aio
+  (let ((branch-name (string-trim (shell-command-to-string "git rev-parse --abbrev-ref HEAD 2>/dev/null"))))
+    (run-at-time "0.5 sec" nil 'ekr-try-insert-branch-name branch-name 20)))
 
 (defun ekr-run-good-auto ()
   "Execute a Good-Auto query."
@@ -1507,50 +1548,50 @@ QUERY is the original query used to generate the answer."
 
   ;; if the current buffer is the git commit message, then run copilot-chat-insert-commit-message
   (if (string-prefix-p "COMMIT_EDITMSG" (buffer-name))
-      (let ((branch-name (string-trim (shell-command-to-string "git rev-parse --abbrev-ref HEAD 2>/dev/null"))))
-        (copilot-mode -1)
-        (insert (concat branch-name ": "))
-        (copilot-chat-insert-commit-message))
+      (ekr-insert-commit-msg)
     (progn
 
-      ;; else, do the whole good-auto thing...
+      (error "This function is deprecated and only to be used in COMMIT_EDITMSG.")
 
-      ;; Prompt for query and write it to input.txt
-
-      (let ((query (ekr-get-query)))
-
-        ;; Delete existing answer file
-        (when (file-exists-p "~/bin/good-auto/data/answer.txt")
-          (delete-file "~/bin/good-auto/data/answer.txt"))
-
-        ;; TODO: query normally is a string. but sometimes it is an list. in this case, insert the first element of it (which will be a string)
-        (with-temp-buffer
-          (insert (if (and (listp query) (not (null query)))
-                      (nth 0 query)  ;; If query is a list, take the first element
-                    query))
-          (write-region (point-min) (point-max) "~/bin/good-auto/data/input.txt"))
-
-        ;; Wait until the answer.txt exists, with timeout
-        (let ((file-exists nil)
-              (count 0))
-          (while (and (not file-exists) (< count (* 4 60)))
-            (setq file-exists (file-exists-p "~/bin/good-auto/data/answer.txt"))
-            (sleep-for 0.25)
-            (setq count (1+ count)))
-
-          (if file-exists
-              ;; Read answer content from the file
-              (let ((answer (with-temp-buffer
-                              (insert-file-contents "~/bin/good-auto/data/answer.txt")
-                              (buffer-string))))
-                ;; If query is a list with the t flag, just paste
-                (if (and (listp query)
-                         (eq (nth 1 query) t))
-                    (insert answer)
-                  ;; Process the answer content if it did not match the list case
-                  (ekr-process-answer query answer)))
-
-            (message "No answer file found.")))))))
+      ;; ;; else, do the whole good-auto thing...
+      ;;
+      ;; ;; Prompt for query and write it to input.txt
+      ;;
+      ;; (let ((query (ekr-get-query)))
+      ;;
+      ;;   ;; Delete existing answer file
+      ;;   (when (file-exists-p "~/bin/good-auto/data/answer.txt")
+      ;;     (delete-file "~/bin/good-auto/data/answer.txt"))
+      ;;
+      ;;   ;; TODO: query normally is a string. but sometimes it is an list. in this case, insert the first element of it (which will be a string)
+      ;;   (with-temp-buffer
+      ;;     (insert (if (and (listp query) (not (null query)))
+      ;;                 (nth 0 query)  ;; If query is a list, take the first element
+      ;;               query))
+      ;;     (write-region (point-min) (point-max) "~/bin/good-auto/data/input.txt"))
+      ;;
+      ;;   ;; Wait until the answer.txt exists, with timeout
+      ;;   (let ((file-exists nil)
+      ;;         (count 0))
+      ;;     (while (and (not file-exists) (< count (* 4 60)))
+      ;;       (setq file-exists (file-exists-p "~/bin/good-auto/data/answer.txt"))
+      ;;       (sleep-for 0.25)
+      ;;       (setq count (1+ count)))
+      ;;
+      ;;     (if file-exists
+      ;;         ;; Read answer content from the file
+      ;;         (let ((answer (with-temp-buffer
+      ;;                         (insert-file-contents "~/bin/good-auto/data/answer.txt")
+      ;;                         (buffer-string))))
+      ;;           ;; If query is a list with the t flag, just paste
+      ;;           (if (and (listp query)
+      ;;                    (eq (nth 1 query) t))
+      ;;               (insert answer)
+      ;;             ;; Process the answer content if it did not match the list case
+      ;;             (ekr-process-answer query answer)))
+      ;;
+      ;;       (message "No answer file found.")))))))
+      )))
 
 (global-set-key (kbd "©") 'ekr-run-good-auto)
 
@@ -1712,6 +1753,22 @@ QUERY is the original query used to generate the answer."
 (define-key copilot-chat-prefix (kbd "u") 'copilot-chat-explain-defun)
 (define-key copilot-chat-prefix (kbd "m") 'copilot-chat-insert-commit-message)
 
+(defun ekr-copilot-chat-ask-and-return-string (prompt)
+  "Ask copilot chat for a response to PROMPT and return the result."
+  (let ((result nil)
+        (tmp ""))
+    (copilot-chat--ask prompt
+                       (lambda (content)
+                         (if (string= content copilot-chat--magic)
+                             (setq result tmp)
+                           (setq tmp (concat tmp content))))
+                       t)
+    ; wait until result is not nil anymore
+    (while (string= result nil)
+      (sleep-for 0.5))
+    ; return the result
+    result))
+
 ; ssh-agent on WSL
 
 (unless (file-exists-p "/tmp/ssh-agent.sh")
@@ -1805,16 +1862,23 @@ QUERY is the original query used to generate the answer."
   "Set the default directory for all buffers to their respective file directories."
   (dolist (buffer (buffer-list))
     (with-current-buffer buffer
-      (when (and (buffer-file-name)
-                 (file-directory-p (file-name-directory (buffer-file-name))))
-        (progn
-          (message "Setting default-directory for buffer %s to %s" (buffer-name) (file-name-directory (buffer-file-name)))
-          (setq-local default-directory (file-name-directory (buffer-file-name)))))))
+      (progn
+        (when (and (buffer-file-name)
+                   (file-directory-p (file-name-directory (buffer-file-name))))
+          (progn
+            (message "Setting default-directory for buffer %s to %s" (buffer-name) (file-name-directory (buffer-file-name)))
+            (setq-local default-directory (file-name-directory (buffer-file-name)))))
+        (when (and (eq major-mode 'dired-mode)
+                   (file-directory-p default-directory))
+          (progn
+            (message "Setting default-directory for dired buffer %s to %s" (buffer-name) dired-directory)
+            (setq-local default-directory dired-directory))))))
   (message "default-directories fixed for desktop-loaded files"))
 
 (defun set-default-directory-for-all-buffers-delayed ()
   "Set the default directory for all buffers to their respective file directories after a delay."
   (run-at-time "4 sec" nil 'set-default-directory-for-all-buffers))
+
 ;(set-default-directory-for-all-buffers-delayed)
 (add-hook 'desktop-after-read-hook 'set-default-directory-for-all-buffers-delayed)
 
