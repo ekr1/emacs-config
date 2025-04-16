@@ -33,3 +33,4 @@ flycheck_init.el
 /ido.last
 /ellama-sessions/
 /.cache/
+/eshell/
