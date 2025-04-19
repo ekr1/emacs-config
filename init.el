@@ -36,10 +36,6 @@
 (straight-use-package 'markdown-mode)
 (straight-use-package 'kubel)
 (straight-use-package 'kubernetes)
-; (straight-use-package 'realgud)    ; compilation errors on WSL (only)
-; (straight-use-package 'realgud-byebug)
-(straight-use-package 'robe)
-(straight-use-package 'projectile-rails)
 (straight-use-package 'projectile)
 (straight-use-package 'groovy-mode)
 (straight-use-package 'lua-mode)
@@ -73,10 +69,11 @@
 ; git blame in status line...
 (straight-use-package 'emacs-async)
 (add-to-list 'load-path "~/.emacs.d/elisp/emsg-blame")
-(require 'emsg-blame)
-(setq emsg-blame-background t)
-(setq emsg-blame-background-color "#444444")
-(global-emsg-blame-mode)
+(ignore-errors
+  (require 'emsg-blame) ; TODO fails on windows... install occasionally
+  (setq emsg-blame-background t)
+  (setq emsg-blame-background-color "#444444")
+  (global-emsg-blame-mode))
 
 ;; (straight-use-package 'llm)
 ;; (straight-use-package 'ellama)
@@ -1107,13 +1104,6 @@
 ; frame commands
 ;(require 'frame-cmds)
 
-; debugger
-(unless (ignore-errors
-          (require 'realgud)
-          ;(add-to-list 'load-path "~/.emacs.d/elisp/realgud-byebug")
-          (require 'realgud-byebug))
-  (message "Warning: error loading realgud, ignoring"))
-
 ;; default smerge bindings
 ;;
 ;; C-c ^ RET       smerge-keep-current
@@ -1185,16 +1175,6 @@
     (message "Warning: `define-key` does not take 3 or 4 parameters; skipping binding."))))
 
 (global-set-key (kbd "C-c p g") #'deadgrep) ; doesnt work...
-
-; many commands like C-c r m  (Model...)
-(unless (ignore-errors
-         (projectile-rails-global-mode))
- (message "Warning: ignoring errors loading projectile-rails-global-mode"))
-
-;; (unless (ignore-errors
-;;          (require 'robe)
-;;          (add-hook 'ruby-mode-hook 'robe-mode))
-;;  (message "Warning: ignoring errors loading robe"))
 
 ;;;;;;; Mac
 
@@ -1384,9 +1364,10 @@
                                         ; "-*-Menlo-regular-normal-normal-*-12-*-*-*-m-0-iso10646-1"
                                         "Font/windows setup: MacOS")
                                        ("Font/windows setup: Unknown system type")))
-                           (let ((print-length 999)
-                                 (print-level 999))
-                             (pp (current-frame-configuration)))))))
+                           ;; (let ((print-length 999)
+                           ;;       (print-level 999))
+                           ;;   (pp (current-frame-configuration)))
+                           ))))
 
 ; plantuml
 
@@ -1673,7 +1654,7 @@
 
       ;; (add-to-list 'major-mode-remap-alist '(typescript-mode . typescript-ts-mode))
       )
-  (message "Tree-sitter binary is not available. Tree-sitter features will be disabled."))
+  (message "Tree-sitter binary is not available. Tree-sitter features will be disabled. Check https://corwin.bru.st/emacs-tree-sitter/ maybe for a windows version."))
 
 ; markdown-mode
 
@@ -1849,14 +1830,15 @@
 ; ultra-scroll scrolls the display precisely using full trackpad or
 ; modern mouse capabilities
 
-(use-package ultra-scroll
-  :load-path "~/.emacs.d/elisp/ultra-scroll" ; if you git clone'd instead of using vc
-  ; :vc (:url "https://github.com/jdtsmith/ultra-scroll") ; For Emacs>=30
-  :init
-  (setq scroll-conservatively 101 ; important!
-        scroll-margin 0)
-  :config
-  (ultra-scroll-mode 1))
+(if (eq system-type 'darwin)
+    (use-package ultra-scroll
+      :load-path "~/.emacs.d/elisp/ultra-scroll" ; if you git clone'd instead of using vc
+                                        ; :vc (:url "https://github.com/jdtsmith/ultra-scroll") ; For Emacs>=30
+      :init
+      (setq scroll-conservatively 101 ; important!
+            scroll-margin 0)
+      :config
+      (ultra-scroll-mode 1)))
 
 ; fix local working directory for desktop-loaded files
 
