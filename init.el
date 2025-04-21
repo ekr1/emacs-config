@@ -63,6 +63,7 @@
 (straight-use-package 'deadgrep)
 (straight-use-package 'dumb-jump)
 (straight-use-package 'load-env-vars)
+; (straight-use-package 'show-font)  ; https://protesilaos.com/emacs/show-font - install manually
 
 (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
 
@@ -1347,27 +1348,37 @@
 
 ;; Also: C-u C-x = to display the current font
 ;; Also: (set-face-attribute 'default nil :font "-*-Menlo-regular-normal-normal-*-12-*-*-*-m-0-iso10646-1") ;; default on MacOS 05/2024, very nice
+;; Also: M-x show-font-list
+;; Also: M-x describe-font - display the concrete name of the current font
+;;                         - <Tab> to see all detailled font descriptors
+;; ALSO!!! Shift-click the frame to visually choose font!
+
+(defun ekr-set-fonts ()
+  "Setup fonts."
+  (interactive)
+  (message (cond ((eq system-type 'gnu/linux)
+                  (set-frame-font "-*-Inconsolata-normal-normal-normal-*-17-*-*-*-m-0-iso10646-1")
+                  (set-frame-position (selected-frame) 3630 2)
+                  (set-frame-size (selected-frame) 152 78)
+                  "Font/windows setup: WSL")
+                 ((eq system-type 'windows-nt)
+                  (set-frame-font "-outline-Inconsolata SemiExpanded-bold-normal-normal-mono-16-*-*-*-c-*-iso10646-1")
+                  "Font/windows setup: Windows native")
+                 ((eq system-type 'darwin)
+                                        ; "-*-Menlo-regular-normal-normal-*-12-*-*-*-m-0-iso10646-1"
+                  "Font/windows setup: MacOS")
+                 ("Font/windows setup: Unknown system type"))))
+
+; (set-frame-font "-outline-Inconsolata-regular-normal-normal-mono-16-*-*-*-c-*-iso10646-1")
+; (set-frame-font "-outline-Inconsolata SemiExpanded ExtraB-extrabold-normal-normal-mono-16-*-*-*-c-*-iso10646-1")
+(set-frame-font "-outline-Inconsolata SemiExpanded-bold-normal-normal-mono-16-*-*-*-c-*-iso10646-1")
+
+;; (let ((print-length 999)
+;;       (print-level 999))
+;;   (pp (current-frame-configuration)))
 
 (add-hook 'emacs-startup-hook
-          (lambda ()
-            (run-at-time "1 sec" nil
-                         (lambda ()
-                           (message (cond ((eq system-type 'gnu/linux)
-                                        (set-frame-font "-*-Inconsolata-normal-normal-normal-*-17-*-*-*-m-0-iso10646-1")
-                                        (set-frame-position (selected-frame) 3630 2)
-                                        (set-frame-size (selected-frame) 152 78)
-                                        "Font/windows setup: WSL")
-                                       ((eq system-type 'windows-nt)
-                                        (set-frame-font "-*-Inconsolata-normal-normal-normal-*-16-*-*-*-m-0-iso10646-1")
-                                        "Font/windows setup: Windows native")
-                                       ((eq system-type 'darwin)
-                                        ; "-*-Menlo-regular-normal-normal-*-12-*-*-*-m-0-iso10646-1"
-                                        "Font/windows setup: MacOS")
-                                       ("Font/windows setup: Unknown system type")))
-                           ;; (let ((print-length 999)
-                           ;;       (print-level 999))
-                           ;;   (pp (current-frame-configuration)))
-                           ))))
+          (lambda () (run-at-time "1 sec" nil ekr-set-fonts)))
 
 ; plantuml
 
