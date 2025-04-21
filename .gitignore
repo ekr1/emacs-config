@@ -34,3 +34,4 @@ flycheck_init.el
 /ellama-sessions/
 /.cache/
 /eshell/
+#.*#

@@ -1682,7 +1682,12 @@
 ;
 ; -> https://github.com/copilot-emacs/copilot.el
 ;
-; - brew install node
+; - brew install node / apt install npm nodejs
+;
+; -> ‘M-x copilot-install-server‘
+;
+; M-x copilot-install-server
+; M-x copilot-login
 
 (if (executable-find "node")
     (progn
@@ -1694,7 +1699,7 @@
       ;; M-x copilot-install-server
       ;; M-x copilot-login
 
-                                        ; suppress ⛔ Warning (copilot): copilot--infer-indentation-offset found no mode-specific indentation offset.
+      ;; suppress ⛔ Warning (copilot): copilot--infer-indentation-offset found no mode-specific indentation offset.
       (add-to-list 'warning-suppress-log-types '(copilot))
 
       (dolist (mode '(ahk bash-ts c++ c++-ts c c-or-c++ c-or-c++-ts c-ts cmake cmake-ts css css-ts
