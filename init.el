@@ -22,6 +22,10 @@
 
 ;; write lockfile: straight-freeze-versions
 
+(straight-use-package 'org)
+; load the file ./straight/build/org/org-table.el for turn-on-orgtbl, else feature-mode breaks
+(load-file (concat (file-name-directory (locate-library "org-table")) "org-table.el"))
+
 (straight-use-package 'use-package)
 (straight-use-package 'csv-mode)
 (straight-use-package 'with-editor)
@@ -1881,6 +1885,8 @@
 
 ;(set-default-directory-for-all-buffers-delayed)
 (add-hook 'desktop-after-read-hook 'set-default-directory-for-all-buffers-delayed)
+
+; aidermacs
 
 ; run server
 
