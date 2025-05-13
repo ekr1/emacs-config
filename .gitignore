@@ -36,3 +36,4 @@ flycheck_init.el
 /eshell/
 #.*#
 .aider.*
+/network-security.data
