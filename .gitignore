@@ -37,3 +37,5 @@ flycheck_init.el
 #.*#
 .aider.*
 /network-security.data
+/session.*
+/tree-sitter/

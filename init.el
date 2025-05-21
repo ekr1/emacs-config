@@ -319,6 +319,16 @@
  '(mouse-wheel-up-event 'mouse-5)
  '(mpc-browser-tags '(Album|Playlist))
  '(mpc-mpd-music-directory "~/Music/Loop")
+ '(notmuch-archive-tags '("-inbox" "-unread"))
+ '(notmuch-saved-searches
+   '((:name "inbox" :query "tag:inbox and not tag:deleted" :key [105])
+     (:name "unread" :query "tag:unread and not tag:deleted" :key
+            [117])
+     (:name "flagged" :query "tag:flagged" :key [102])
+     (:name "sent" :query "tag:sent" :key [116])
+     (:name "drafts" :query "tag:draft" :key [100])
+     (:name "all mail" :query "*" :key [97])))
+ '(notmuch-search-oldest-first nil)
  '(org-export-backends '(ascii html md odt))
  '(org-jira-boards-default-limit 200)
  '(org-jira-custom-jqls
@@ -458,7 +468,9 @@
 
 (defun ekr-compilation-finished (buf result)
   "Play a beep when compilation finishes."
-  (start-process "*Compilation Finished Beep*" nil "afplay" "/Users/KRAEME/.emacs.d/short_beep.m4a"))
+  ; if the "afplay" exec exists...
+  (if (executable-find "afplay")
+      (start-process "*Compilation Finished Beep*" nil "afplay" "/Users/KRAEME/.emacs.d/short_beep.m4a")))
 (remove-hook 'compilation-finish-functions 'ekr-compilation-finished)
 (add-hook 'compilation-finish-functions 'ekr-compilation-finished)
 
@@ -758,8 +770,9 @@
 ; erstes (also letztes ;) ) entfernen, beim Entwickeln
 ;(setq compilation-error-regexp-alist-alist (cdr compilation-error-regexp-alist-alist))
 
-(setenv "TERM" "dumb")  ; for perldoc etc.
-(setenv "PAGER" "cat")
+; (setenv "TERM" "dumb")  ; for perldoc etc.
+; (setenv "PAGER" "cat")
+(setenv "EMACS" "1")
 
 ;;;; obsolete X mode ;;;;
 ;;;; obsolete X mode ;;;;;; Font
@@ -1375,7 +1388,7 @@
 
 ; (set-frame-font "-outline-Inconsolata-regular-normal-normal-mono-16-*-*-*-c-*-iso10646-1")
 ; (set-frame-font "-outline-Inconsolata SemiExpanded ExtraB-extrabold-normal-normal-mono-16-*-*-*-c-*-iso10646-1")
-;; (set-frame-font "-outline-Inconsolata SemiExpanded-bold-normal-normal-mono-16-*-*-*-c-*-iso10646-1")
+; (set-frame-font "-outline-Inconsolata SemiExpanded-bold-normal-normal-mono-16-*-*-*-c-*-iso10646-1")
 
 ;; (let ((print-length 999)
 ;;       (print-level 999))
@@ -1888,19 +1901,44 @@
 
 ; aidermacs
 
-; package-install -> aidermacs
-(use-package aidermacs
-  :bind (("C-c a" . aidermacs-transient-menu))
-  :config
-  ;; ; Set API_KEY in .bashrc, that will automatically picked up by aider or in elisp
-  ;; (setenv "ANTHROPIC_API_KEY" "sk-...")
-  ;; ; defun my-get-openrouter-api-key yourself elsewhere for security reasons
-  ;; (setenv "OPENROUTER_API_KEY" (my-get-openrouter-api-key))
-  :custom
-  ; See the Configuration section below
-  (aidermacs-use-architect-mode t)
-  ;; (aidermacs-default-model "sonnet")
-  )
+(if (executable-find "aider")
+    ;; package-install -> aidermacs
+    (use-package aidermacs
+      :bind (("C-c a" . aidermacs-transient-menu))
+      :config
+      ;; ; Set API_KEY in .bashrc, that will automatically picked up by aider or in elisp
+      ;; (setenv "ANTHROPIC_API_KEY" "sk-...")
+      ;; ; defun my-get-openrouter-api-key yourself elsewhere for security reasons
+      ;; (setenv "OPENROUTER_API_KEY" (my-get-openrouter-api-key))
+      :custom
+                                        ; See the Configuration section below
+      (aidermacs-use-architect-mode t)
+      ;; (aidermacs-default-model "sonnet")
+      ))
+
+; notmuch
+
+; dpkg -L elpa-notmuch
+(if (executable-find "notmuch")
+    (progn
+      (message "Notmuch binary is available.")
+      (add-to-list 'load-path "/usr/share/emacs/site-lisp/elpa-src/notmuch-0.35")
+      (require 'notmuch)
+
+      ;; M-m   show unread mails
+      (global-set-key (kbd "M-m")
+                      (lambda () (interactive)
+                        (progn
+                          (notmuch-poll)
+                          (notmuch-search "tag:unread and not tag:deleted"))))
+
+      (run-at-time "1 min" 60
+                   (lambda ()
+                     (when (and (not (minibufferp))
+                                (not (active-minibuffer-window)))
+                       (notmuch-poll)))))
+  (message "Notmuch binary is not available. Notmuch features will be disabled."))
+
 
 ; run server
 
