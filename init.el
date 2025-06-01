@@ -1930,7 +1930,18 @@
                       (lambda () (interactive)
                         (progn
                           (notmuch-poll)
-                          (notmuch-search "tag:unread and not tag:deleted"))))
+                          (notmuch-search "tag:inbox and not tag:deleted"))))
+
+      ;; a    "archive" (read) mail, default setting
+
+      ;; d    delete mail
+      ;; add the "d" key to notmuch-search-mode-map:
+      (define-key notmuch-search-mode-map (kbd "d")
+                  (lambda () (interactive)
+                    "Delete the current thread and move to the next one."
+                    (progn
+                      (notmuch-search-tag '("+deleted" "-inbox" "-unread")))
+                      (notmuch-search-next-thread))))
 
       (run-at-time "1 min" 60
                    (lambda ()
@@ -1939,6 +1950,10 @@
                        (notmuch-poll)))))
   (message "Notmuch binary is not available. Notmuch features will be disabled."))
 
+;; map C-v to "paste" (in addition to C-y) for "Smile" on Gnome
+(when (and (eq system-type 'gnu/linux)
+           (string= (getenv "XDG_CURRENT_DESKTOP") "pop:GNOME"))
+  (global-set-key (kbd "C-v") 'clipboard-yank))
 
 ; run server
 
