@@ -68,6 +68,7 @@
 (straight-use-package 'dumb-jump)
 (straight-use-package 'load-env-vars)
 ; (straight-use-package 'show-font)  ; https://protesilaos.com/emacs/show-font - install manually
+(straight-use-package 'aidermacs)
 
 (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
 
@@ -157,6 +158,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(ahk-indentation 2)
+ '(aidermacs-backend 'comint)
  '(ansi-color-bold-is-bright t)
  '(ansi-color-for-comint-mode t)
  '(ansi-color-names-vector
@@ -234,8 +236,8 @@
  '(dumb-jump-debug t)
  '(dumb-jump-force-searcher 'ag)
  '(emsg-blame-idle-time 5)
- '(feature-cucumber-command "bundle exec cucumber {options} {feature}")
- '(feature-rake-command "bundle exec cucumber {options} {feature}")
+ '(feature-cucumber-command "cucumber {options} {feature}")
+ '(feature-rake-command "cucumber {options} {feature}")
  '(file-coding-system-alist
    '(("\\.dz\\'" no-conversion . no-conversion)
      ("\\.txz\\'" no-conversion . no-conversion)
@@ -343,6 +345,7 @@
  '(plantuml-jar-path
    "/opt/homebrew/Cellar/plantuml/1.2024.6/libexec/plantuml.jar" t)
  '(projectile-completion-system 'ido)
+ '(projectile-global-ignore-file-patterns '(".aider.*"))
  '(projectile-globally-ignored-files '("TAGS" "#*#"))
  '(ruby-insert-encoding-magic-comment nil)
  '(safe-local-variable-values
@@ -1954,6 +1957,10 @@
 (when (and (eq system-type 'gnu/linux)
            (string= (getenv "XDG_CURRENT_DESKTOP") "pop:GNOME"))
   (global-set-key (kbd "C-v") 'clipboard-yank))
+
+(unless (boundp 'projectile-grep-find-ignored-patterns)
+  (setq projectile-grep-find-ignored-patterns '()))
+(add-to-list 'projectile-grep-find-ignored-patterns "./.aider.chat.history.md")
 
 ; run server
 
