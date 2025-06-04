@@ -1,5 +1,13 @@
 ;;; package --- Summary
 
+;; define a "banner" defun that outputs a message with a nice ASCII art border
+(defun ekr-banner (msg)
+  "Display a message in a bordered box."
+  (let ((border (make-string (length msg) ?-)))
+    (message "\n%s\n%s\n%s\n" border msg border)))
+
+(ekr-banner "Start init.el")
+
 ;; Initialization 'straight
 
 (defvar bootstrap-version)
@@ -21,6 +29,8 @@
 ;; M-x straight-pull-all           # updates packages, not only the lists...
 
 ;; write lockfile: straight-freeze-versions
+
+(ekr-banner "Load straight-based packages")
 
 (straight-use-package 'org)
 ; load the file ./straight/build/org/org-table.el for turn-on-orgtbl, else feature-mode breaks
@@ -64,13 +74,15 @@
 (straight-use-package 'highlight-indent-guides)
 (straight-use-package 'compile)
 (straight-use-package 'plantuml-mode)
-(straight-use-package 'deadgrep)
+;; (straight-use-package 'deadgrep)
 (straight-use-package 'dumb-jump)
 (straight-use-package 'load-env-vars)
 ; (straight-use-package 'show-font)  ; https://protesilaos.com/emacs/show-font - install manually
 (straight-use-package 'aidermacs)
 
 (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
+
+(ekr-banner "git blame in status line")
 
 ; git blame in status line...
 (straight-use-package 'emacs-async)
@@ -111,6 +123,8 @@
 
 ;; ------------------------ flycheck plus additional modules
 
+(ekr-banner "flycheck")
+
 (use-package flycheck
   :straight t
   :init (global-flycheck-mode)
@@ -137,6 +151,8 @@
 ;; (with-eval-after-load 'flycheck (flycheck-status-emoji-mode))
 ;; (eval-after-load 'flycheck '(add-hook 'flycheck-mode-hook #'flycheck-checkbashisms-setup))
 
+(ekr-banner "compile, feature-mode")
+
 ; required since some compilation vars are used later
 (require 'compile)
 (require 'feature-mode)
@@ -152,6 +168,8 @@
 ;(ido-mode t) ; use 'buffer rather than t to use only buffer switching
 ;(ido-everywhere t)
 
+(ekr-banner "Custom variables")
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -159,6 +177,7 @@
  ;; If there is more than one, they won't work right.
  '(ahk-indentation 2)
  '(aidermacs-backend 'comint)
+ '(aidermacs-default-model "gpt-4.1")
  '(ansi-color-bold-is-bright t)
  '(ansi-color-for-comint-mode t)
  '(ansi-color-names-vector
@@ -201,7 +220,7 @@
  '(cperl-invalid-face 'default)
  '(cperl-merge-trailing-else nil)
  '(custom-enabled-themes '(tango-dark))
- '(deadgrep-extra-arguments '("--no-config" "--sort=path"))
+ ;; '(deadgrep-extra-arguments '("--no-config" "--sort=path"))
  '(desktop-files-not-to-save '"xyzzy (will crash if this is nil)")
  '(desktop-globals-to-clear
    '(kill-ring-yank-pointer search-ring search-ring-yank-pointer
@@ -392,6 +411,8 @@
 
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
+
+(ekr-banner "ekr compilation extensions")
 
 ; (setq special-display-buffer-names
 ;           '("*Async Shell Command*" "*grep*" "*compilation*" "*vc-dir*"))
@@ -881,6 +902,8 @@
 ;(prefer-coding-system 'utf-8)
 ; ... wird aber in .dir-locals.el eingestellt (auf andere Weise - genügt das?)
 
+(ekr-banner "ANSI colors")
+
 ;; included in 28.2, not required anymore
 ;; ANSI coloring in compilation buffers
 ;; (require 'ansi-color)
@@ -1026,6 +1049,8 @@
 ;; (setq interprogram-cut-function nil)
 ;; (setq interprogram-paste-function nil)
 
+(ekr-banner "auto-mode-alist, recent, git, etc.")
+
 ;; .html.erb etc.
 
 ;(add-to-list 'auto-mode-alist '("\.html.erb$" . ruby-mode))
@@ -1072,31 +1097,6 @@
 
 (global-set-key (kbd "C-x g") 'magit-status)
 (global-set-key (kbd "C-x C-g") 'magit-dispatch-popup)
-
-(if (string= default-directory "~/src/akp_test_sf/")
-    (progn
-      (custom-set-faces
-       ;; custom-set-faces was added by Custom.
-       ;; If you edit it by hand, you could mess it up, so be careful.
-       ;; Your init file should contain only one such instance.
-       ;; If there is more than one, they won't work right.
-       '(default ((t (:inherit nil :stipple nil :background "DodgerBlue4"
-                               :foreground "#eeeeec" :inverse-video nil :box nil :strike-through nil
-                               :overline nil :underline nil :slant normal :weight normal :height 113
-                               :width normal :foundry "unknown" :family "DejaVu Sans Mono")))))
-      (message "Special face for akp_test_sf..."))
-  (if (string= default-directory "~/src/svn2_adlerfelsen/")
-      (progn
-        (custom-set-faces
-         '(default ((t (:inherit nil :stipple nil :background "DarkOrange4"
-                                 :foreground "#eeeeec" :inverse-video nil :box nil :strike-through nil
-                                 :overline nil :underline nil :slant normal :weight normal :height 113
-                                 :width normal :foundry "unknown" :family "DejaVu Sans Mono")))))
-        (message "Special face for svn2_adlerfelsen..."))
-    (progn
-      (message "Standard face...")
-      (message default-directory))))
-
 
 ; maximise on windows
 ; (run-at-time "1" nil '(lambda () (toggle-frame-maximized)))
@@ -1169,6 +1169,7 @@
 ;; (add-to-list 'compilation-finish-functions
 ;; 	     'notify-compilation-result)
 
+(ekr-banner "Ruby, projectile, ...")
 
 ;;;;;;; special ruby stuff (packages installed specifically for that)
 ; https://lorefnon.me/2014/02/02/configuring-emacs-for-rails.html
@@ -1185,17 +1186,15 @@
 ; deadgrep instead of projectile's search...
 ; (define-key projectile-mode-map (kbd "C-c p g") #'projectile-grep t) ; to remove previous def
 ;(define-key projectile-mode-map (kbd "C-c p g") #'deadgrep t) ; to remove previous def
-
-(let ((args (help-function-arglist #'define-key)))
-  (cond
-   ((and args (= (length args) 4))
-    (define-key projectile-mode-map (kbd "C-c p g") #'deadgrep t))
-   ((and args (= (length args) 3))
-    (define-key projectile-mode-map (kbd "C-c p g") #'deadgrep))
-   (t
-    (message "Warning: `define-key` does not take 3 or 4 parameters; skipping binding."))))
-
-(global-set-key (kbd "C-c p g") #'deadgrep) ; doesnt work...
+;; (let ((args (help-function-arglist #'define-key)))
+;;   (cond
+;;    ((and args (= (length args) 4))
+;;     (define-key projectile-mode-map (kbd "C-c p g") #'deadgrep t))
+;;    ((and args (= (length args) 3))
+;;     (define-key projectile-mode-map (kbd "C-c p g") #'deadgrep))
+;;    (t
+;;     (message "Warning: `define-key` does not take 3 or 4 parameters; skipping binding."))))
+;; (global-set-key (kbd "C-c p g") #'deadgrep)
 
 ;;;;;;; Mac
 
@@ -1213,13 +1212,13 @@
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
 ;; naybe start docker-machine first ("docker-machine start default")
-(if (file-directory-p "/Users/KRAEME/.docker/machine")
-    (progn
-      (shell-command "docker-machine start")
-      (setenv "DOCKER_HOST" (shell-command-to-string "docker-machine env default | grep DOCKER_HOST | sed -e 's/export DOCKER_HOST=.//' -e 's/.$//' | tr -d '\n'"))
-      (setenv "DOCKER_TLS_VERIFY" "1")
-      (setenv "DOCKER_CERT_PATH" "/Users/KRAEME/.docker/machine/machines/default")
-      (setenv "DOCKER_MACHINE_NAME" "default")))
+;; (if (file-directory-p "/Users/KRAEME/.docker/machine")
+;;     (progn
+;;       (shell-command "docker-machine start")
+;;       (setenv "DOCKER_HOST" (shell-command-to-string "docker-machine env default | grep DOCKER_HOST | sed -e 's/export DOCKER_HOST=.//' -e 's/.$//' | tr -d '\n'"))
+;;       (setenv "DOCKER_TLS_VERIFY" "1")
+;;       (setenv "DOCKER_CERT_PATH" "/Users/KRAEME/.docker/machine/machines/default")
+;;       (setenv "DOCKER_MACHINE_NAME" "default")))
 
 ; DOCKER_BUILDKIT does not look good in *compilation* buffers...
 (setenv "BUILDKIT_PROGRESS" "plain")
@@ -1253,26 +1252,26 @@
 
 ;;;;;;;; embark & marginalia
 
-(use-package embark
-  :ensure t
-
-  :bind
-  (("C-." . embark-act)         ;; pick some comfortable binding
-   ("C-;" . embark-dwim)        ;; good alternative: M-.
-   ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
-
-  :init
-
-  ;; Optionally replace the key help with a completing-read interface
-  (setq prefix-help-command #'embark-prefix-help-command)
-
-  :config
-
-  ;; Hide the mode line of the Embark live/completions buffers
-  (add-to-list 'display-buffer-alist
-               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
-                 nil
-                 (window-parameters (mode-line-format . none)))))
+;; (use-package embark
+;;   :ensure t
+;;
+;;   :bind
+;;   (("C-." . embark-act)         ;; pick some comfortable binding
+;;    ("C-;" . embark-dwim)        ;; good alternative: M-.
+;;    ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
+;;
+;;   :init
+;;
+;;   ;; Optionally replace the key help with a completing-read interface
+;;   (setq prefix-help-command #'embark-prefix-help-command)
+;;
+;;   :config
+;;
+;;   ;; Hide the mode line of the Embark live/completions buffers
+;;   (add-to-list 'display-buffer-alist
+;;                '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+;;                  nil
+;;                  (window-parameters (mode-line-format . none)))))
 
 ; fix Home key on MacOs
 
@@ -1291,6 +1290,8 @@
 
 ;(when (version<= "26.0.50" emacs-version )
 ;  (global-display-line-numbers-mode))
+
+(ekr-banner "Go, org-jira, unicode, fonts...")
 
 ; golang
 
@@ -1398,7 +1399,9 @@
 ;;   (pp (current-frame-configuration)))
 
 (add-hook 'emacs-startup-hook
-          (lambda () (run-at-time "1 sec" nil ekr-set-fonts)))
+          (lambda () (run-at-time "1 sec" nil 'ekr-set-fonts)))
+
+(ekr-banner "plantuml, good-auto, ...")
 
 ; plantuml
 
@@ -1615,6 +1618,8 @@
 
 ; tree-sitter
 
+(ekr-banner "tree-sitter")
+
 ;; $ tree-sitter init-config
 ;; -> Library/Application Support/tree-sitter/config.json
 
@@ -1697,6 +1702,8 @@
 ;; (autoload 'gfm-mode "markdown-mode"
 ;;    "Major mode for editing GitHub Flavored Markdown files" t)
 (add-to-list 'auto-mode-alist '("README\\.md\\'" . gfm-mode))
+
+(ekr-banner "Copilot, copilot-chat, ssh-agent, ...")
 
 ;;;;;;;; github copilot ;;;;;;;;;;;;;;
 ;
@@ -1817,6 +1824,8 @@
 ; .tpl = helm charts
 (add-to-list 'auto-mode-alist '("\\.tpl$" . yaml-mode))
 
+(message "Misc settings...")
+
 ; provide scrolling for the wheel-up/down events as well (MacOS)
 
 (defun mouse-wheel-text-scale (event)
@@ -1878,6 +1887,8 @@
 
 ; fix local working directory for desktop-loaded files
 
+(ekr-banner "Fix desktop CWD's...")
+
 (defun set-default-directory-for-all-buffers ()
   "Set the default directory for all buffers to their respective file directories."
   (dolist (buffer (buffer-list))
@@ -1904,6 +1915,8 @@
 
 ; aidermacs
 
+(ekr-banner "Aider, aidermacs...")
+
 (if (executable-find "aider")
     ;; package-install -> aidermacs
     (use-package aidermacs
@@ -1920,6 +1933,8 @@
       ))
 
 ; notmuch
+
+(ekr-banner "Notmuch...")
 
 ; dpkg -L elpa-notmuch
 (if (executable-find "notmuch")
@@ -1944,7 +1959,7 @@
                     "Delete the current thread and move to the next one."
                     (progn
                       (notmuch-search-tag '("+deleted" "-inbox" "-unread")))
-                      (notmuch-search-next-thread))))
+                      (notmuch-search-next-thread)))
 
       (run-at-time "1 min" 60
                    (lambda ()
@@ -1964,7 +1979,10 @@
 
 ; run server
 
+(ekr-banner "Start Server...")
+
 (server-start)
 
 (provide 'init)
-;;; init.el ends here
+
+(ekr-banner "init.el loaded successfully!")
