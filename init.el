@@ -25,7 +25,7 @@
 
 ;; Straight packages
 
-;; M-x straight-pull-recipe-repositories
+;; M-x straight-pull-recipe-repositories   # restart emacs after that...
 ;; M-x straight-pull-all           # updates packages, not only the lists...
 
 ;; write lockfile: straight-freeze-versions
@@ -1610,7 +1610,7 @@
       ;;       (message "No answer file found.")))))))
       )))
 
-(global-set-key (kbd "©") 'ekr-run-good-auto)
+(global-set-key (kbd (if (eq system-type 'gnu/linux) "s-g" "©")) 'ekr-run-good-auto)
 
 ; bash-mode
 
@@ -1762,10 +1762,11 @@
 
 (global-set-key (kbd "Ì") 'copilot-chat-display)
 
-; create a key prefix "C-x c" for copilot-chat commands:
 (define-prefix-command 'copilot-chat-prefix)
-(global-set-key (kbd "ç") 'copilot-chat-prefix)
-(define-key copilot-chat-prefix (kbd "ç") 'copilot-chat-transient)
+
+(global-set-key (kbd (if (eq system-type 'gnu/linux) "s-c" "ç")) 'copilot-chat-prefix)
+
+(define-key copilot-chat-prefix (if (eq system-type 'gnu/linux) "s-c" "ç") 'copilot-chat-transient)
 (define-key copilot-chat-prefix (kbd "d") 'copilot-chat-display)
 (define-key copilot-chat-prefix (kbd "y") 'copilot-chat-yank)
 (define-key copilot-chat-prefix (kbd "a") 'copilot-chat-add-current-buffer)
