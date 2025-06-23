@@ -220,7 +220,6 @@
  '(cperl-invalid-face 'default)
  '(cperl-merge-trailing-else nil)
  '(custom-enabled-themes '(tango-dark))
- ;; '(deadgrep-extra-arguments '("--no-config" "--sort=path"))
  '(desktop-files-not-to-save '"xyzzy (will crash if this is nil)")
  '(desktop-globals-to-clear
    '(kill-ring-yank-pointer search-ring search-ring-yank-pointer
@@ -255,7 +254,7 @@
  '(dumb-jump-debug t)
  '(dumb-jump-force-searcher 'ag)
  '(emsg-blame-idle-time 5)
- '(feature-cucumber-command "cucumber {options} {feature}")
+ '(feature-cucumber-command "cucumber {options} {feature} | fmt -w 100")
  '(feature-rake-command "cucumber {options} {feature}")
  '(file-coding-system-alist
    '(("\\.dz\\'" no-conversion . no-conversion)
@@ -916,6 +915,18 @@
 
 ;; ; ANSI coloring in compilation buffers
 (add-hook 'compilation-filter-hook 'ansi-color-compilation-filter)
+
+
+(defun ekr-compilation-start-add-fold (args)
+  "Add '| fold -w <visible-width>' to the command passed to compilation-start.
+If the *compilation* buffer is not visible or does not exist, default to 100."
+  (let* ((command (nth 0 args))
+         (visible-width (- (frame-width) 7)))
+    (setf (nth 0 args)
+          (concat "( " command " ) 2>&1 | LC_ALL=C sed -E \"s/(.{" (number-to-string visible-width) "})/\\1↩\\n/g\"  # see init.el"))
+    args))
+
+(advice-add 'compilation-start :filter-args #'ekr-compilation-start-add-fold)
 
 ; ANSI coloring for any buffer
 ; (require 'tty-format)
