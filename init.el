@@ -28,7 +28,79 @@
 ;; M-x straight-pull-recipe-repositories   # restart emacs after that...
 ;; M-x straight-pull-all           # updates packages, not only the lists...
 
-;; write lockfile: straight-freeze-versions
+;; write lockfile: straight-freeze-versions -> straight/versions/default.el, copy to straight/versions/default.el-YYYY-MM-DD
+
+(defun ekr-compare-straight-version-files (file1 file2)
+  "Compare two straight.el version files and print keys whose hashes differ.
+FILE1 and FILE2 should be paths to the version files."
+  (let* ((alist1 (with-temp-buffer
+                   (insert-file-contents file1)
+                   (read (current-buffer))))
+         (alist2 (with-temp-buffer
+                   (insert-file-contents file2)
+                   (read (current-buffer))))
+         (ht1 (make-hash-table :test 'equal))
+         (ht2 (make-hash-table :test 'equal)))
+    ;; Populate hash tables for fast lookup
+    (dolist (pair alist1)
+      (puthash (car pair) (cdr pair) ht1))
+    (dolist (pair alist2)
+      (puthash (car pair) (cdr pair) ht2))
+    ;; Collect all keys from both files
+    (let ((all-keys (delete-dups (append (mapcar #'car alist1)
+                                         (mapcar #'car alist2)))))
+      (dolist (key all-keys)
+        (let ((val1 (gethash key ht1))
+              (val2 (gethash key ht2)))
+          (unless (equal val1 val2)
+            (message "%s: %s (file1) vs %s (file2)" key val1 val2)))))))
+
+(defun ekr-compare-straight-version-files-with-git-log (file1 file2)
+  "Compare two straight.el version files and show git log for differing hashes.
+FILE1 and FILE2 should be paths to the version files."
+  (let* ((alist1 (with-temp-buffer
+                   (insert-file-contents file1)
+                   (read (current-buffer))))
+         (alist2 (with-temp-buffer
+                   (insert-file-contents file2)
+                   (read (current-buffer))))
+         (ht1 (make-hash-table :test 'equal))
+         (ht2 (make-hash-table :test 'equal)))
+    ;; Populate hash tables for fast lookup
+    (dolist (pair alist1)
+      (puthash (car pair) (cdr pair) ht1))
+    (dolist (pair alist2)
+      (puthash (car pair) (cdr pair) ht2))
+    ;; Collect all keys from both files
+    (let ((all-keys (delete-dups (append (mapcar #'car alist1)
+                                         (mapcar #'car alist2)))))
+      (dolist (key all-keys)
+        (let ((val1 (gethash key ht1))
+              (val2 (gethash key ht2)))
+          (unless (equal val1 val2)
+            (let* ((repo-dir (expand-file-name (format "straight/repos/%s" key)
+                                               user-emacs-directory))
+                   (git-log-cmd (format "git log --oneline %s..%s"
+                                        (or val2 "") (or val1 ""))))
+              (message "Package: %s\n  file1: %s\n  file2: %s"
+                       key val1 val2)
+              (message "Git log cmd: %s" git-log-cmd)
+              (if (file-directory-p repo-dir)
+                  (let ((default-directory repo-dir))
+                    (message "Git log for %s:" key)
+                    (message "%s"
+                             (with-temp-buffer
+                               (let ((exit-code (call-process-shell-command
+                                                 git-log-cmd nil t)))
+                                 (if (eq exit-code 0)
+                                     (buffer-string)
+                                   (format "Error running git log in %s" repo-dir))))))
+                (message "Repo directory not found: %s" repo-dir)))))))))
+
+;; Usage example:
+;; (ekr-compare-straight-version-files-with-git-log "straight/versions/default.el"
+;;                                     "straight/versions/default.el-2025-07-16")
+
 
 (ekr-banner "Load straight-based packages")
 
@@ -204,6 +276,7 @@
  '(copilot-chat-commit-prompt
    "Here is the result of running `git diff --cached`. Please suggest a commit message. Don't add anything else to the response. The following describes conventional commits.\12Do not use any markers around the commit message. Do not add the conventional commit prefix.\12\12Here is the result of `git diff --cached`:\12")
  '(copilot-chat-debug t)
+ '(copilot-chat-default-model "gpt-4.1")
  '(copilot-chat-follow nil)
  '(copilot-chat-frontend 'shell-maker)
  '(copilot-chat-model-ignore-picker t)
@@ -359,9 +432,9 @@
       " assignee = currentUser() and createdDate >= '2022-01-01' order by created DESC "
       :limit 100 :filename "this-years-work")))
  '(org-startup-with-inline-images t)
- '(plantuml-default-exec-mode 'executable t)
+ '(plantuml-default-exec-mode 'jar)
  '(plantuml-jar-path
-   "/opt/homebrew/Cellar/plantuml/1.2024.6/libexec/plantuml.jar" t)
+   "/opt/homebrew/Cellar/plantuml/1.2025.4/libexec/plantuml.jar")
  '(projectile-completion-system 'ido)
  '(projectile-global-ignore-file-patterns '(".aider.*"))
  '(projectile-globally-ignored-files '("TAGS" "#*#"))
@@ -1416,8 +1489,14 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
 
 ; plantuml
 
-(setq plantuml-jar-path "/usr/local/Cellar/plantuml/1.2024.3/libexec/plantuml.jar")
-(setq plantuml-default-exec-mode 'jar)
+(defun set-plantuml-preview-background ()
+  "Set the background color of the *PLANTUML Preview* buffer to white."
+  (when (string-equal (buffer-name) "*PLANTUML Preview*")
+    (with-current-buffer "*PLANTUML Preview*"
+      (face-remap-add-relative 'default :background "white"))))
+
+(add-hook 'buffer-list-update-hook #'set-plantuml-preview-background)
+
 
 ; good-auto
 
