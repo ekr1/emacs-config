@@ -993,10 +993,9 @@ FILE1 and FILE2 should be paths to the version files."
 (defun ekr-compilation-start-add-fold (args)
   "Add '| fold -w <visible-width>' to the command passed to compilation-start.
 If the *compilation* buffer is not visible or does not exist, default to 100."
-  (let* ((command (nth 0 args))
-         (visible-width (- (frame-width) 7)))
+  (let* ((command (nth 0 args)))
     (setf (nth 0 args)
-          (concat "( " command " ) 2>&1 | LC_ALL=C sed -E \"s/(.{" (number-to-string visible-width) "})/\\1↩\\n/g\"  # see init.el"))
+          (concat "( " command " ) 2>&1 | LC_ALL=C   awk '{LEN=400; while (length($0) > LEN) {print substr($0, 1, LEN), \"↩\"; $0 = substr($0, LEN+1)} print $0}' # see init.el"))
     args))
 
 (advice-add 'compilation-start :filter-args #'ekr-compilation-start-add-fold)
@@ -1617,18 +1616,13 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
       (message "ekr-try-insert-branch-name: did not find completion message, giving up.")
     (progn
       ;; extract the last 3 lines from the buffer *Messages* into a string
-      (let ((messages-buffer (get-buffer "*Messages*"))
-            (finished nil))
+      (let ((finished nil))
         (progn
           ;; check if copilot is finished
-          (when messages-buffer
-            (with-current-buffer messages-buffer
-              (save-excursion
-                (goto-char (point-max))
-                (forward-line -3)
-                (if (string-match "Commit message generation completed."
-                                  (buffer-substring-no-properties (point) (point-max)))
-                    (setq finished t)))))
+          (with-current-buffer commit-buffer
+            (if (not (string-match "Generating commit message"
+                                   (buffer-substring-no-properties (point-min) (point-max))))
+                (setq finished t)))
           (if finished
               (with-current-buffer commit-buffer
                 ;; insert the branch name at the beginning of the buffer
@@ -1647,7 +1641,7 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
     (message "flush 4")
     ;; (copilot-chat-insert-commit-message)   ; has a 1 sec timer
     (copilot-chat-insert-commit-message-when-ready)   ; is async with aio
-    (run-at-time "0.5 sec" nil 'ekr-try-insert-branch-name branch-name 20 (current-buffer))))
+    (run-at-time "1 sec" nil 'ekr-try-insert-branch-name branch-name 20 (current-buffer))))
 
 (defun ekr-run-good-auto ()
   "Execute a Good-Auto query."
@@ -1825,9 +1819,11 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
                           json json-ts lua make make-ts markdown markdown-ts nxml perl php plantuml powershell
                           python python-ts ruby ruby-ts scss sgml sh sh-script shell-script sql text typescript
                           typescript-ts web xml yaml yaml-ts))
-        (add-hook (intern (concat (symbol-name mode) "-mode-hook")) 'copilot-mode))
-
-                                        ;(add-hook 'after-change-major-mode-hook 'copilot-turn-on-unless-buffer-read-only)
+        (let ((hook (intern (concat (symbol-name mode) "-mode-hook"))))
+          (add-hook hook 'copilot-mode)
+          ;; (add-hook hook 'highlight-indent-guides-mode))
+        )
+      ;; (add-hook 'after-change-major-mode-hook 'copilot-turn-on-unless-buffer-read-only)
 
       (when (fboundp 'keymap-set)
         (keymap-set copilot-completion-map "TAB" 'copilot-accept-completion)
