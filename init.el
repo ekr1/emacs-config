@@ -1787,7 +1787,7 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
 ;;    "Major mode for editing GitHub Flavored Markdown files" t)
 (add-to-list 'auto-mode-alist '("README\\.md\\'" . gfm-mode))
 
-(ekr-banner "Copilot, copilot-chat, ssh-agent, ...")
+(ekr-banner "Copilot, ...")
 
 ;;;;;;;; github copilot ;;;;;;;;;;;;;;
 ;
@@ -1822,8 +1822,10 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
         (let ((hook (intern (concat (symbol-name mode) "-mode-hook"))))
           (add-hook hook 'copilot-mode)
           ;; (add-hook hook 'highlight-indent-guides-mode))
-        )
+          ))
+
       ;; (add-hook 'after-change-major-mode-hook 'copilot-turn-on-unless-buffer-read-only)
+
 
       (when (fboundp 'keymap-set)
         (keymap-set copilot-completion-map "TAB" 'copilot-accept-completion)
@@ -1840,7 +1842,7 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
 
   (message "`node` not found, copilot not initialized"))
 
-; copilot chat
+(ekr-banner "copilot-chat")
 
 (use-package copilot-chat
   :straight (:host github :repo "chep/copilot-chat.el" :files ("*.el"))
@@ -1881,6 +1883,8 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
       (sleep-for 0.5))
     ; return the result
     result))
+
+(ekr-banner "ssh-agent, ...")
 
 ; ssh-agent on WSL
 
