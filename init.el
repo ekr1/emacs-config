@@ -181,6 +181,7 @@ and show the commits on the remote that are not in the local branch."
 ; (straight-use-package 'show-font)  ; https://protesilaos.com/emacs/show-font - install manually
 (straight-use-package 'aidermacs)
 (straight-use-package 'avy)
+(straight-use-package 'sqlite-mode)
 
 (global-set-key (kbd "M-j") 'avy-goto-char-timer)
 
