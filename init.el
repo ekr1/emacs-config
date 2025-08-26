@@ -97,9 +97,38 @@ FILE1 and FILE2 should be paths to the version files."
                                    (format "Error running git log in %s" repo-dir))))))
                 (message "Repo directory not found: %s" repo-dir)))))))))
 
-;; Usage example:
+(defun ekr-fetch-remote-main-branches-and-diff-with-local-main-branch ()
+  "For each straight repo, fetch the remote for the currently checked out branch
+and show the commits on the remote that are not in the local branch."
+  (interactive)
+  (let ((repos-dir (expand-file-name "straight/repos/" user-emacs-directory)))
+    (dolist (repo (directory-files repos-dir t "^[^.]"))
+      (when (file-directory-p repo)
+        (let ((default-directory repo))
+          ;; Determine current branch
+          (let ((branch
+                 (string-trim
+                  (with-output-to-string
+                    (with-current-buffer standard-output
+                      (call-process "git" nil t nil "rev-parse" "--abbrev-ref" "HEAD"))))))
+            (if (or (string= branch "") (string= branch "HEAD"))
+                (message "Detached HEAD in %s, skipping." repo)
+              (message "\nFetching and comparing in repo: %s (branch %s)" repo branch)
+              (let ((fetch-exit-code (call-process "git" nil nil nil "fetch" "origin" branch)))
+                (if (eq fetch-exit-code 0)
+                    (with-temp-buffer
+                      (let ((log-exit-code
+                             (call-process "git" nil t nil "log" "--oneline"
+                                           (format "HEAD..origin/%s" branch))))
+                        (if (eq log-exit-code 0)
+                            (message "Git log for %s (%s):\n%s"
+                                     (file-name-nondirectory repo) branch (buffer-string))
+                          (message "Error running git log in %s" repo))))
+                  (message "Error fetching origin/%s in %s" branch repo))))))))))
+
+;; Usage example (output in *Messages*):
 ;; (ekr-compare-straight-version-files-with-git-log "straight/versions/default.el"
-;;                                     "straight/versions/default.el-2025-07-16")
+;;                                                  "straight/versions/default.el-2025-07-16")
 
 
 (ekr-banner "Load straight-based packages")
@@ -151,6 +180,11 @@ FILE1 and FILE2 should be paths to the version files."
 (straight-use-package 'load-env-vars)
 ; (straight-use-package 'show-font)  ; https://protesilaos.com/emacs/show-font - install manually
 (straight-use-package 'aidermacs)
+(straight-use-package 'avy)
+
+(global-set-key (kbd "M-j") 'avy-goto-char-timer)
+
+(global-set-key [remap dabbrev-expand] 'hippie-expand)
 
 (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
 
@@ -192,6 +226,14 @@ FILE1 and FILE2 should be paths to the version files."
 ;;   :bind ("C-c 0" . magit-status))
 
 (add-to-list 'load-path "~/.emacs.d/elisp")
+
+; MacOS dark mode for frame
+
+(add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+(add-to-list 'default-frame-alist '(ns-appearance . dark))
+
+(menu-bar-mode -1)
+(toggle-scroll-bar -1)
 
 ;; ------------------------ flycheck plus additional modules
 
@@ -404,7 +446,6 @@ FILE1 and FILE2 should be paths to the version files."
  '(ido-everywhere t)
  '(indent-tabs-mode nil)
  '(jit-lock-stealth-verbose t)
- '(kubernetes-kubectl-executable "/usr/local/bin/oc")
  '(make-pointer-invisible nil)
  '(max-mini-window-height 1)
  '(max-specpdl-size 10000 t)
@@ -414,8 +455,6 @@ FILE1 and FILE2 should be paths to the version files."
  '(mouse-wheel-progressive-speed nil)
  '(mouse-wheel-scroll-amount '(5 ((shift) . hscroll) ((meta)) ((control) . text-scale)))
  '(mouse-wheel-up-event 'mouse-5)
- '(mpc-browser-tags '(Album|Playlist))
- '(mpc-mpd-music-directory "~/Music/Loop")
  '(notmuch-archive-tags '("-inbox" "-unread"))
  '(notmuch-saved-searches
    '((:name "inbox" :query "tag:inbox and not tag:deleted" :key [105])
@@ -1332,11 +1371,6 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
 (add-to-list 'auto-mode-alist '("\.ps1$" . powershell-mode))
 (add-to-list 'auto-mode-alist '("\.ps2$" . powershell-mode))
 
-; dark mode
-
-(menu-bar-mode -1)
-(toggle-scroll-bar -1)
-
 ;;;;;;;; embark & marginalia
 
 ;; (use-package embark
@@ -1951,7 +1985,7 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
 
 ; tab-bar-mode
 
-(tab-bar-mode 1)
+;; (tab-bar-mode 1)
 
 ; editorconfig-mode to apply options from .editorconfig files
 

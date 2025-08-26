@@ -8,6 +8,7 @@
  ("csv-mode" . "1695ee17521d55dbe94caacaef5a94dfa933cd9f")
  ("cucumber.el" . "b788d49624c7a4eb4a3bce475cd4ce1e08d5193d")
  ("dash.el" . "fcb5d831fc08a43f984242c7509870f30983c27c")
+ ("deflate" . "d3863855d213f73dc7a1a54736d94a75f8f7e9c5")
  ("dockerfile-mode" . "8135740bfc6ad96ab82d39d9fe68dbce56180f4c")
  ("dumb-jump" . "42f97dea503367bf45c53a69de959177b06b0f59")
  ("editorconfig-emacs" . "d2beb3ec2e7f84505818594124a7202d5d6d0185")
