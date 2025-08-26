@@ -229,8 +229,8 @@ FILE1 and FILE2 should be paths to the version files."
 (require 'compile)
 (require 'feature-mode)
 
-; fix for very slow compiling:
-(setq process-adaptive-read-buffering nil)
+; fix for very slow compiling:  (see docs, a little bit confusing?)
+; (setopt process-adaptive-read-buffering nil)
 
 ;(setopt load-path (cons "~/.emacs.d/elisp/icicles" load-path))
 ;(require 'icicles)
@@ -273,6 +273,7 @@ FILE1 and FILE2 should be paths to the version files."
  '(compilation-context-lines 3)
  '(compilation-mode-hook nil)
  '(compilation-scroll-output t)
+ '(copilot-chat-commit-model "gpt-5")
  '(copilot-chat-commit-prompt
    "Here is the result of running `git diff --cached`. Please suggest a commit message. Don't add anything else to the response. The following describes conventional commits.\12Do not use any markers around the commit message. Do not add the conventional commit prefix.\12\12Here is the result of `git diff --cached`:\12")
  '(copilot-chat-debug t)
@@ -281,6 +282,9 @@ FILE1 and FILE2 should be paths to the version files."
  '(copilot-chat-frontend 'shell-maker)
  '(copilot-chat-model-ignore-picker t)
  '(copilot-indent-offset-warning-disable t)
+ '(copilot-lsp-settings ''(:copilot.model "gpt-5"))
+ '(copilot-max-char 120000)
+ '(copilot-server-log-level 4)
  '(cperl-autoindent-on-semi t)
  '(cperl-brace-offset -2)
  '(cperl-extra-newline-before-brace t)
