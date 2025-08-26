@@ -161,8 +161,8 @@ FILE1 and FILE2 should be paths to the version files."
 (add-to-list 'load-path "~/.emacs.d/elisp/emsg-blame")
 (ignore-errors
   (require 'emsg-blame) ; TODO fails on windows... install occasionally
-  (setq emsg-blame-background t)
-  (setq emsg-blame-background-color "#444444")
+  (setopt emsg-blame-background t)
+  (setopt emsg-blame-background-color "#444444")
   (global-emsg-blame-mode))
 
 ;; (straight-use-package 'llm)
@@ -232,7 +232,7 @@ FILE1 and FILE2 should be paths to the version files."
 ; fix for very slow compiling:
 (setq process-adaptive-read-buffering nil)
 
-;(setq load-path (cons "~/.emacs.d/elisp/icicles" load-path))
+;(setopt load-path (cons "~/.emacs.d/elisp/icicles" load-path))
 ;(require 'icicles)
 ;(icy-mode 0)
 ; Switching to previous buffer doesn't work anymore?!
@@ -486,11 +486,11 @@ FILE1 and FILE2 should be paths to the version files."
 
 (ekr-banner "ekr compilation extensions")
 
-; (setq special-display-buffer-names
+; (setopt special-display-buffer-names
 ;           '("*Async Shell Command*" "*grep*" "*compilation*" "*vc-dir*"))
 
 ; note: special-display-buffer-names is deprecated, use display-buffer-alist instead
-; (setq special-display-buffer-names nil)
+; (setopt special-display-buffer-names nil)
 
 ;; (defun ekr-wiki-update ()
 ;;   (interactive)
@@ -626,15 +626,15 @@ FILE1 and FILE2 should be paths to the version files."
                (string-equal (substring s 0 (length "ekr-")) "ekr-"))
               (t nil))))
 
-(setq compilation-error-regexp-alist-alist
+(setopt compilation-error-regexp-alist-alist
       (cl-remove-if (lambda (item) (starts-with-ekr (car item)))
                  compilation-error-regexp-alist-alist))
-(setq compilation-error-regexp-alist
+(setopt compilation-error-regexp-alist
       (cl-remove-if 'starts-with-ekr
                  (mapcar 'car compilation-error-regexp-alist-alist)))
 
 ; M-x re-builder
-; (setq compilation-debug t) ; => then M-x describe-text-properties
+; (setopt compilation-debug t) ; => then M-x describe-text-properties
 
 ; (REGEXP FILE [LINE COLUMN TYPE HYPERLINK HIGHLIGHT...])
 ; TYPE is 2 or nil for a real error or 1 for warning or 0 for info.
@@ -858,13 +858,13 @@ FILE1 and FILE2 should be paths to the version files."
                                      1 2 nil 2))
 
 ; undo the last add-to-list:
-; (setq compilation-error-regexp-alist-alist (cdr compilation-error-regexp-alist-alist))
+; (setopt compilation-error-regexp-alist-alist (cdr compilation-error-regexp-alist-alist))
 
 ; REGEXP FILE [LINE COLUMN TYPE HYPERLINK HIGHLIGHT...]
 ; TYPE is 2 or nil for a real error or 1 for warning or 0 for info.
 
 ; erstes (also letztes ;) ) entfernen, beim Entwickeln
-;(setq compilation-error-regexp-alist-alist (cdr compilation-error-regexp-alist-alist))
+;(setopt compilation-error-regexp-alist-alist (cdr compilation-error-regexp-alist-alist))
 
 ; (setenv "TERM" "dumb")  ; for perldoc etc.
 ; (setenv "PAGER" "cat")
@@ -946,8 +946,8 @@ FILE1 and FILE2 should be paths to the version files."
 
 ; cucumber mode
 ;(add-to-list 'load-path "~/.emacs.d/elisp/feature-mode")
-;(setq feature-default-i18n-file "/path/to/gherkin/gem/i18n.yml")
-(setq feature-default-language "fi")
+;(setopt feature-default-i18n-file "/path/to/gherkin/gem/i18n.yml")
+(setopt feature-default-language "fi")
 (add-to-list 'auto-mode-alist '("\.feature$" . feature-mode))
 ;; Keybinding	Description
 ;; C-c ,v	Verify all scenarios in the current buffer file.
@@ -980,9 +980,9 @@ FILE1 and FILE2 should be paths to the version files."
 ;; ANSI coloring in compilation buffers
 ;; (require 'ansi-color)
 ;; (defun ff/ansi-colorize-buffer ()
-;; ;  (setq buffer-read-only nil)
+;; ;  (setopt buffer-read-only nil)
 ;; ;  (ansi-color-apply-on-region (point-min) (point-max))
-;; ;  (setq buffer-read-only t)
+;; ;  (setopt buffer-read-only t)
 ;;   )
 ;; (add-hook 'compilation-filter-hook 'ff/ansi-colorize-buffer)
 
@@ -1094,8 +1094,8 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
 ;; I prefer using the "clipboard" selection (the one the
 ;; typically is used by c-c/c-v) before the primary selection
 ;; (that uses mouse-select/middle-button-click)
-;(setq x-select-enable-clipboard nil)
-;(setq x-select-enable-primary t)
+;(setopt x-select-enable-clipboard nil)
+;(setopt x-select-enable-primary t)
 
 ;; If emacs is run in a terminal, the clipboard- functions have no
 ;; effect. Instead, we use of xsel, see
@@ -1122,15 +1122,15 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
 ;;         (unless (string= (car kill-ring) xsel-output)
 ;;           xsel-output )))
 ;;     ;; Attach callbacks to hooks
-;;     (setq interprogram-cut-function 'xsel-cut-function)
-;;     (setq interprogram-paste-function 'xsel-paste-function)
+;;     (setopt interprogram-cut-function 'xsel-cut-function)
+;;     (setopt interprogram-paste-function 'xsel-paste-function)
 ;;     ;; Idea from
 ;;     ;; http://shreevatsa.wordpress.com/2006/10/22/emacs-copypaste-and-x/
 ;;     ;; http://www.mail-archive.com/help-gnu-emacs@gnu.org/msg03577.html
 ;;      ))
 
-;; (setq interprogram-cut-function nil)
-;; (setq interprogram-paste-function nil)
+;; (setopt interprogram-cut-function nil)
+;; (setopt interprogram-paste-function nil)
 
 (ekr-banner "auto-mode-alist, recent, git, etc.")
 
@@ -1165,12 +1165,12 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
 ;; (require 'emmet-mode)
 ;; (add-hook 'web-mode-hook 'emmet-mode)
 
-;(setq electric-indent-functions-without-reindent (remove 'indent-line-function electric-indent-functions-without-reindent))
+;(setopt electric-indent-functions-without-reindent (remove 'indent-line-function electric-indent-functions-without-reindent))
 
 (setq-default electric-indent-inhibit t)
 
 (recentf-mode 1)
-(setq recentf-max-menu-items 25)
+(setopt recentf-max-menu-items 25)
 (global-set-key "\C-x\ \C-r" 'recentf-open-files)
 ;;;
 ;;; magit
@@ -1245,7 +1245,7 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
 ;;             (delete-windows-on buffer)
 ;;             (tooltip-show "\n Compilation Successful :-) \n "))
 ;;         (tooltip-show "\n Compilation Failed :-( \n "))
-;;                                         ; (setq current-frame (car (car (cdr (current-frame-configuration)))))
+;;                                         ; (setopt current-frame (car (car (cdr (current-frame-configuration)))))
 ;;                                         ; (select-frame-set-input-focus current-frame)
 ;;     ))
 ;;
@@ -1285,11 +1285,11 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
 
 ; originally 'super
 (if (boundp 'ns-command-modifier)
-    (setq ns-command-modifier 'meta))
+    (setopt ns-command-modifier 'meta))
 
 ; originally 'meta
 (if (boundp 'ns-option-modifier)
-    (setq ns-option-modifier nil))
+    (setopt ns-option-modifier nil))
 
 ; specifically nice for AHK-mode which has indentation bugs when there are trailing spaces
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
@@ -1346,7 +1346,7 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
 ;;   :init
 ;;
 ;;   ;; Optionally replace the key help with a completing-read interface
-;;   (setq prefix-help-command #'embark-prefix-help-command)
+;;   (setopt prefix-help-command #'embark-prefix-help-command)
 ;;
 ;;   :config
 ;;
@@ -1393,7 +1393,7 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
 
 ;; org-jira
 
-(setq jiralib-url "https://jira-caps-ext.nttdata-emea.com")
+(setopt jiralib-url "https://jira-caps-ext.nttdata-emea.com")
 
 ; set up unicode symbols (order matters!)
 
@@ -1715,7 +1715,7 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
     (progn
       (message "Tree-sitter binary is available.")
 
-      (setq treesit-language-source-alist
+      (setopt treesit-language-source-alist
             '(
               (bash "https://github.com/tree-sitter/tree-sitter-bash")
               (cmake "https://github.com/uyha/tree-sitter-cmake")
@@ -1971,7 +1971,7 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
       :load-path "~/.emacs.d/elisp/ultra-scroll" ; if you git clone'd instead of using vc
                                         ; :vc (:url "https://github.com/jdtsmith/ultra-scroll") ; For Emacs>=30
       :init
-      (setq scroll-conservatively 101 ; important!
+      (setopt scroll-conservatively 101 ; important!
             scroll-margin 0)
       :config
       (ultra-scroll-mode 1)))
@@ -2033,7 +2033,7 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
 (if (file-exists-p "/home/ekr/Daten/Mail/notmuch")
     (progn
       (message "Custom notmuch binary is available.")
-      (setq notmuch-command "/home/ekr/Daten/Mail/notmuch")
+      (setopt notmuch-command "/home/ekr/Daten/Mail/notmuch")
 
       ; (add-to-list 'load-path "/usr/share/emacs/site-lisp/elpa-src/notmuch-0.35")
       (add-to-list 'load-path "/home/ekr/Daten/Mail/data/elisp/notmuch-0.37")
@@ -2073,7 +2073,7 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
   (global-set-key (kbd "C-v") 'clipboard-yank))
 
 (unless (boundp 'projectile-grep-find-ignored-patterns)
-  (setq projectile-grep-find-ignored-patterns '()))
+  (setopt projectile-grep-find-ignored-patterns '()))
 (add-to-list 'projectile-grep-find-ignored-patterns "./.aider.chat.history.md")
 
 ; run server
