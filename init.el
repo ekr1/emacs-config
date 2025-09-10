@@ -180,10 +180,8 @@ and show the commits on the remote that are not in the local branch."
 (straight-use-package 'load-env-vars)
 ; (straight-use-package 'show-font)  ; https://protesilaos.com/emacs/show-font - install manually
 (straight-use-package 'aidermacs)
-(straight-use-package 'avy)
 (straight-use-package 'sqlite-mode)
-
-(global-set-key (kbd "M-j") 'avy-goto-char-timer)
+(straight-use-package 'jira-markup-mode)
 
 (global-set-key [remap dabbrev-expand] 'hippie-expand)
 
@@ -211,20 +209,6 @@ and show the commits on the remote that are not in the local branch."
 ;;            ;; deepseek-coder:6.7b  ->  pretty ok?
 ;; 	   :chat-model "deepseek-coder-v2"
 ;; 	   :embedding-model "deepseek-coder-v2")))
-
-;; (use-package transient
-;;   :straight (transient
-;;              :type git
-;;              :host github
-;;              :repo "magit/transient"
-;;              :version 0.4.1))
-;; (use-package magit
-;;   :straight (magit
-;;              :type git
-;;              :host github
-;;              :repo "magit/magit"
-;;              :version 3.2.1)
-;;   :bind ("C-c 0" . magit-status))
 
 (add-to-list 'load-path "~/.emacs.d/elisp")
 
@@ -293,6 +277,7 @@ and show the commits on the remote that are not in the local branch."
  '(ahk-indentation 2)
  '(aidermacs-backend 'comint)
  '(aidermacs-default-model "gpt-4.1")
+ '(aidermacs-watch-files t)
  '(ansi-color-bold-is-bright t)
  '(ansi-color-for-comint-mode t)
  '(ansi-color-names-vector
@@ -316,18 +301,19 @@ and show the commits on the remote that are not in the local branch."
  '(compilation-context-lines 3)
  '(compilation-mode-hook nil)
  '(compilation-scroll-output t)
- '(copilot-chat-commit-model "gpt-5")
+ '(copilot-chat-commit-model "gpt-4.1")
  '(copilot-chat-commit-prompt
    "Here is the result of running `git diff --cached`. Please suggest a commit message. Don't add anything else to the response. The following describes conventional commits.\12Do not use any markers around the commit message. Do not add the conventional commit prefix.\12\12Here is the result of `git diff --cached`:\12")
- '(copilot-chat-debug t)
+ '(copilot-chat-debug nil)
  '(copilot-chat-default-model "gpt-4.1")
  '(copilot-chat-follow nil)
  '(copilot-chat-frontend 'shell-maker)
  '(copilot-chat-model-ignore-picker t)
  '(copilot-indent-offset-warning-disable t)
- '(copilot-lsp-settings ''(:copilot.model "gpt-5"))
+ '(copilot-lsp-settings ''(:copilot.model "gpt-4.1"))
  '(copilot-max-char 120000)
  '(copilot-server-log-level 4)
+ '(corfu-auto t)
  '(cperl-autoindent-on-semi t)
  '(cperl-brace-offset -2)
  '(cperl-extra-newline-before-brace t)
@@ -423,7 +409,12 @@ and show the commits on the remote that are not in the local branch."
       forge-stagit-repository)
      ("git.sr.ht" nil "git.sr.ht" forge-srht-repository)
      ("atc-github.azure.cloud.bmw" "atc-github.azure.cloud.bmw/api/v3"
-      "atc-github.azure.cloud.bmw" forge-github-repository)))
+      "atc-github.azure.cloud.bmw" forge-github-repository)
+     ("gitlab.devops.telekom.de" "gitlab.devops.telekom.de/api/v4/"
+      "gitlab.devops.telekom.de" forge-gitlab-repository)
+     ("gitlab.caps.nttdata-emea.com"
+      "gitlab.caps.nttdata-emea.com/api/v4/"
+      "gitlab.caps.nttdata-emea.com" forge-gitlab-repository)))
  '(git-commit-summary-max-length 2000)
  '(grep-find-ignored-files
    '(".#*" "*.o" "*~" "*.bin" "*.lbin" "*.so" "*.a" "*.ln" "*.blg"
@@ -476,12 +467,13 @@ and show the commits on the remote that are not in the local branch."
       " assignee = currentUser() and createdDate >= '2022-01-01' order by created DESC "
       :limit 100 :filename "this-years-work")))
  '(org-startup-with-inline-images t)
+ '(org-startup-with-link-previews t)
  '(plantuml-default-exec-mode 'jar)
  '(plantuml-jar-path
    "/opt/homebrew/Cellar/plantuml/1.2025.4/libexec/plantuml.jar")
  '(projectile-completion-system 'ido)
  '(projectile-global-ignore-file-patterns '(".aider.*"))
- '(projectile-globally-ignored-files '("TAGS" "#*#"))
+ '(projectile-globally-ignored-files '("TAGS" "#*#" ".aider*"))
  '(ruby-insert-encoding-magic-comment nil)
  '(safe-local-variable-values
    '((package-lint-main-file . "copilot-chat.el") (ahk-indentation . 2)
@@ -1216,14 +1208,33 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
 (recentf-mode 1)
 (setopt recentf-max-menu-items 25)
 (global-set-key "\C-x\ \C-r" 'recentf-open-files)
+
 ;;;
-;;; magit
+;;; magit & forge
 ;;;
 
 (setenv "GIT_ASKPASS" "git-gui--askpass")
 
 (global-set-key (kbd "C-x g") 'magit-status)
 (global-set-key (kbd "C-x C-g") 'magit-dispatch-popup)
+
+;; forge setup (see https://magit.vc/manual/forge/Setup-for-Another-Gitlab-Instance.html ):
+;;
+;; 1. customize-variable forge-alist  -> add new github or gitlab host. Info can be found with "glab auth status"
+;;
+;; 2. configure repo user name (username can be found in the file mentioned by "glab auth status")
+;;
+;;    git config --global gitlab.APIENDPOINT.user USERNAME
+;;
+;; 3. token into ~/.authinfo:
+;;
+;;    machine HOSTNAME login USERNAME^forge password TOKEN
+;;
+;; 4. M-x auth-source-forget-all-cached
+;;
+;; 5. M-x forge-pull for initial pull
+
+
 
 ; maximise on windows
 ; (run-at-time "1" nil '(lambda () (toggle-frame-maximized)))
@@ -1276,8 +1287,8 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(line-number ((t (:inherit (shadow default) :foreground "gray32"))))
- '(mode-line ((t (:background "#2e3436" :foreground "#d3d7cf" :box (:line-width -1 :style released-button))))))
+ '(line-number ((t (:foreground "gray38"))))
+ '(mode-line (nil)))
 
 ;; (defun notify-compilation-result(buffer msg)
 ;;   "Notify that the compilation is finished,
@@ -2114,6 +2125,13 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
 (unless (boundp 'projectile-grep-find-ignored-patterns)
   (setopt projectile-grep-find-ignored-patterns '()))
 (add-to-list 'projectile-grep-find-ignored-patterns "./.aider.chat.history.md")
+
+; stuff
+
+; Show possible key bindings after a short delay
+(which-key-mode 1)
+
+(global-set-key (kbd "C-c C-k") 'kill-compilation)
 
 ; run server
 

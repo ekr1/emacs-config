@@ -39,3 +39,4 @@ flycheck_init.el
 /network-security.data
 /session.*
 /tree-sitter/
+/url/
