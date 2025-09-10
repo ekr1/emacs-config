@@ -1312,28 +1312,6 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
 ;;;;;;; special ruby stuff (packages installed specifically for that)
 ; https://lorefnon.me/2014/02/02/configuring-emacs-for-rails.html
 
-; ruby shell
-(global-set-key (kbd "C-c r r") 'inf-ruby-console-auto)
-
-;;;;;; projectile
-
-(projectile-mode +1)
-(define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
-(define-key projectile-mode-map (kbd "C-c p g") #'projectile-grep)
-
-; deadgrep instead of projectile's search...
-; (define-key projectile-mode-map (kbd "C-c p g") #'projectile-grep t) ; to remove previous def
-;(define-key projectile-mode-map (kbd "C-c p g") #'deadgrep t) ; to remove previous def
-;; (let ((args (help-function-arglist #'define-key)))
-;;   (cond
-;;    ((and args (= (length args) 4))
-;;     (define-key projectile-mode-map (kbd "C-c p g") #'deadgrep t))
-;;    ((and args (= (length args) 3))
-;;     (define-key projectile-mode-map (kbd "C-c p g") #'deadgrep))
-;;    (t
-;;     (message "Warning: `define-key` does not take 3 or 4 parameters; skipping binding."))))
-;; (global-set-key (kbd "C-c p g") #'deadgrep)
-
 ;;;;;;; Mac
 
 ; to be able to use Option-7 for | etc.
@@ -2073,58 +2051,9 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
       ;; (aidermacs-default-model "sonnet")
       ))
 
-; notmuch
-
-(ekr-banner "Notmuch...")
-
-; dpkg -L elpa-notmuch
-
-; if the file ~/Daten/Mail/notmuch exists...
-(if (file-exists-p "/home/ekr/Daten/Mail/notmuch")
-    (progn
-      (message "Custom notmuch binary is available.")
-      (setopt notmuch-command "/home/ekr/Daten/Mail/notmuch")
-
-      ; (add-to-list 'load-path "/usr/share/emacs/site-lisp/elpa-src/notmuch-0.35")
-      (add-to-list 'load-path "/home/ekr/Daten/Mail/data/elisp/notmuch-0.37")
-      (require 'notmuch)
-
-      (notmuch-assert-cli-sane)
-      (message "Notmuch sanity check: %s" (notmuch-config-get "user.primary_email"))
-
-      ;; M-m   show unread mails
-      (global-set-key (kbd "M-m")
-                      (lambda () (interactive)
-                        (progn
-                          (notmuch-poll)
-                          (notmuch-search "tag:inbox and not tag:deleted"))))
-
-      ;; a    "archive" (read) mail, default setting
-
-      ;; d    delete mail
-      ;; add the "d" key to notmuch-search-mode-map:
-      (define-key notmuch-search-mode-map (kbd "d")
-                  (lambda () (interactive)
-                    "Delete the current thread and move to the next one."
-                    (progn
-                      (notmuch-search-tag '("+deleted" "-inbox" "-unread")))
-                      (notmuch-search-next-thread)))
-
-      (run-at-time "1 min" 60
-                   (lambda ()
-                     (when (and (not (minibufferp))
-                                (not (active-minibuffer-window)))
-                       (notmuch-poll)))))
-  (message "Notmuch binary is not available. Notmuch features will be disabled."))
-
-;; map C-v to "paste" (in addition to C-y) for "Smile" on Gnome
-(when (and (eq system-type 'gnu/linux)
-           (string= (getenv "XDG_CURRENT_DESKTOP") "pop:GNOME"))
-  (global-set-key (kbd "C-v") 'clipboard-yank))
-
-(unless (boundp 'projectile-grep-find-ignored-patterns)
-  (setopt projectile-grep-find-ignored-patterns '()))
-(add-to-list 'projectile-grep-find-ignored-patterns "./.aider.chat.history.md")
+(load-file (expand-file-name "init_notmuch.el" user-emacs-directory))
+(load-file (expand-file-name "init_pop_os.el" user-emacs-directory))
+(load-file (expand-file-name "init_projectile.el" user-emacs-directory))
 
 ; stuff
 
