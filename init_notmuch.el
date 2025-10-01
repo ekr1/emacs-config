@@ -15,8 +15,11 @@
       (add-to-list 'load-path "/home/ekr/Daten/Mail/data/elisp/notmuch-0.37")
       (require 'notmuch)
 
-      (notmuch-assert-cli-sane)
-      (message "Notmuch sanity check: %s" (notmuch-config-get "user.primary_email"))
+      (message "Notmuch sanity check ... if it hangs, make sure podman runs.")
+      (ignore-errors
+        (progn
+          (notmuch-assert-cli-sane)
+          (message "Notmuch sanity check: %s" (notmuch-config-get "user.primary_email"))))
 
       ;; M-m   show unread mails
       (global-set-key (kbd "M-m")
@@ -34,7 +37,14 @@
                     "Delete the current thread and move to the next one."
                     (progn
                       (notmuch-search-tag '("+deleted" "-inbox" "-unread")))
-                    (notmuch-search-next-thread)))
+                      (notmuch-search-next-thread)))
+
+      (define-key notmuch-tree-mode-map (kbd "d")
+                  (lambda () (interactive)
+                    "Delete the current thread and move to the next one."
+                    (progn
+                      (notmuch-tree-tag '("+deleted" "-inbox" "-unread")))
+                      (notmuch-tree-next-thread)))
 
       (run-at-time "1 min" 60
                    (lambda ()

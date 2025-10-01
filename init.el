@@ -339,6 +339,7 @@ and show the commits on the remote that are not in the local branch."
                                   compilation-directory
                                   shell-command-history kill-ring
                                   search-ring \...))
+ '(desktop-load-locked-desktop 'check-pid)
  '(desktop-locals-to-save
    '(desktop-locals-to-save truncate-lines case-fold-search case-replace
                             fill-column overwrite-mode
