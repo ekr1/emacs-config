@@ -894,6 +894,12 @@ and show the commits on the remote that are not in the local branch."
  	     '(ekr-dockerfile "^\\(Dockerfile[^:]+\\):\\([0-9]+\\)$"
                                      1 2 nil 2))
 
+;  File "/.../xxx.py", line 43, in parse_under_cursor
+(add-to-list 'compilation-error-regexp-alist 'ekr-python-parse)
+(add-to-list 'compilation-error-regexp-alist-alist
+             '(ekr-python-parse "^ *File \"\\(.*?\.py\\)\", line \\([0-9]+\\)"
+                                1 2 nil 2))
+
 ; undo the last add-to-list:
 ; (setopt compilation-error-regexp-alist-alist (cdr compilation-error-regexp-alist-alist))
 
@@ -2042,10 +2048,8 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
     (use-package aidermacs
       :bind (("C-c a" . aidermacs-transient-menu))
       :config
-      ;; ; Set API_KEY in .bashrc, that will automatically picked up by aider or in elisp
-      ;; (setenv "ANTHROPIC_API_KEY" "sk-...")
-      ;; ; defun my-get-openrouter-api-key yourself elsewhere for security reasons
-      ;; (setenv "OPENROUTER_API_KEY" (my-get-openrouter-api-key))
+      ;; Github Copilot key -> https://aider.chat/docs/llms/github.html
+      ;; (OPENAI_API_BASE, OPENAI_API_KEY in .bashrc)
       :custom
                                         ; See the Configuration section below
       (aidermacs-use-architect-mode t)
@@ -2062,6 +2066,8 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
 (which-key-mode 1)
 
 (global-set-key (kbd "C-c C-k") 'kill-compilation)
+
+(add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
 
 ; run server
 
