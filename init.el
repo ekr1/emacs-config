@@ -275,8 +275,8 @@ and show the commits on the remote that are not in the local branch."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(ahk-indentation 2)
+ '(aidermacs-auto-commits nil)
  '(aidermacs-backend 'comint)
- '(aidermacs-default-model "gpt-4.1")
  '(aidermacs-watch-files t)
  '(ansi-color-bold-is-bright t)
  '(ansi-color-for-comint-mode t)
@@ -2048,8 +2048,23 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
     (use-package aidermacs
       :bind (("C-c a" . aidermacs-transient-menu))
       :config
-      ;; Github Copilot key -> https://aider.chat/docs/llms/github.html
-      ;; (OPENAI_API_BASE, OPENAI_API_KEY in .bashrc)
+      ;; Github Copilot key ->
+      ;; https://aider.chat/docs/llms/github.html (OPENAI_API_BASE,
+      ;; OPENAI_API_KEY in .bashrc) But then we get
+      ;; "forbidden". Instead: set aidermacs-default-model to
+      ;; github_copilot/gpt-4.1, aider will prompt for Github login.
+      ;;
+      ;; https://www.reddit.com/r/ChatGPTCoding/comments/1lk2mvv/aider_anyone_have_success_with_gh_copilot_oauth/
+      ;; https://github.com/Aider-AI/aider/issues/2227#issuecomment-3141551921
+      ;;
+      ;; Also ~/.aider.*.yml for model defaults etc.
+      ;;
+      ;; Test with
+      ;;
+      ;;   curl -s https://api.githubcopilot.com/models \
+      ;;     -H "Authorization: Bearer $(cat ~/.config/litellm/github_copilot/access-token)" \
+      ;;     | jq -r '.data[].id'
+
       :custom
                                         ; See the Configuration section below
       (aidermacs-use-architect-mode t)

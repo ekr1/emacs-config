@@ -40,3 +40,4 @@ flycheck_init.el
 /session.*
 /tree-sitter/
 /url/
+/#init.el#

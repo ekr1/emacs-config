@@ -27,6 +27,10 @@
                         (progn
                           (notmuch-poll)
                           (notmuch-search "tag:inbox and not tag:deleted"))))
+      (run-at-time "1 min" nil
+                   (lambda ()
+                     (ignore-errors
+                       (call-interactively (key-binding (kbd "M-m")))))))
 
       ;; a    "archive" (read) mail, default setting
 
@@ -46,9 +50,10 @@
                       (notmuch-tree-tag '("+deleted" "-inbox" "-unread")))
                       (notmuch-tree-next-thread)))
 
-      (run-at-time "1 min" 60
+      (run-at-time "5 min" 60
                    (lambda ()
                      (when (and (not (minibufferp))
                                 (not (active-minibuffer-window)))
                        (notmuch-poll)))))
+
   (message "Notmuch binary is not available. Notmuch features will be disabled."))
