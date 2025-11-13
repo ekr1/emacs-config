@@ -64,5 +64,3 @@
       (sleep-for 0.5))
     ; return the result
     result))
-
-(provide 'init_copilot_chat)

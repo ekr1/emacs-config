@@ -1877,8 +1877,6 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
 
   (message "`node` not found, copilot not initialized"))
 
-(load-file (expand-file-name "init_copilot_chat.el" user-emacs-directory))
-
 (ekr-banner "ssh-agent, ...")
 
 ; ssh-agent on WSL
@@ -2034,6 +2032,7 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
 (load-file (expand-file-name "init_notmuch.el" user-emacs-directory))
 (load-file (expand-file-name "init_pop_os.el" user-emacs-directory))
 (load-file (expand-file-name "init_projectile.el" user-emacs-directory))
+(load-file (expand-file-name "init_copilot_chat.el" user-emacs-directory))
 
 ; stuff
 

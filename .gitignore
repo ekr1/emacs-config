@@ -41,3 +41,4 @@ flycheck_init.el
 /tree-sitter/
 /url/
 /#init.el#
+.aider*
