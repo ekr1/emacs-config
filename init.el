@@ -1903,6 +1903,28 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
 (define-key copilot-chat-prefix (kbd "u") 'copilot-chat-explain-defun)
 (define-key copilot-chat-prefix (kbd "m") 'copilot-chat-insert-commit-message)
 
+; simplify the instances - only use one
+(with-eval-after-load 'copilot-chat
+  (defun copilot-chat--ask-for-instance ()
+    "Reuse an existing Copilot Chat instance, or create one if none exist."
+    (if copilot-chat--instances
+        (copilot-chat--choose-instance)
+      (copilot-chat--create-instance))))
+
+; always use home dir
+(with-eval-after-load 'copilot-chat
+  (defun copilot-chat--create-instance ()
+    "Create a new copilot chat instance for your home directory."
+    (let* ((directory (expand-file-name "~")) ; Always use home directory
+           (found (copilot-chat--find-instance directory))
+           (instance
+            (if found
+                found
+              (copilot-chat--create directory))))
+      (unless found
+        (push instance copilot-chat--instances))
+      instance)))
+
 (defun ekr-copilot-chat-ask-and-return-string (prompt)
   "Ask copilot chat for a response to PROMPT and return the result."
   (let ((result nil)
