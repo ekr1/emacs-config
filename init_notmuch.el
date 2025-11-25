@@ -30,7 +30,7 @@
       (run-at-time "1 min" nil
                    (lambda ()
                      (ignore-errors
-                       (call-interactively (key-binding (kbd "M-m")))))))
+                       (call-interactively (key-binding (kbd "M-m"))))))
 
       ;; a    "archive" (read) mail, default setting
 
