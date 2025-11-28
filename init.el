@@ -277,6 +277,7 @@ and show the commits on the remote that are not in the local branch."
  '(ahk-indentation 2)
  '(aidermacs-auto-commits nil)
  '(aidermacs-backend 'comint)
+ '(aidermacs-default-model "see ~/.aider.conf.yml instead!")
  '(aidermacs-watch-files t)
  '(ansi-color-bold-is-bright t)
  '(ansi-color-for-comint-mode t)
@@ -301,16 +302,16 @@ and show the commits on the remote that are not in the local branch."
  '(compilation-context-lines 3)
  '(compilation-mode-hook nil)
  '(compilation-scroll-output t)
- '(copilot-chat-commit-model "gpt-4.1")
+ '(copilot-chat-commit-model "gpt-5.1")
  '(copilot-chat-commit-prompt
    "Here is the result of running `git diff --cached`. Please suggest a commit message. Don't add anything else to the response. The following describes conventional commits.\12Do not use any markers around the commit message. Do not add the conventional commit prefix.\12\12Here is the result of `git diff --cached`:\12")
  '(copilot-chat-debug nil)
- '(copilot-chat-default-model "gpt-4.1")
+ '(copilot-chat-default-model "gpt-5.1")
  '(copilot-chat-follow nil)
  '(copilot-chat-frontend 'shell-maker)
  '(copilot-chat-model-ignore-picker t)
  '(copilot-indent-offset-warning-disable t)
- '(copilot-lsp-settings ''(:copilot.model "gpt-4.1"))
+ '(copilot-lsp-settings ''(:copilot.model "gpt-5.1"))
  '(copilot-max-char 120000)
  '(copilot-server-log-level 4)
  '(corfu-auto t)
@@ -446,7 +447,7 @@ and show the commits on the remote that are not in the local branch."
  '(mouse-wheel-down-event 'mouse-4)
  '(mouse-wheel-mode t)
  '(mouse-wheel-progressive-speed nil)
- '(mouse-wheel-scroll-amount '(5 ((shift) . hscroll) ((meta)) ((control) . text-scale)))
+ '(mouse-wheel-scroll-amount '(5 ((shift) . hscroll)))
  '(mouse-wheel-up-event 'mouse-5)
  '(notmuch-archive-tags '("-inbox" "-unread"))
  '(notmuch-saved-searches
@@ -1917,6 +1918,9 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
   (interactive (list last-input-event))
   (ignore))
 
+
+
+
 ;; The following is not necessary on MacOS Emacs 30.1, scrolling just
 ;; worked out of the box.
 ;;
@@ -2016,6 +2020,8 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
       ;; https://github.com/Aider-AI/aider/issues/2227#issuecomment-3141551921
       ;;
       ;; Also ~/.aider.*.yml for model defaults etc.
+      ;;
+      ;; Also: aider --list-models openai/
       ;;
       ;; Test with
       ;;
