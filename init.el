@@ -302,16 +302,16 @@ and show the commits on the remote that are not in the local branch."
  '(compilation-context-lines 3)
  '(compilation-mode-hook nil)
  '(compilation-scroll-output t)
- '(copilot-chat-commit-model "gpt-5.1")
+ '(copilot-chat-commit-model "gpt-4.1")
  '(copilot-chat-commit-prompt
    "Here is the result of running `git diff --cached`. Please suggest a commit message. Don't add anything else to the response. The following describes conventional commits.\12Do not use any markers around the commit message. Do not add the conventional commit prefix.\12\12Here is the result of `git diff --cached`:\12")
  '(copilot-chat-debug nil)
- '(copilot-chat-default-model "gpt-5.1")
+ '(copilot-chat-default-model "gpt-5")
  '(copilot-chat-follow nil)
  '(copilot-chat-frontend 'shell-maker)
  '(copilot-chat-model-ignore-picker t)
  '(copilot-indent-offset-warning-disable t)
- '(copilot-lsp-settings ''(:copilot.model "gpt-5.1"))
+ '(copilot-lsp-settings ''(:copilot.model "gpt-5"))
  '(copilot-max-char 120000)
  '(copilot-server-log-level 4)
  '(corfu-auto t)
@@ -2019,21 +2019,106 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
       ;; https://www.reddit.com/r/ChatGPTCoding/comments/1lk2mvv/aider_anyone_have_success_with_gh_copilot_oauth/
       ;; https://github.com/Aider-AI/aider/issues/2227#issuecomment-3141551921
       ;;
-      ;; Also ~/.aider.*.yml for model defaults etc.
-      ;;
-      ;; Also: aider --list-models openai/
+      ;; Also ~/.aider.conf.yml for model defaults etc.
       ;;
       ;; Test with
       ;;
-      ;;   curl -s https://api.githubcopilot.com/models \
-      ;;     -H "Authorization: Bearer $(cat ~/.config/litellm/github_copilot/access-token)" \
+      ;;   curl -s $OPENAI_API_BASE/models \
+      ;;     -H "Authorization: Bearer $OPENAI_API_KEY" \
       ;;     | jq -r '.data[].id'
+      ;;
+      ;;       gpt-4.1
+      ;;       gpt-5-mini
+      ;;       gpt-5
+      ;;       gpt-3.5-turbo
+      ;;       gpt-3.5-turbo-0613
+      ;;       gpt-4o-mini
+      ;;       gpt-4o-mini-2024-07-18
+      ;;       gpt-4
+      ;;       gpt-4-0613
+      ;;       gpt-4-0125-preview
+      ;;       gpt-4o
+      ;;       gpt-4o-2024-11-20
+      ;;       gpt-4o-2024-05-13
+      ;;       gpt-4-o-preview
+      ;;       gpt-4o-2024-08-06
+      ;;       grok-code-fast-1
+      ;;       text-embedding-ada-002
+      ;;       text-embedding-3-small
+      ;;       text-embedding-3-small-inference
+      ;;       claude-sonnet-4
+      ;;       claude-sonnet-4.5
+      ;;       gemini-2.5-pro
+      ;;       gpt-4.1-2025-04-14
+      ;;
+      ;;
+      ;; github_copilot Setup
+      ;; ====================
+      ;;
+      ;; github_copilot/gpt-5 seems not to work (doesn't have editor auth):
+      ;;   litellm.BadRequestError: Github_copilotException - bad request: missing
+      ;;   Editor-Version header for IDE auth
+      ;;
+      ;; Experiment with https://github.com/Aider-AI/aider/issues/2227#issuecomment-3141551921 :
+      ;;
+      ;; * OK: Current aider seems to use litellm==1.75.0
+      ;;
+      ;; * Create ~/.aider.model.settings.yml:
+      ;;
+      ;;   - name: github_copilot/gpt-4.1
+      ;;     # edit_format: diff
+      ;;     extra_params:
+      ;;       max_tokens: 80000
+      ;;       extra_headers:
+      ;;         User-Agent: GithubCopilot/1.155.0
+      ;;         Editor-Plugin-Version: copilot/1.155.0
+      ;;         Editor-Version: vscode/1.85.1
+      ;;         Copilot-Integration-Id: vscode-chat
+      ;;
+      ;; * But this is enough as default:
+      ;;
+      ;;   - name: aider/extra_params
+      ;;     extra_params:
+      ;;       extra_headers:
+      ;;         Editor-Version: vscode/42
+      ;;
+      ;; * Works again, this fixes the missing editor header.
+      ;;
+      ;; Quota
+      ;; =====
+      ;;
+      ;; Github Copilot has a "premium" quota (-> Web GUI, right at the top).
+
 
       :custom
                                         ; See the Configuration section below
       (aidermacs-use-architect-mode t)
       ;; (aidermacs-default-model "sonnet")
       ))
+
+; read ~/.aider.conf.yml and extracting the gpt
+; model from the line "model: .../gpt-4.1" (ignore the prefix).
+; make it callable either from elisp (return the "gpt-4.1" string) or from M-x (print it).
+; remove the prefix (i.e. "github_copilot/", but anything before the "/" from the name.
+(defun ekr-get-aider-gpt-model (&optional interactive)
+  "Extract the GPT model name from the ~/.aider.conf.yml file."
+    (let ((model-line (with-temp-buffer
+                        (insert-file-contents "~/.aider.conf.yml")
+                        (goto-char (point-min))
+                        (if (re-search-forward "^model:[ \t]*\\(.*\\)$" nil t)
+                            (match-string 1)
+                            nil))))
+        (if model-line
+            (let* ((model-name (string-trim model-line))
+                 (model-short-name (if (string-match "/\\(.*\\)$" model-name)
+                                         (match-string 1 model-name)
+                                     model-name)))
+            (if interactive
+                (message "Aider GPT model: %s" model-short-name)
+                model-short-name))
+        (if interactive
+            (message "No model found in ~/.aider.conf.yml")
+            nil))))
 
 (load-file (expand-file-name "init_notmuch.el" user-emacs-directory))
 (load-file (expand-file-name "init_pop_os.el" user-emacs-directory))
