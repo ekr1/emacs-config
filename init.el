@@ -2111,9 +2111,9 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
                             nil))))
         (if model-line
             (let* ((model-name (string-trim model-line))
-                   (match (string-match "^.*/\\(.*\\)$" model-name))
-                   (model-short-name (if match
-                                         (match-string 1 model-name)
+                   (slash-pos (string-match "/" model-name))
+                   (model-short-name (if slash-pos
+                                         (substring model-name (1+ slash-pos))
                                        model-name)))
             (if interactive
                 (message "Aider GPT model: %s" model-short-name)
