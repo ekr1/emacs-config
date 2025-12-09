@@ -2111,7 +2111,8 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
                             nil))))
         (if model-line
             (let* ((model-name (string-trim model-line))
-                   (model-short-name (if (string-match "^.*/\\(.*\\)$" model-name)
+                   (match (string-match "^.*/\\(.*\\)$" model-name))
+                   (model-short-name (if match
                                          (match-string 1 model-name)
                                        model-name)))
             (if interactive
