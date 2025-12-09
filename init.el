@@ -2102,6 +2102,7 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
 ; remove the prefix (i.e. "github_copilot/", but anything before the "/" from the name.
 (defun ekr-get-aider-gpt-model (&optional interactive)
   "Extract the GPT model name from the ~/.aider.conf.yml file."
+  (interactive)
     (let ((model-line (with-temp-buffer
                         (insert-file-contents "~/.aider.conf.yml")
                         (goto-char (point-min))
