@@ -25,6 +25,9 @@
       (global-set-key (kbd "M-m")
                       (lambda () (interactive)
                         (progn
+                          ; run $HOME/Daten/Mail/poll.sh:
+                          (shell-command
+                           (concat (getenv "HOME") "/Daten/Mail/poll.sh"))
                           (notmuch-poll)
                           (notmuch-search "tag:inbox and not tag:deleted"))))
       (run-at-time "1 min" nil
@@ -40,20 +43,14 @@
                   (lambda () (interactive)
                     "Delete the current thread and move to the next one."
                     (progn
-                      (notmuch-search-tag '("+deleted" "-inbox" "-unread")))
-                      (notmuch-search-next-thread)))
+                      (notmuch-search-tag '("+deleted" "-inbox" "-unread"))
+                      (notmuch-search-next-thread))))
 
       (define-key notmuch-tree-mode-map (kbd "d")
                   (lambda () (interactive)
                     "Delete the current thread and move to the next one."
                     (progn
-                      (notmuch-tree-tag '("+deleted" "-inbox" "-unread")))
-                      (notmuch-tree-next-thread)))
-
-      (run-at-time "5 min" 60
-                   (lambda ()
-                     (when (and (not (minibufferp))
-                                (not (active-minibuffer-window)))
-                       (notmuch-poll)))))
-
+                      (notmuch-tree-tag '("+deleted" "-inbox" "-unread"))
+                      (notmuch-tree-next-thread))))
+      )
   (message "Notmuch binary is not available. Notmuch features will be disabled."))
