@@ -182,6 +182,7 @@ and show the commits on the remote that are not in the local branch."
 (straight-use-package 'aidermacs)
 (straight-use-package 'sqlite-mode)
 (straight-use-package 'jira-markup-mode)
+(straight-use-package 'vterm)
 
 (global-set-key [remap dabbrev-expand] 'hippie-expand)
 
@@ -278,6 +279,8 @@ and show the commits on the remote that are not in the local branch."
  '(aidermacs-auto-commits nil)
  '(aidermacs-backend 'comint)
  '(aidermacs-default-model "see ~/.aider.conf.yml instead!")
+ '(aidermacs-program '("aider" "aider-ce"))
+ '(aidermacs-show-diff-after-change nil)
  '(aidermacs-watch-files t)
  '(ansi-color-bold-is-bright t)
  '(ansi-color-for-comint-mode t)
@@ -302,16 +305,14 @@ and show the commits on the remote that are not in the local branch."
  '(compilation-context-lines 3)
  '(compilation-mode-hook nil)
  '(compilation-scroll-output t)
- '(copilot-chat-commit-model "gpt-4.1")
+ '(copilot-chat-commit-model "gpt-4.1" t)
  '(copilot-chat-commit-prompt
    "Here is the result of running `git diff --cached`. Please suggest a commit message. Don't add anything else to the response. The following describes conventional commits.\12Do not use any markers around the commit message. Do not add the conventional commit prefix.\12\12Here is the result of `git diff --cached`:\12")
  '(copilot-chat-debug nil)
- '(copilot-chat-default-model "gpt-5")
  '(copilot-chat-follow nil)
  '(copilot-chat-frontend 'shell-maker)
  '(copilot-chat-model-ignore-picker t)
  '(copilot-indent-offset-warning-disable t)
- '(copilot-lsp-settings ''(:copilot.model "gpt-5"))
  '(copilot-max-char 120000)
  '(copilot-server-log-level 4)
  '(corfu-auto t)
@@ -361,6 +362,7 @@ and show the commits on the remote that are not in the local branch."
  '(display-line-numbers t)
  '(dumb-jump-debug t)
  '(dumb-jump-force-searcher 'ag)
+ '(emigo-python-command "~/.emacs.d/straight/repos/emigo/python3-venv")
  '(emsg-blame-idle-time 5)
  '(feature-cucumber-command "cucumber {options} {feature} | fmt -w 100")
  '(feature-rake-command "cucumber {options} {feature}")
@@ -772,7 +774,7 @@ and show the commits on the remote that are not in the local branch."
 ;;                                      1 2 nil 2))
 
 ; Yet another style of ruby errors...
-;	 3: from /Users/ekkehard.kraemer/Documents/src/akp/acn_neu_tools/bin/acn_tools_jira.rb:146:in `add_watcher'
+;	 3: from /Users/xx/Documents/src/akp/acn_neu_tools/bin/acn_tools_jira.rb:146:in `add_watcher'
 (add-to-list 'compilation-error-regexp-alist 'ekr-ruby-acntools)
 (add-to-list 'compilation-error-regexp-alist-alist
  	     '(ekr-ruby-acntools "from \\([^:]+\\):\\([0-9]+\\):" 1 2 nil 2))
@@ -2010,11 +2012,20 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
     (use-package aidermacs
       :bind (("C-c a" . aidermacs-transient-menu))
       :config
-      ;; Github Copilot key ->
+      ;; aider-ce
+      ;; ========
+      ;;
+      ;; uv tool install --python python3.12 aider-ce
+      ;; Installed 5 executables: aider-ce, ce, ce-cli, ce.cli, cecli
+      ;;
+      ;; Github Copilot key
+      ;; ==================
+      ;;
       ;; https://aider.chat/docs/llms/github.html (OPENAI_API_BASE,
       ;; OPENAI_API_KEY in .bashrc) But then we get
       ;; "forbidden". Instead: set aidermacs-default-model to
-      ;; github_copilot/gpt-4.1, aider will prompt for Github login.
+      ;; github_copilot/gpt-4.1, aider will prompt for Github login,
+      ;; then set those variables from those files (see below)
       ;;
       ;; https://www.reddit.com/r/ChatGPTCoding/comments/1lk2mvv/aider_anyone_have_success_with_gh_copilot_oauth/
       ;; https://github.com/Aider-AI/aider/issues/2227#issuecomment-3141551921
@@ -2023,9 +2034,7 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
       ;;
       ;; Test with
       ;;
-      ;;   curl -s $OPENAI_API_BASE/models \
-      ;;     -H "Authorization: Bearer $OPENAI_API_KEY" \
-      ;;     | jq -r '.data[].id'
+      ;;   curl -s $OPENAI_API_BASE/models -H "Authorization: Bearer $OPENAI_API_KEY" | jq -r '.data[].id'
       ;;
       ;;       gpt-4.1
       ;;       gpt-5-mini
@@ -2088,7 +2097,44 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
       ;; =====
       ;;
       ;; Github Copilot has a "premium" quota (-> Web GUI, right at the top).
+      ;;
+      ;; Remove confusing/old tokens, re-login everything
+      ;; ================================================
+      ;;
+      ;;   find ~/.config -type f | xargs grep -l ghu_ |grep -v \~ | grep -v \.old
+      ;;   -rw-r--r--@ 1 xx  staff  41 Jun  5  2025 .config/copilot-chat/github-token
+      ;;     ghu_...
+      ;;   -rw-r--r--@ 1 xx  staff  90 Jun  4  2025 .config/github-copilot/hosts.json
+      ;;     {"github.com":{"user":"...","oauth_token":"ghu_..."}}
+      ;;   -rw-r--r--@ 1 xx  staff  40 Dec 10 14:14 .config/litellm/github_copilot/access-token
+      ;;     ghu_...
 
+      ;;
+      ;; mv ~/.config/copilot-chat ~/.config/copilot-chat.old
+      ;; mv ~/.config/github-copilot ~/.config/github-copilot.old
+      ;; mv ~/.config/litellm/github_copilot ~/.config/litellm/github_copilot.old
+      ;;
+      ;; unset OPENAI_API_BASE   # not needed for aider with gpt-4/gpt-5, but later with gpt-5-codex
+      ;; unset OPENAI_API_KEY
+      ;; aider
+      ;;  # github login procedure -> everything works, info stored in ~/.config/litellm/github_copilot
+      ;;
+      ;; M-x aidermacs works
+      ;;
+      ;; M-x copilot-chat does its own github_copilot login; works
+      ;;
+      ;; M-x copilot-login does its own login, works.
+      ;;
+      ;; The above 3 files are recreated.
+      ;;
+      ;; Get gpt-5-codex to work
+      ;; =======================
+      ;;
+      ;; .bash_profile ->
+      ;;
+      ;; export OPENAI_API_BASE=$(jq -r '.endpoints.api' ~/.config/litellm/github_copilot/api-key.json)
+      ;; -> https://api.business.githubcopilot.com
+      ;; export OPENAI_API_KEY=$(cat ~/.config/litellm/github_copilot/access-token)
 
       :custom
                                         ; See the Configuration section below
@@ -2096,10 +2142,6 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
       ;; (aidermacs-default-model "sonnet")
       ))
 
-; read ~/.aider.conf.yml and extracting the gpt
-; model from the line "model: .../gpt-4.1" (ignore the prefix).
-; make it callable either from elisp (return the "gpt-4.1" string) or from M-x (print it).
-; remove the prefix (i.e. "github_copilot/", but anything before the "/" from the name.
 (defun ekr-get-aider-gpt-model (&optional interactive)
   "Extract the GPT model name from the ~/.aider.conf.yml file."
   (interactive)
@@ -2115,17 +2157,43 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
                    (model-short-name (if slash-pos
                                          (substring model-name (1+ slash-pos))
                                        model-name)))
-            (if interactive
+              (progn
                 (message "Aider GPT model: %s" model-short-name)
                 model-short-name))
-        (if interactive
-            (message "No model found in ~/.aider.conf.yml")
-            nil))))
+          (message "No model found in ~/.aider.conf.yml"))))
+
+(progn
+  (setopt copilot-lsp-settings `(:copilot.model ,(ekr-get-aider-gpt-model)))
+  (setopt copilot-chat-default-model (ekr-get-aider-gpt-model))
+  (setopt copilot-chat-commit-model (ekr-get-aider-gpt-model)))
 
 (load-file (expand-file-name "init_notmuch.el" user-emacs-directory))
 (load-file (expand-file-name "init_pop_os.el" user-emacs-directory))
 (load-file (expand-file-name "init_projectile.el" user-emacs-directory))
 (load-file (expand-file-name "init_copilot_chat.el" user-emacs-directory))
+
+;; Emigo Aider alternative...
+
+;; in ~/.emacs.d/straight/repos/emigo/
+;;
+;;    python3 -m venv venv
+;;    . venv/bin/activate ; pip install -r requirements.txt
+;;
+;; Customize group and set this python command:
+;;
+;;     . ~/.emacs.d/straight/repos/emigo/venv/bin/activate && python3
+;;
+;; 02/2026: unusable. Does not set an Editor-Version; and passes much too many tokens.
+;;
+;; (use-package emigo
+;;   :straight (:host github :repo "MatthewZMD/emigo" :files (:defaults "*.py" "*.el"))
+;;   :config
+;;   (emigo-enable) ;; Starts the background process automatically
+;;   :custom
+;;   ;; Encourage using OpenRouter with Deepseek
+;;   (emigo-model "github_copilot/gpt-4.1")
+;;   (emigo-base-url (getenv "OPENAI_API_BASE"))
+;;   (emigo-api-key (getenv "OPENAI_API_KEY")))
 
 ; stuff
 
