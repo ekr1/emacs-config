@@ -276,10 +276,9 @@ and show the commits on the remote that are not in the local branch."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(ahk-indentation 2)
- '(aidermacs-auto-commits nil)
- '(aidermacs-backend 'comint)
+ '(aidermacs-backend 'vterm)
  '(aidermacs-default-model "see ~/.aider.conf.yml instead!")
- '(aidermacs-program '("aider" "aider-ce"))
+ '(aidermacs-program '("cecli"))
  '(aidermacs-show-diff-after-change nil)
  '(aidermacs-watch-files t)
  '(ansi-color-bold-is-bright t)
