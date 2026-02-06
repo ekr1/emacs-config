@@ -97,6 +97,7 @@ FILE1 and FILE2 should be paths to the version files."
                                    (format "Error running git log in %s" repo-dir))))))
                 (message "Repo directory not found: %s" repo-dir)))))))))
 
+; TODO: Change this so it writes to a new buffer instead of *Messages* AI!
 (defun ekr-fetch-remote-main-branches-and-diff-with-local-main-branch ()
   "For each straight repo, fetch the remote for the currently checked out branch
 and show the commits on the remote that are not in the local branch."
@@ -278,7 +279,7 @@ and show the commits on the remote that are not in the local branch."
  '(ahk-indentation 2)
  '(aidermacs-backend 'comint)
  '(aidermacs-default-model "see ~/.aider.conf.yml instead!")
- '(aidermacs-extra-args '(""))
+ '(aidermacs-extra-args '("--watch-files"))
  '(aidermacs-program '("aider"))
  '(aidermacs-show-diff-after-change nil)
  '(aidermacs-watch-files t)
@@ -305,7 +306,7 @@ and show the commits on the remote that are not in the local branch."
  '(compilation-context-lines 3)
  '(compilation-mode-hook nil)
  '(compilation-scroll-output t)
- '(copilot-chat-commit-model "gpt-4.1" t)
+ '(copilot-chat-commit-model "gpt-4.1")
  '(copilot-chat-commit-prompt
    "Here is the result of running `git diff --cached`. Please suggest a commit message. Don't add anything else to the response. The following describes conventional commits.\12Do not use any markers around the commit message. Do not add the conventional commit prefix.\12\12Here is the result of `git diff --cached`:\12")
  '(copilot-chat-debug nil)
@@ -508,6 +509,9 @@ and show the commits on the remote that are not in the local branch."
  '(use-file-dialog nil)
  '(vc-handled-backends '(RCS SVN SCCS Bzr Git Hg Arch))
  '(vc-svn-diff-switches "-x -b")
+ '(vterm-keymap-exceptions
+   '("C-c" "C-x" "C-u" "C-g" "C-h" "C-l" "M-x" "M-o" "C-y" "M-y"
+     "<prior>"))
  '(whitespace-global-modes '(yaml-mode))
  '(whitespace-line-column 80)
  '(whitespace-style
