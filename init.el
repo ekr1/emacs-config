@@ -276,9 +276,10 @@ and show the commits on the remote that are not in the local branch."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(ahk-indentation 2)
- '(aidermacs-backend 'vterm)
+ '(aidermacs-backend 'comint)
  '(aidermacs-default-model "see ~/.aider.conf.yml instead!")
- '(aidermacs-program '("cecli"))
+ '(aidermacs-extra-args '(""))
+ '(aidermacs-program '("aider"))
  '(aidermacs-show-diff-after-change nil)
  '(aidermacs-watch-files t)
  '(ansi-color-bold-is-bright t)
@@ -2016,6 +2017,8 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
       ;;
       ;; uv tool install --python python3.12 aider-ce
       ;; Installed 5 executables: aider-ce, ce, ce-cli, ce.cli, cecli
+      ;;
+      ;; uv tool upgrade --python python3.12 aider-ce
       ;;
       ;; Github Copilot key
       ;; ==================
