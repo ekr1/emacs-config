@@ -77,6 +77,7 @@
 (straight-use-package 'sqlite-mode)
 (straight-use-package 'jira-markup-mode)
 (straight-use-package 'vterm)
+(straight-use-package 'lab)
 
 (global-set-key [remap dabbrev-expand] 'hippie-expand)
 
@@ -2103,6 +2104,36 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
 ;;   (emigo-api-key (getenv "OPENAI_API_KEY")))
 
 ; stuff
+
+;; lab / gitlab
+
+(defun my-set-lab-host ()
+  "Set the lab-host variable to the host of the git repo in the current working directory.
+Also try to discover and set `lab-token` using the `glab` CLI config."
+  (interactive)
+  (let* ((git-url (string-trim (shell-command-to-string "git config --get remote.origin.url 2>/dev/null")))
+         (host (cond
+                ;; HTTPS/HTTP style: https://gitlab.example.com/group/project.git
+                ((string-match "\\(https?://[^/]+\\)" git-url)
+                 (match-string 1 git-url))
+                ;; SSH style: git@gitlab.example.com:group/project.git
+                ((string-match "\\`[^@]+@\\([^:]+\\):" git-url)
+                 (concat "https://" (match-string 1 git-url)))))
+         ;; Try to derive the GitLab host without protocol
+         (api-host (when host
+                     (replace-regexp-in-string "\\`https?://\\([^/]+\\).*" "\\1" host)))
+         ;; Ask glab directly for the token of this host; ignore errors (2>/dev/null)
+         (token (when api-host
+                  (let ((out (string-trim
+                              (shell-command-to-string
+                               (format "glab config get token --host %s 2>/dev/null" api-host)))))
+                    (and (not (string-empty-p out)) out)))))
+    (setq lab-host host)
+    (when token
+      (setq lab-token token))
+    (message "lab-host set to %s%s"
+             lab-host
+             (if token " (lab-token updated from glab config)" ""))))
 
 ; Show possible key bindings after a short delay
 (which-key-mode 1)
