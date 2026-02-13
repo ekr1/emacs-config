@@ -78,6 +78,16 @@
 (straight-use-package 'jira-markup-mode)
 (straight-use-package 'vterm)
 (straight-use-package 'lab)
+(straight-use-package 'emacs-everywhere)       ; ctrl-cmd-e to open an emacs frame in the current directory, with the current clipboard content as the initial buffer content
+(straight-use-package 'kind-icon) ; icons for corfu
+(when (straight-use-package 'corfu)
+  (global-corfu-mode))
+
+;; maybe try:
+;;
+;; vertico - vertical completion
+;; orderless - completion with spaces...
+;; diff-hl - git diff in the fringe
 
 (global-set-key [remap dabbrev-expand] 'hippie-expand)
 
@@ -257,6 +267,8 @@
  '(display-line-numbers t)
  '(dumb-jump-debug t)
  '(dumb-jump-force-searcher 'ag)
+ '(emacs-everywhere-frame-parameters
+   '((name . "emacs-everywhere") (fullscreen) (width . 120) (height . 25)))
  '(emigo-python-command "~/.emacs.d/straight/repos/emigo/python3-venv")
  '(emsg-blame-idle-time 5)
  '(feature-cucumber-command "cucumber {options} {feature} | fmt -w 100")
