@@ -1660,6 +1660,8 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
 
 (ekr-banner "tree-sitter")
 
+;; brew upgrade tree-sitter tree-sitter-cli
+
 ;; $ tree-sitter init-config
 ;; -> Library/Application Support/tree-sitter/config.json
 
@@ -1671,22 +1673,25 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
     (progn
       (message "Tree-sitter binary is available.")
 
+      ;; For version-mismatch: clone repo, "git blame src/parser.c | grep LANGUAGE_VERSION", find previous commit.
+      ;; Then "git describe --tags --abbrev=0 8509e322^". Use that tag in the list below.
+
       (setopt treesit-language-source-alist
             '(
-              (bash "https://github.com/tree-sitter/tree-sitter-bash")
+              (bash "https://github.com/tree-sitter/tree-sitter-bash" "v0.23.3")
               (cmake "https://github.com/uyha/tree-sitter-cmake")
-              (css "https://github.com/tree-sitter/tree-sitter-css")
-              (elisp "https://github.com/Wilfred/tree-sitter-elisp")
-              (go "https://github.com/tree-sitter/tree-sitter-go")
+              (css "https://github.com/tree-sitter/tree-sitter-css" "v0.23.2")
+              (elisp "https://github.com/Wilfred/tree-sitter-elisp" "1.5.0")
+              (go "https://github.com/tree-sitter/tree-sitter-go" "v0.23.4")
               (html "https://github.com/tree-sitter/tree-sitter-html")
               (java "https://github.com/tree-sitter/tree-sitter-java")
-              (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
+              (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "v0.23.1")
               (json "https://github.com/tree-sitter/tree-sitter-json")
               (make "https://github.com/alemuller/tree-sitter-make")
               (markdown "https://github.com/ikatyang/tree-sitter-markdown")
-              (python "https://github.com/tree-sitter/tree-sitter-python")
+              (python "https://github.com/tree-sitter/tree-sitter-python" "v0.23.6")
               (ruby "https://github.com/tree-sitter/tree-sitter-ruby")
-              (c "https://github.com/tree-sitter/tree-sitter-c")
+              (c "https://github.com/tree-sitter/tree-sitter-c" "v0.23.6")
               (cpp "https://github.com/tree-sitter/tree-sitter-cpp")
               (yaml "https://github.com/ikatyang/tree-sitter-yaml")
               (dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile")
@@ -2146,6 +2151,8 @@ Also try to discover and set `lab-token` using the `glab` CLI config."
     (message "lab-host set to %s%s"
              lab-host
              (if token " (lab-token updated from glab config)" ""))))
+
+(bind-key "C-x l" lab-map)
 
 ; Show possible key bindings after a short delay
 (which-key-mode 1)
