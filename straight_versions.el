@@ -297,8 +297,11 @@ show commits that are on origin but not on the local branch, in an Org buffer."
           (outline-hide-sublevels 1)))
       ;; end with-current-buffer
       (message "DEBUG: about to display-buffer, output-buf=%S (live=%S)"
-               output-buf (buffer-live-p output-buf)))
+               output-buf (buffer-live-p output-buf))
       (display-buffer output-buf)
+      )
+
+
     ;; Call display-buffer after the with-current-buffer form, so the
     ;; number of closing parens matches the bindings above.
     )
