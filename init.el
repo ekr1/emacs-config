@@ -82,6 +82,8 @@
 (straight-use-package 'kind-icon) ; icons for corfu
 (when (straight-use-package 'corfu)
   (global-corfu-mode))
+(straight-use-package 'shell-maker)
+; (straight-use-package 'agent-shell)
 
 ;; maybe try:
 ;;
