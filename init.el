@@ -84,6 +84,8 @@
   (global-corfu-mode))
 (straight-use-package 'shell-maker)
 ; (straight-use-package 'agent-shell)
+(straight-use-package 'ripgrep)
+(straight-use-package 'rg)
 
 ;; maybe try:
 ;;

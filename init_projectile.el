@@ -3,7 +3,7 @@
 
 (projectile-mode +1)
 (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
-(define-key projectile-mode-map (kbd "C-c p g") #'projectile-grep)
+(define-key projectile-mode-map (kbd "C-c p g") #'projectile-ripgrep)
 
 ;; deadgrep instead of projectile's search...
 ;; (define-key projectile-mode-map (kbd "C-c p g") #'projectile-grep t) ; to remove previous def
