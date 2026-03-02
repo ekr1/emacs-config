@@ -185,9 +185,8 @@
  '(ahk-indentation 2)
  '(aidermacs-backend 'comint)
  '(aidermacs-default-model "see ~/.aider.conf.yml instead!")
- '(aidermacs-extra-args '("--watch-files --no-tui"))
- '(aidermacs-program '("~/bin/emacs_cecli.sh"))
  '(aidermacs-show-diff-after-change nil)
+ '(aidermacs-subtree-only t)
  '(aidermacs-watch-files t)
  '(ansi-color-bold-is-bright t)
  '(ansi-color-for-comint-mode t)
@@ -2068,6 +2067,13 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
                                         ; See the Configuration section below
       (aidermacs-use-architect-mode t)
       ;; (aidermacs-default-model "sonnet")
+
+      (if (eq system-type 'darwin) ; MacOS
+          (progn
+            (customize-set-variable 'aidermacs-extra-args '("--watch-files --no-tui"))
+            (customize-set-variable 'aidermacs-program "~/bin/emacs_cecli.sh"))
+        (customize-set-variable 'aidermacs-extra-args '("--watch-files")))
+
       ))
 
 (defun ekr-get-aider-gpt-model (&optional interactive)
