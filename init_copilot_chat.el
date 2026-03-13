@@ -64,3 +64,270 @@
       (sleep-for 0.5))
     ; return the result
     result))
+
+;;; commit messages
+
+(defun my-try-insert-branch-name (branch-name reps commit-buffer)
+  "Wait until copilot has finished (by busy waiting on the *Messages* buffer) and insert the BRANCH-NAME into the commit message.  REPS is the countdown to timeout."
+
+  (if (< reps 0)
+      (message "my-try-insert-branch-name: did not find completion message, giving up.")
+    (progn
+      ;; extract the last 3 lines from the buffer *Messages* into a string
+      (let ((finished nil))
+        (progn
+          ;; check if copilot is finished
+          (with-current-buffer commit-buffer
+            (if (not (string-match "Generating commit message"
+                                   (buffer-substring-no-properties (point-min) (point-max))))
+                (setq finished t)))
+          (if finished
+              (with-current-buffer commit-buffer
+                ;; insert the branch name at the beginning of the buffer
+                (goto-char (point-min))
+                (insert (concat branch-name ": ")))
+            (progn
+              (run-at-time "0.5 sec" nil 'my-try-insert-branch-name branch-name (- reps 1) commit-buffer))))))))
+
+(defun my-insert-commit-msg ()
+  "Run copilot to figure out a commit message.  Make sure the branch name is included."
+  (copilot-mode -1)
+  (let ((branch-name (string-trim (shell-command-to-string "git rev-parse --abbrev-ref HEAD 2>/dev/null"))))
+    (message "flush 1")
+    (message "flush 2")
+    (message "flush 3")
+    (message "flush 4")
+    ;; (copilot-chat-insert-commit-message)   ; has a 1 sec timer
+    (copilot-chat-insert-commit-message-when-ready)   ; is async with aio
+    (run-at-time "1 sec" nil 'my-try-insert-branch-name branch-name 20 (current-buffer))))
+
+(defun my-run-good-auto ()
+  "Execute a Good-Auto query."
+  (interactive)
+  ;; if the current buffer is the git commit message, then run copilot-chat-insert-commit-message
+  (if (string-prefix-p "COMMIT_EDITMSG" (buffer-name))
+      (my-insert-commit-msg)
+    (error "This function is deprecated and only to be used in COMMIT_EDITMSG.")))
+
+; © is option-g
+(global-set-key (kbd "©") 'my-run-good-auto)
+
+(my-banner "Copilot, ...")
+
+;;;;;;;; github copilot ;;;;;;;;;;;;;;
+;
+; -> https://github.com/copilot-emacs/copilot.el
+;
+; - brew install node / apt install npm nodejs
+;
+; -> ‘M-x copilot-install-server‘
+;
+; M-x copilot-install-server
+; M-x copilot-login
+
+(if (executable-find "node")
+    (progn
+      (use-package copilot
+        :straight (:host github :repo "copilot-emacs/copilot.el" :files ("*.el"))
+        :ensure t)
+
+      ;; first time:
+      ;; M-x copilot-install-server
+      ;; M-x copilot-login
+
+      ;; suppress ⛔ Warning (copilot): copilot--infer-indentation-offset found no mode-specific indentation offset.
+      (add-to-list 'warning-suppress-log-types '(copilot))
+
+      (dolist (mode '(ahk bash-ts c++ c++-ts c c-or-c++ c-or-c++-ts c-ts cmake cmake-ts css css-ts
+                          csv dockerfile dockerfile-ts elisp elisp-ts emacs-lisp emmet feature fundamental
+                          gfm go go-ts groovy html html-ts java java-ts javascript javascript-ts js-json js
+                          json json-ts lua make make-ts markdown markdown-ts nxml perl php plantuml powershell
+                          python python-ts ruby ruby-ts scss sgml sh sh-script shell-script sql text typescript
+                          typescript-ts web xml yaml yaml-ts))
+        (let ((hook (intern (concat (symbol-name mode) "-mode-hook"))))
+          (add-hook hook 'copilot-mode)
+          ;; (add-hook hook 'highlight-indent-guides-mode))
+          ))
+
+      ;; (add-hook 'after-change-major-mode-hook 'copilot-turn-on-unless-buffer-read-only)
+
+
+      (when (fboundp 'keymap-set)
+        (keymap-set copilot-completion-map "TAB" 'copilot-accept-completion)
+        (keymap-set copilot-completion-map "C-<tab>" 'copilot-accept-completion-by-word)
+        (keymap-set copilot-completion-map "S-<tab>" 'copilot-accept-completion-by-line)
+        (keymap-set copilot-completion-map "C-g" 'copilot-clear-overlay)
+        (keymap-set copilot-completion-map "C-<right>" 'copilot-next-completion)
+        (keymap-set copilot-completion-map "C-<left>" 'copilot-previous-completion)
+        ;; (define-key copilot-completion-map (kbd "") 'copilot-accept-completion-by-paragraph)
+        ;; (define-key copilot-mode-map (kbd "TAB") 'copilot-complete)
+        (keymap-set copilot-completion-map "C-<return>" 'copilot-panel-complete)))
+
+  ;; else, if `node` not found (Windows...):
+
+  (message "`node` not found, copilot not initialized"))
+
+; aidermacs
+
+(my-banner "Aider, aidermacs...")
+
+(if (executable-find "aider")
+    (progn
+      (global-set-key (kbd "C-c a") 'aidermacs-transient-menu)
+
+      ;; aider-ce
+      ;; ========
+      ;;
+      ;; uv tool install --python python3.12 aider-ce
+      ;; Installed 5 executables: aider-ce, ce, ce-cli, ce.cli, cecli
+      ;;
+      ;; uv tool upgrade --python python3.12 aider-ce
+      ;;
+      ;; Github Copilot key
+      ;; ==================
+      ;;
+      ;; https://aider.chat/docs/llms/github.html (OPENAI_API_BASE,
+      ;; OPENAI_API_KEY in .bashrc) But then we get
+      ;; "forbidden". Instead: set aidermacs-default-model to
+      ;; github_copilot/gpt-4.1, aider will prompt for Github login,
+      ;; then set those variables from those files (see below)
+      ;;
+      ;; https://www.reddit.com/r/ChatGPTCoding/comments/1lk2mvv/aider_anyone_have_success_with_gh_copilot_oauth/
+      ;; https://github.com/Aider-AI/aider/issues/2227#issuecomment-3141551921
+      ;;
+      ;; Also ~/.aider.conf.yml for model defaults etc.
+      ;;
+      ;; Test with
+      ;;
+      ;;   curl -s $OPENAI_API_BASE/models -H "Authorization: Bearer $OPENAI_API_KEY" | jq -r '.data[].id'
+      ;;
+      ;;       gpt-4.1
+      ;;       gpt-5-mini
+      ;;       gpt-5
+      ;;       gpt-3.5-turbo
+      ;;       gpt-3.5-turbo-0613
+      ;;       gpt-4o-mini
+      ;;       gpt-4o-mini-2024-07-18
+      ;;       gpt-4
+      ;;       gpt-4-0613
+      ;;       gpt-4-0125-preview
+      ;;       gpt-4o
+      ;;       gpt-4o-2024-11-20
+      ;;       gpt-4o-2024-05-13
+      ;;       gpt-4-o-preview
+      ;;       gpt-4o-2024-08-06
+      ;;       grok-code-fast-1
+      ;;       text-embedding-ada-002
+      ;;       text-embedding-3-small
+      ;;       text-embedding-3-small-inference
+      ;;       claude-sonnet-4
+      ;;       claude-sonnet-4.5
+      ;;       gemini-2.5-pro
+      ;;       gpt-4.1-2025-04-14
+      ;;
+      ;;
+      ;; github_copilot Setup
+      ;; ====================
+      ;;
+      ;; github_copilot/gpt-5 seems not to work (doesn't have editor auth):
+      ;;   litellm.BadRequestError: Github_copilotException - bad request: missing
+      ;;   Editor-Version header for IDE auth
+      ;;
+      ;; Experiment with https://github.com/Aider-AI/aider/issues/2227#issuecomment-3141551921 :
+      ;;
+      ;; * OK: Current aider seems to use litellm==1.75.0
+      ;;
+      ;; * Create ~/.aider.model.settings.yml:
+      ;;
+      ;;   - name: github_copilot/gpt-4.1
+      ;;     # edit_format: diff
+      ;;     extra_params:
+      ;;       max_tokens: 80000
+      ;;       extra_headers:
+      ;;         User-Agent: GithubCopilot/1.155.0
+      ;;         Editor-Plugin-Version: copilot/1.155.0
+      ;;         Editor-Version: vscode/1.85.1
+      ;;         Copilot-Integration-Id: vscode-chat
+      ;;
+      ;; * But this is enough as default:
+      ;;
+      ;;   - name: aider/extra_params
+      ;;     extra_params:
+      ;;       extra_headers:
+      ;;         Editor-Version: vscode/42
+      ;;
+      ;; * Works again, this fixes the missing editor header.
+      ;;
+      ;; Quota
+      ;; =====
+      ;;
+      ;; Github Copilot has a "premium" quota (-> Web GUI, right at the top).
+      ;;
+      ;; Remove confusing/old tokens, re-login everything
+      ;; ================================================
+      ;;
+      ;;   find ~/.config -type f | xargs grep -l ghu_ |grep -v \~ | grep -v \.old
+      ;;   -rw-r--r--@ 1 xx  staff  41 Jun  5  2025 .config/copilot-chat/github-token
+      ;;     ghu_...
+      ;;   -rw-r--r--@ 1 xx  staff  90 Jun  4  2025 .config/github-copilot/hosts.json
+      ;;     {"github.com":{"user":"...","oauth_token":"ghu_..."}}
+      ;;   -rw-r--r--@ 1 xx  staff  40 Dec 10 14:14 .config/litellm/github_copilot/access-token
+      ;;     ghu_...
+
+      ;;
+      ;; mv ~/.config/copilot-chat ~/.config/copilot-chat.old
+      ;; mv ~/.config/github-copilot ~/.config/github-copilot.old
+      ;; mv ~/.config/litellm/github_copilot ~/.config/litellm/github_copilot.old
+      ;;
+      ;; unset OPENAI_API_BASE   # not needed for aider with gpt-4/gpt-5, but later with gpt-5-codex
+      ;; unset OPENAI_API_KEY
+      ;; aider
+      ;;  # github login procedure -> everything works, info stored in ~/.config/litellm/github_copilot
+      ;;
+      ;; M-x aidermacs works
+      ;;
+      ;; M-x copilot-chat does its own github_copilot login; works
+      ;;
+      ;; M-x copilot-login does its own login, works.
+      ;;
+      ;; The above 3 files are recreated.
+      ;;
+      ;; Get gpt-5-codex to work
+      ;; =======================
+      ;;
+      ;; .bash_profile ->
+      ;;
+      ;; export OPENAI_API_BASE=$(jq -r '.endpoints.api' ~/.config/litellm/github_copilot/api-key.json)
+      ;; -> https://api.business.githubcopilot.com
+      ;; export OPENAI_API_KEY=$(cat ~/.config/litellm/github_copilot/access-token)
+
+      (if (eq system-type 'darwin) ; MacOS
+          (progn
+            (message "Enabling special emacs_cecli.sh")
+            (customize-set-variable 'aidermacs-program "~/bin/emacs_cecli.sh")))
+      ))
+
+(defun my-get-aider-gpt-model (&optional interactive)
+  "Extract the GPT model name from the ~/.aider.conf.yml file."
+  (interactive)
+    (let ((model-line (with-temp-buffer
+                        (insert-file-contents "~/.aider.conf.yml")
+                        (goto-char (point-min))
+                        (if (re-search-forward "^model:[ \t]*\\(.*\\)$" nil t)
+                            (match-string 1)
+                            nil))))
+        (if model-line
+            (let* ((model-name (string-trim model-line))
+                   (slash-pos (string-match "/" model-name))
+                   (model-short-name (if slash-pos
+                                         (substring model-name (1+ slash-pos))
+                                       model-name)))
+              (progn
+                (message "Aider GPT model: %s" model-short-name)
+                model-short-name))
+          (message "No model found in ~/.aider.conf.yml"))))
+
+(progn
+  (setopt copilot-lsp-settings `(:copilot.model ,(my-get-aider-gpt-model)))
+  (setopt copilot-chat-default-model (my-get-aider-gpt-model))
+  (setopt copilot-chat-commit-model (my-get-aider-gpt-model)))

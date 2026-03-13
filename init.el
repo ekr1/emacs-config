@@ -6,6 +6,8 @@
   (let ((border (make-string (length msg) ?-)))
     (message "\n%s\n%s\n%s\n" border msg border)))
 
+(switch-to-buffer "*Messages*")
+
 (my-banner "Start init.el")
 
 ;; Initialization 'straight
@@ -67,7 +69,6 @@
 (straight-use-package 'recentf)
 (straight-use-package 'compile)
 (straight-use-package 'highlight-indent-guides)
-(straight-use-package 'compile)
 (straight-use-package 'plantuml-mode)
 (straight-use-package 'deadgrep)
 (straight-use-package 'dumb-jump)
@@ -161,13 +162,6 @@
 ;; (eval-after-load 'flycheck '(add-hook 'flycheck-mode-hook #'flycheck-checkbashisms-setup))
 
 (my-banner "compile, feature-mode")
-
-; required since some compilation vars are used later
-(require 'compile)
-(require 'feature-mode)
-
-; fix for very slow compiling:  (see docs, a little bit confusing?)
-; (setopt process-adaptive-read-buffering nil)
 
 ;(setopt load-path (cons "~/.emacs.d/elisp/icicles" load-path))
 ;(require 'icicles)
@@ -438,91 +432,8 @@
  '(xslt-process-xml-xslt-associations nil)
  '(xterm-mouse-mode t))
 
- ;; '(feature-cucumber-command
- ;;   "time bin/rake cucumber:rerun_nodb CUCUMBER_OPTS=\"{options}\" FEATURE=\"{feature}\" ")
-
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
-
-(my-banner "compilation extensions")
-
-; (setopt special-display-buffer-names
-;           '("*Async Shell Command*" "*grep*" "*compilation*" "*vc-dir*"))
-
-; note: special-display-buffer-names is deprecated, use display-buffer-alist instead
-; (setopt special-display-buffer-names nil)
-
-(defun my-recompile ()
-  "Save all files, wait a little bit, then call (recompile).  For compilations that watch file-change-times (RotTestHelper...)."
-  (interactive)
-  (progn (save-some-buffers t)
-	 ;(sleep-for 1.5)
-	 ; (recompile)
-
-         ; use comint-mode (the "t" of compilation-start)
-         (let ((default-directory compilation-directory))
-           (apply 'compilation-start (list compile-command t)))
-
-         ;; if *compilation* is open in another frame (which is
-         ;; visible and raised), then close it in "this" window
-         (if (string= "t"
-                      (mapconcat (lambda (val)
-                                   (if val "t" ""))
-                                 (mapcar (lambda (frame)
-                                           (unless (eq frame (selected-frame))
-                                             (string= "*compilation*"
-                                                      (buffer-name
-                                                       (window-buffer
-                                                        (frame-selected-window frame))))))
-                                         (frame-list))
-                                 ""))
-             ;; we have one other frame which has *compilation* selected, so we
-             ;; can close the *compilation* on the current frame
-             (walk-windows (lambda (win)
-                             (if (string= "*compilation*"
-                                          (buffer-name (window-buffer win)))
-                                 (delete-window win)))))
-         ))
-
-(defun my-compilation-finished (buf result)
-  "Play a beep when compilation finishes."
-  ; if the "afplay" exec exists...
-  (if (executable-find "afplay")
-      (start-process "*Compilation Finished Beep*" nil "afplay" "/Users/KRAEME/.emacs.d/short_beep.m4a")))
-(remove-hook 'compilation-finish-functions 'my-compilation-finished)
-(add-hook 'compilation-finish-functions 'my-compilation-finished)
-
-(defun my-git-gui ()
-  "Run 'git gui' without a buffer."
-  (interactive)
-  (start-process "git gui" nil "git" "gui")
-  (message "'git gui' started"))
-
-(defun my-next-scenario ()
-  "Jump to the next cucumber scenario in the compilation buffer."
-  (interactive)
-  (switch-to-buffer-other-window "*compilation*")
-  (search-forward "Szenario:")
-  (execute-kbd-macro (kbd "<return>")))
-
-(defun my-previous-scenario ()
-  "Jump to the previous cucumber scenario in the compilation buffer."
-  (interactive)
-  (switch-to-buffer-other-window "*compilation*")
-  (search-backward "Szenario:")
-  (execute-kbd-macro (kbd "<return>")))
-
-;; (global-set-key (kbd "<f1>") 'my-wiki-update)
-(global-set-key (kbd "M-a") 'my-recompile)
-(global-set-key (kbd "M-c") 'my-recompile)
-;; (global-set-key (kbd "<f3>") 'my-compile-plsql)
-(global-set-key (kbd "<f5>") 'my-git-gui)
-(global-set-key (kbd "M-n") 'next-error)
-(global-set-key (kbd "M-p") 'previous-error)
-(global-set-key (kbd "C-M-n") 'my-next-scenario)
-(global-set-key (kbd "C-M-p") 'my-previous-scenario)
-(global-set-key (kbd "C-/") 'comment-or-uncomment-region)
-(global-set-key (kbd "C-#") 'comment-or-uncomment-region)
 
 ;(global-unset-key (kbd "M-q"))  ; avoid mistaken fill-paragraph when accidentally tying M-q on Mac
 (define-key key-translation-map (kbd "M-q") (kbd "@"))
@@ -540,259 +451,6 @@
 (global-set-key (kbd "C-x C-c") 'ask-before-closing)
 
 ;(find-file-noselect "/my@10.226.93.5:/opt")
-
-(defun starts-with-my (symb)
-      "Returns non-nil if symbol symb starts with 'my-'.  Else nil."
-      (let ((s (symbol-name symb)))
-        (cond ((>= (length s) (length "my-"))
-               (string-equal (substring s 0 (length "my-")) "my-"))
-              (t nil))))
-
-(setopt compilation-error-regexp-alist-alist
-      (cl-remove-if (lambda (item) (starts-with-my (car item)))
-                 compilation-error-regexp-alist-alist))
-(setopt compilation-error-regexp-alist
-      (cl-remove-if 'starts-with-my
-                 (mapcar 'car compilation-error-regexp-alist-alist)))
-
-; M-x re-builder
-; (setopt compilation-debug t) ; => then M-x describe-text-properties
-
-; (REGEXP FILE [LINE COLUMN TYPE HYPERLINK HIGHLIGHT...])
-; TYPE is 2 or nil for a real error or 1 for warning or 0 for info.
-;
-; Later entries seem to have higher priority...
-
-; ignore spurious output
-;      stmt.c:243:in oci8lib_230.bundle
-(add-to-list 'compilation-error-regexp-alist 'my-oci8-stmt)
-(add-to-list 'compilation-error-regexp-alist-alist
- 	     '(my-oci8-stmt "^ *\\(stmt.c\\):\\([0-9]+\\):"
-		     1 2 nil 0))
-
-; comments on every cucumber line
-; Wenn die REST-API für Mobilfunkverträge aufgerufen wird # features/step_definitions/api_mobilfunk_vertraege_steps.rb:17
-(add-to-list 'compilation-error-regexp-alist 'my-cucumber-comment)
-(add-to-list 'compilation-error-regexp-alist-alist
- 	     '(my-cucumber-comment "# \\(.+rb\\):\\([0-9]+\\)$"
-		     1 2 nil 0))
-
-; build in docker... /app/ entfernen
-; /app/src/emil/build.xml:226: Javadoc failed: java.io.IOException: Cannot run program "javadoc": error=2, No such file or directory
-(add-to-list 'compilation-error-regexp-alist 'my-container-remove-app)
-(add-to-list 'compilation-error-regexp-alist-alist
- 	     '(my-container-remove-app "^/app/\\(.+?\\):\\([0-9]+\\):"
-                                     1 2 nil 2))
-
-; pytest/stacktrace
-; file /app/tests/test_basics.py, line 14
-(add-to-list 'compilation-error-regexp-alist 'my-pytest-container-trace)
-(add-to-list 'compilation-error-regexp-alist-alist
- 	     '(my-pytest-container-trace "^file /app/\\(.+?\\), line \\([0-9]+\\)$"
-                                     1 2 nil 2))
-
-; pytest / yet another format
-;  File "/app/application/routes/halerium.py", line 28
-(add-to-list 'compilation-error-regexp-alist 'my-pytest-app-error)
-(add-to-list 'compilation-error-regexp-alist-alist
- 	     '(my-pytest-app-error "^ *File \"/app/\\(.+?\\)\", line \\([0-9]+\\)$"
-                                     1 2 nil 2))
-
-; ignore pytest timing
-; #13 3.878 test_main.py:79:4: E0602: Undefined variable '_clear_all' (undefined-variable)
-(add-to-list 'compilation-error-regexp-alist 'my-pytest-timing)
-(add-to-list 'compilation-error-regexp-alist-alist
- 	     '(my-pytest-timing "^#[0-9]+ [0-9]+.[0-9]+ \\(.+?\\):\\([0-9]+\\):"
-                                     1 2 nil 2))
-
-; ignore /usr/local...
-; /usr/local/lib/python3.7/site-packages/urllib3/connection.py:170:
-(add-to-list 'compilation-error-regexp-alist 'my-ignore-usr-local)
-(add-to-list 'compilation-error-regexp-alist-alist
- 	     '(my-ignore-usr-local "^/usr/local/"
-                                     nil nil nil 0))
-
-; also jump between Szenarios...
-;  Szenario: xxxxx           # /home/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.feature:242
-(add-to-list 'compilation-error-regexp-alist 'my-cucumber-scenario)
-(add-to-list 'compilation-error-regexp-alist-alist
- 	     '(my-cucumber-scenario "Szenario:.*# \\(.+\\.feature\\):\\([0-9]+\\)"
-                                     1 2 nil 1))
-
-; stacktrace
-;    [  0] "/Users/KRAEME/Documents/src/akp/acnneu/app/controllers/gps_controller.rb:128:in `block (2 levels) in show_analytics'",
-(add-to-list 'compilation-error-regexp-alist 'my-ruby-stacktrace)
-(add-to-list 'compilation-error-regexp-alist-alist
- 	     '(my-ruby-stacktrace "^ *.[ 0-9]+. \"\\(.+\\.rb\\):\\([0-9]+\\):"
-                                     1 2 nil 2))
-
-; ruby stack trace -> rbenv are low prio
-;    [  1] "/Users/KRAEME/.rbenv/versions/2.3.3/lib/ruby/gems/2.3.0/gems/actionpack-4.0.6/lib/action_controller/metal/mime_responds.rb:191:in `respond_to'",
-(add-to-list 'compilation-error-regexp-alist 'my-rbenv)
-(add-to-list 'compilation-error-regexp-alist-alist
- 	     '(my-rbenv "\\([a-zA-Z0-9_./-]*/.rbenv/.*?\\):\\([0-9]+\\):"
-		     1 2 nil 0))
-
-; cucumber output => ignore HTML on first line of HTML stacktrace
-;            <pre><code>app/models/concerns/gp_asp.rb:60:in `_update_kundenbetreuer_direktvertrieb&#39;
-;        <h2>/Users/KRAEME/Documents/src/akp/acnneu/app/views/doculife_api/akte_index.json.jbuilder:14: syntax error, unexpected keyword_ensure, expecting end-of-input</h2>
-(add-to-list 'compilation-error-regexp-alist 'my-cucumber-html-pre)
-(add-to-list 'compilation-error-regexp-alist-alist
- 	     '(my-cucumber-html-pre ">\\([a-zA-Z0-9_./-]*?\\.[a-z]+\\):\\([0-9]+\\):"
-		     1 2 nil 2))
-
-; weird capybara output
-;          Showing <i>/Users/KRAEME/Documents/src/akp/acnneu/app/views/doculife_api/akte_index.json.jbuilder</i> where line <b>#5</b> raised:
-(add-to-list 'compilation-error-regexp-alist 'my-cucumber-showing)
-(add-to-list 'compilation-error-regexp-alist-alist
- 	     '(my-cucumber-showing "Showing <i>\\(.*?\\)</i> where line <b>.\\([0-9]+\\)</b>"
-		     1 2 nil 2))
-
-;; ; rspec... # entfernen
-;; ;      # ./spec/acceptance/doculife_api_spec.rb:17:in `block (3 levels) in <top (required)>'
-;; (add-to-list 'compilation-error-regexp-alist 'my-remove-hash)
-;; (add-to-list 'compilation-error-regexp-alist-alist
-;;  	     '(my-remove-hash "# \\(.+?\\):\\([0-9]+\\)$"
-;;                                      1 2 nil 2))
-
-; Yet another style of ruby errors...
-;	 3: from /Users/xx/Documents/src/akp/acn_neu_tools/bin/acn_tools_jira.rb:146:in `add_watcher'
-(add-to-list 'compilation-error-regexp-alist 'my-ruby-acntools)
-(add-to-list 'compilation-error-regexp-alist-alist
- 	     '(my-ruby-acntools "from \\([^:]+\\):\\([0-9]+\\):" 1 2 nil 2))
-
-; ignore API warnings...
-; /app/src/emil/src/de/edag/fps/emil/AnwendungEMIL.java:54: warning: Signal is internal proprietary API and may be removed in a future release
-(add-to-list 'compilation-error-regexp-alist 'my-ignore-sunapi)
-(add-to-list 'compilation-error-regexp-alist-alist
- 	     '(my-ignore-sunapi ".*is internal proprietary API and may be removed in a future release.*"
-		     nil nil nil 0))
-
-; ignore cucumber artifact...
-; -e:1:in `<main>'
-(add-to-list 'compilation-error-regexp-alist 'my-ignore-minuse)
-(add-to-list 'compilation-error-regexp-alist-alist
- 	     '(my-ignore-minuse "^-e:1:in"
-		     nil nil nil 0))
-
-; saxon / xslt errors
-; Error at xsl:param on line 770 of ipp_measurement.xsl:
-(add-to-list 'compilation-error-regexp-alist 'my-saxon-error)
-(add-to-list 'compilation-error-regexp-alist-alist
- 	     '(my-saxon-error "^Error at .*? on line \\([0-9]+\\) of \\(.+\\):$"
-                                     2 1 nil 2))
-
-; saxon / xslt error with column
-; Error at xsl:call-template on line 598 column 78 of ipp_measurement.xsl:
-(add-to-list 'compilation-error-regexp-alist 'my-saxon-error-col)
-(add-to-list 'compilation-error-regexp-alist-alist
- 	     '(my-saxon-error-col "^Error at .*? on line \\([0-9]+\\) column \\([0-9]+\\) of \\(.+\\):$"
-                                     3 1 2 2))
-
-; saxon / backtrace
-;  at xsl:call-template name="tolerances" (file:/Users/KRAEME/Documents/src/doorfitting/process-adapter/config/ipp_measurement.xsl#598)
-(add-to-list 'compilation-error-regexp-alist 'my-saxon-backtrace)
-(add-to-list 'compilation-error-regexp-alist-alist
- 	     '(my-saxon-backtrace " at .*? (file:\\(.+\\)#\\([0-9]+\\))$"
-                                     1 2 nil 2))
-
-; PHP with docker prefix
-; #1 /opt/app-root/src/webroot/php/application/AjaxConnector.php(2063): Tools::convertTimestampToDate('@1662716581', false)
-(add-to-list 'compilation-error-regexp-alist 'my-php-approot)
-(add-to-list 'compilation-error-regexp-alist-alist
- 	     '(my-php-approot "#[0-9]+ /opt/app-root/src/\\(.+?.php\\)(\\([0-9]+\\)): "
-                                     1 2 nil 2))
-
-; #2  /opt/app-root/src/tests/unit/KafkaTest.php:134
-(add-to-list 'compilation-error-regexp-alist 'my-php-codeception-backtrace)
-(add-to-list 'compilation-error-regexp-alist-alist
- 	     '(my-php-codeception-backtrace "/opt/app-root/src/\\(.+?.php\\):\\([0-9]+\\)"
-                                     1 2 nil 2))
-
-; PHP Codeception snapshots
-;  [Snapshot Saved] file:///opt/app-root/src/tests/_output/debug/2023-01-18_14-02-03_63c7fbdb9f1029.50598734.html
-(add-to-list 'compilation-error-regexp-alist 'my-php-codeception-snapshot)
-(add-to-list 'compilation-error-regexp-alist-alist
- 	     '(my-php-codeception-snapshot ".*\\[Snapshot Saved\\] file:///opt/app-root/src/\\(.+?.html\\)"
-                                     1 nil nil 2))
-
-; PHP Codeception HTML
-;Html: /opt/app-root/src/tests/_output/ArchivedMeasurementPlanCest.showListOfArchivedPlans.fail.html
-(add-to-list 'compilation-error-regexp-alist 'my-php-codeception-html)
-(add-to-list 'compilation-error-regexp-alist-alist
- 	     '(my-php-codeception-html "Html: /opt/app-root/src/\\(.+?.html\\)"
-                                     1 nil nil 2))
-
-; PHP Codeception Response
-;Response: /opt/app-root/src/tests/_output/ArchivedMeasurementPlanCest.showListOfArchivedPlans.fail.html
-(add-to-list 'compilation-error-regexp-alist 'my-php-codeception-response)
-(add-to-list 'compilation-error-regexp-alist-alist
- 	     '(my-php-codeception-response "Response: /opt/app-root/src/\\(.+?.html\\)"
-                                     1 nil nil 2))
-
-; PHP Codeception Png
-;Png: /opt/app-root/src/tests/_output/ArchivedMeasurementPlanCest.showListOfArchivedPlans.fail.png
-(add-to-list 'compilation-error-regexp-alist 'my-php-codeception-png)
-(add-to-list 'compilation-error-regexp-alist-alist
- 	     '(my-php-codeception-png "Png: /opt/app-root/src/\\(.+?.png\\)"
-                                     1 nil nil 2))
-
-; rspec error
-;     # ./spec/models/dtag_spec.rb:9:in `block (3 levels) in <top (required)>'
-(add-to-list 'compilation-error-regexp-alist 'my-rspec-error)
-(add-to-list 'compilation-error-regexp-alist-alist
- 	     '(my-rspec-error "# \\(.+?\\):\\([0-9]+\\):"
-                                     1 2 nil 2))
-
-; "helm template" error
-; Error: template: legacy-webserver-backup/templates/pvc.yaml:10:25:
-(add-to-list 'compilation-error-regexp-alist 'my-helm-template-error)
-(add-to-list 'compilation-error-regexp-alist-alist
- 	     '(my-helm-template-error "Error: template: .*/\\(templates/.+?\\):\\([0-9]+\\):\\([0-9]+\\):"
-                                     1 2 3 2))
-
-; "helm YAML parse" error
-; Error: YAML parse error on legacy-webserver-backup/templates/cronjob.yaml: error converting YAML to JSON: yaml: line 28: did not find expected '-' indicator
-(add-to-list 'compilation-error-regexp-alist 'my-helm-yaml-parse-error)
-(add-to-list 'compilation-error-regexp-alist-alist
- 	     '(my-helm-yaml-parse-error "Error: YAML parse error on .*/\\(templates/.+?\\): error converting YAML to JSON: yaml: line \\([0-9]+\\):"
-                                     1 2 nil 2))
-
-; internal helm go errors, ignore
-; install.go:222: [debug] Original chart version: ""
-(add-to-list 'compilation-error-regexp-alist 'my-helm-ignore-go)
-(add-to-list 'compilation-error-regexp-alist-alist
- 	     '(my-helm-ignore-go "[^.:]+\\.go:[0-9]+:"
-                                     nil nil nil 0))
-
-; yaml image tag, ignore
-;            image: mtr.devops.telekom.de/akp/legacy-webserver-backup:1.0.0
-(add-to-list 'compilation-error-regexp-alist 'my-yaml-image-tag-ignore)
-(add-to-list 'compilation-error-regexp-alist-alist
- 	     '(my-yaml-image-tag-ignore "[\t ]image:[\t ]"
-                                     nil nil nil 0))
-
-; Dockerfiles
-; Dockerfile.akp-web:98
-(add-to-list 'compilation-error-regexp-alist 'my-dockerfile)
-(add-to-list 'compilation-error-regexp-alist-alist
- 	     '(my-dockerfile "^\\(Dockerfile[^:]+\\):\\([0-9]+\\)$"
-                                     1 2 nil 2))
-
-;  File "/.../xxx.py", line 43, in parse_under_cursor
-(add-to-list 'compilation-error-regexp-alist 'my-python-parse)
-(add-to-list 'compilation-error-regexp-alist-alist
-             '(my-python-parse "^ *File \"\\(.*?\.py\\)\", line \\([0-9]+\\)"
-                                1 2 nil 2))
-
-; undo the last add-to-list:
-; (setopt compilation-error-regexp-alist-alist (cdr compilation-error-regexp-alist-alist))
-
-; REGEXP FILE [LINE COLUMN TYPE HYPERLINK HIGHLIGHT...]
-; TYPE is 2 or nil for a real error or 1 for warning or 0 for info.
-
-; erstes (also letztes ;) ) entfernen, beim Entwickeln
-;(setopt compilation-error-regexp-alist-alist (cdr compilation-error-regexp-alist-alist))
 
 ; (setenv "TERM" "dumb")  ; for perldoc etc.
 ; (setenv "PAGER" "cat")
@@ -872,73 +530,7 @@
 ;;;; obsolete X mode ;;;;;
 ;;;; obsolete X mode ;;;;; </fontconfig>
 
-; cucumber mode
-;(add-to-list 'load-path "~/.emacs.d/elisp/feature-mode")
-;(setopt feature-default-i18n-file "/path/to/gherkin/gem/i18n.yml")
-(setopt feature-default-language "fi")
-(add-to-list 'auto-mode-alist '("\.feature$" . feature-mode))
-;; Keybinding	Description
-;; C-c ,v	Verify all scenarios in the current buffer file.
-;; C-c ,s	Verify the scenario under the point in the current buffer.
-;; C-c ,f	Verify all features in project. (Available in feature and ruby files)
-;; C-c ,r	Repeat the last verification process.
-;; C-c ,g	Go to step-definition under point (requires ruby_parser gem >= 2.0.5)
-(define-key feature-mode-map  (kbd "C-c ,v") 'my-feature-verify-dev-scenarios-in-buffer)
-(define-key feature-mode-map  (kbd "C-c ,V") 'feature-verify-all-scenarios-in-buffer)
-
-(defun my-feature-verify-dev-scenarios-in-buffer ()
-  "Run all the @dev tagged scenarios defined in current buffer."
-  (interactive)
-  (let* ((abs-file-name (buffer-file-name))
-         ;; Cut off path elements up to and including "acnneu"
-         (relative-path (if (and abs-file-name
-                                  (string-match "\\(.*\\)/acnneu/\\(.*\\)" abs-file-name))
-                            (match-string 2 abs-file-name)
-                          abs-file-name))) ; Fallback to the absolute path if "acnneu" not found
-    ;; Run Cucumber with the relative path
-    (feature-run-cucumber '("--tags @dev") :feature-file relative-path)))
-
-; hiermit erkennt u.a. der Compilation Buffer (=> cucumber) utf8 korrekt
-;(prefer-coding-system 'utf-8)
-; ... wird aber in .dir-locals.el eingestellt (auf andere Weise - genügt das?)
-
-(my-banner "ANSI colors")
-
-;; included in 28.2, not required anymore
-;; ANSI coloring in compilation buffers
-;; (require 'ansi-color)
-;; (defun ff/ansi-colorize-buffer ()
-;; ;  (setopt buffer-read-only nil)
-;; ;  (ansi-color-apply-on-region (point-min) (point-max))
-;; ;  (setopt buffer-read-only t)
-;;   )
-;; (add-hook 'compilation-filter-hook 'ff/ansi-colorize-buffer)
-
-;; ; ANSI coloring in compilation buffers
-(add-hook 'compilation-filter-hook 'ansi-color-compilation-filter)
-
-
-(defun my-compilation-start-add-fold (args)
-  "Add '| fold -w <visible-width>' to the command passed to compilation-start.
-If the *compilation* buffer is not visible or does not exist, default to 100."
-  (let* ((command (nth 0 args)))
-    (setf (nth 0 args)
-          (concat "( " command " ) 2>&1 | LC_ALL=C   awk '{LEN=400; while (length($0) > LEN) {print substr($0, 1, LEN), \"↩\"; $0 = substr($0, LEN+1)} print $0}' # see init.el"))
-    args))
-
-(advice-add 'compilation-start :filter-args #'my-compilation-start-add-fold)
-
-; ANSI coloring for any buffer
-; (require 'tty-format)
-;; M-x display-ansi-colors to explicitly decode ANSI color escape sequences
-
-; this accesses variable ansi-color-regexp in tty_format; the variable is undefined
-;; (defun display-ansi-colors ()
-;;   "Enable ANSI colors in the current buffer."
-;;   (interactive)
-;;   (format-decode-buffer 'ansi-colors))
-;; ;; decode ANSI color escape sequences for *.txt or README files
-;; (add-hook 'find-file-hooks 'tty-format-guess)
+(my-banner "ANSI colors (also see init_compilation.el)...")
 
 (require 'ansi-color)
 (defun display-ansi-colors ()
@@ -1148,10 +740,6 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
 ;;     ;; default
 ;;     (string-inflection-ruby-style-cycle))))
 
-; avoid extreme pauses on long compilation lines
-;; (require 'truncated-compilation-mode)
-;; (truncated-compilation-mode)
-
 ; frame commands
 ;(require 'frame-cmds)
 
@@ -1182,23 +770,6 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
  '(line-number ((t (:foreground "gray38"))))
  '(mode-line (nil)))
 
-;; (defun notify-compilation-result(buffer msg)
-;;   "Notify that the compilation is finished,
-;; close the *compilation* buffer if the compilation is successful,
-;; and set the focus back to Emacs frame"
-;;   (if (string= "*compilation*" (buffer-name buffer))
-;;       (if (string-match "^finished" msg)
-;;           (progn
-;;             (delete-windows-on buffer)
-;;             (tooltip-show "\n Compilation Successful :-) \n "))
-;;         (tooltip-show "\n Compilation Failed :-( \n "))
-;;                                         ; (setopt current-frame (car (car (cdr (current-frame-configuration)))))
-;;                                         ; (select-frame-set-input-focus current-frame)
-;;     ))
-;;
-;; (add-to-list 'compilation-finish-functions
-;; 	     'notify-compilation-result)
-
 (my-banner "Ruby, projectile, ...")
 
 ;;;;;;; special ruby stuff (packages installed specifically for that)
@@ -1227,9 +798,6 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
 ;;       (setenv "DOCKER_TLS_VERIFY" "1")
 ;;       (setenv "DOCKER_CERT_PATH" "/Users/KRAEME/.docker/machine/machines/default")
 ;;       (setenv "DOCKER_MACHINE_NAME" "default")))
-
-; DOCKER_BUILDKIT does not look good in *compilation* buffers...
-(setenv "BUILDKIT_PROGRESS" "plain")
 
 ;;; folding in xml
 
@@ -1282,9 +850,6 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
 (global-set-key (kbd "<end>") 'move-end-of-line)
 
 (savehist-mode 1)
-(add-to-list 'savehist-additional-variables 'compile-command)
-(add-to-list 'savehist-additional-variables 'compile-history)
-(add-to-list 'savehist-additional-variables 'compilation-directory)
 (add-to-list 'savehist-additional-variables 'shell-command-history)
 
 ; ox-confluence, export org to confluence/jira markup
@@ -1416,206 +981,6 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
 
 (add-hook 'buffer-list-update-hook #'set-plantuml-preview-background)
 
-
-; good-auto
-
-;; (defun my-open-chat-file ()
-;;   "Open or create a chat file with the name format chat-YYYYMMDD.md in ~/Documents/src/ai."
-;;   (let* ((current-date (format-time-string "%Y%m%d"))  ; Get current date in YYYYMMDD format
-;;          (file-name (concat "~/Documents/ai/chat-" current-date ".md"))  ; Construct file name
-;;          (file-path (expand-file-name file-name)))  ; Expand to full path
-;;     (find-file-noselect file-path)))  ; Open the file but don't switch to it
-
-;; (defun my-get-query ()
-;;   "Prompt the user for a query, returning the selected region,
-;;   user input, or the output of a shell command if the current buffer
-;;   is named COMMIT_EDITMSG."
-;;   (cond
-;;    ;; Check if the current buffer name begins with "COMMIT_EDITMSG":
-;;    ((string-prefix-p "COMMIT_EDITMSG" (buffer-name))
-;;
-;;     ;; Get the name of the currently active Git branch
-;;     (let ((branch-name (string-trim (shell-command-to-string "git rev-parse --abbrev-ref HEAD 2>/dev/null"))))
-;;       ;; Create the prompt including the branch name and the git diff
-;;       (list (concat ;"Forget all previous context from this chat. "
-;;                     "Create a commit message, prefixed with the branch name '" branch-name ":'. "
-;;                     "Make sure it does not use more than 80 characters. "
-;;                     "Output *only* the message with no additional text. "
-;;                     "Do not output any markdown. "
-;;                     "Make sure the text is on one line with no newlines. "
-;;                     "If you feel the need, you can add a newline separated bullet point list with more details. "
-;;                     "Here is the diff:\n"
-;;                     (shell-command-to-string "git diff --cached 2>&1")) t)))
-;;
-;;    ;; ;; Check if there is "TODO" in the current line
-;;    ;; ((string-match "TODO" (thing-at-point 'line t))
-;;    ;;  (let ((start (max (line-beginning-position -40) (point-min)))
-;;    ;;        (end (min (line-end-position 40) (point-max))))
-;;    ;;    ;; Fetch the context lines
-;;    ;;    (buffer-substring-no-properties start end)))
-;;
-;;    ;; Check if there is "TODO" in the current line
-;;    ((string-match "TODO" (thing-at-point 'line t))
-;;     (let ((current-line (line-number-at-pos))                  ; Get the current line number
-;;           (full-buffer (buffer-string)))                      ; Get the entire buffer content
-;;       ;; Prepare the full prompt with instructions
-;;       (concat "The actual prompt is on line " (number-to-string current-line) " and marked by the word 'TODO'. Please find the context below:\n\n"
-;;               full-buffer)))                                   ; Return the whole buffer contents
-;;
-;;    ;; Check if a region is active
-;;    ((region-active-p)
-;;     (buffer-substring (region-beginning) (region-end)))
-;;
-;;    ;; Otherwise, prompt the user for input
-;;    (t
-;;     (read-string "Enter query: "))))
-
-;; (defun my-process-answer (query answer)
-;;   "Process the provided ANSWER content and insert it into the buffer.
-;; QUERY is the original query used to generate the answer."
-;;   (let ((answer (with-temp-buffer
-;;                   (insert-file-contents "~/bin/good-auto/data/answer.txt")
-;;                   (buffer-string)))
-;;         (answer-buffer (my-open-chat-file)))
-;;
-;;     (with-current-buffer answer-buffer
-;;       (let ((start-pos (point-max)))
-;;
-;;         ;; Activate the answer buffer for following commands
-;;         (pop-to-buffer answer-buffer)
-;;
-;;         ;; Add prompt as level-1 header, ensuring it is shortened if necessary
-;;         (goto-char start-pos)
-;;         (insert "\n\n══════════════════════════════════════════════════════════════════════════════════════════════════════════════════\n\n")
-;;         (insert "# Prompt: " (replace-regexp-in-string
-;;                             "\n" " "
-;;                             (if (> (length query) 80)
-;;                                 (concat (substring query 0 80) "...")
-;;                               query)) "\n\n")
-;;
-;;         ;; Add new answer, ensuring there is no level-1 header
-;;         (insert (replace-regexp-in-string "\\(^\\|\n\\)#" "\\1##" answer))
-;;         (insert "\n")
-;;
-;;         ;; Handle potential ANSI color codes
-;;         (display-ansi-colors)
-;;
-;;         ;; Ensure markdown is active
-;;         (markdown-mode)
-;;         (markdown-toggle-markup-hiding 1)
-;;
-;;         ;; Break long lines
-;;         (goto-char start-pos)
-;;         (while (not (eobp))
-;;           (when (> (line-end-position) fill-column)
-;;             (fill-paragraph))
-;;           (forward-line 1))
-;;
-;;         ;; Fold away the previous answer
-;;         (goto-char start-pos)
-;;         (search-backward "# Prompt:" nil t)
-;;         (markdown-cycle)
-;;
-;;         ;; Redisplay in a controlled manner, vertically
-;;         (goto-char start-pos)
-;;         (search-forward "# Prompt:" nil t)
-;;         (beginning-of-line)
-;;         (markdown-enter-key)
-;;         (recenter 7)
-;;
-;;         ;; Save to disk
-;;         (save-buffer)
-;;
-;;         ;; Return to previous window
-;;         (other-window 1)))))
-
-(defun my-try-insert-branch-name (branch-name reps commit-buffer)
-  "Wait until copilot has finished (by busy waiting on the *Messages* buffer) and insert the BRANCH-NAME into the commit message.  REPS is the countdown to timeout."
-
-  (if (< reps 0)
-      (message "my-try-insert-branch-name: did not find completion message, giving up.")
-    (progn
-      ;; extract the last 3 lines from the buffer *Messages* into a string
-      (let ((finished nil))
-        (progn
-          ;; check if copilot is finished
-          (with-current-buffer commit-buffer
-            (if (not (string-match "Generating commit message"
-                                   (buffer-substring-no-properties (point-min) (point-max))))
-                (setq finished t)))
-          (if finished
-              (with-current-buffer commit-buffer
-                ;; insert the branch name at the beginning of the buffer
-                (goto-char (point-min))
-                (insert (concat branch-name ": ")))
-            (progn
-              (run-at-time "0.5 sec" nil 'my-try-insert-branch-name branch-name (- reps 1) commit-buffer))))))))
-
-(defun my-insert-commit-msg ()
-  "Run copilot to figure out a commit message.  Make sure the branch name is included."
-  (copilot-mode -1)
-  (let ((branch-name (string-trim (shell-command-to-string "git rev-parse --abbrev-ref HEAD 2>/dev/null"))))
-    (message "flush 1")
-    (message "flush 2")
-    (message "flush 3")
-    (message "flush 4")
-    ;; (copilot-chat-insert-commit-message)   ; has a 1 sec timer
-    (copilot-chat-insert-commit-message-when-ready)   ; is async with aio
-    (run-at-time "1 sec" nil 'my-try-insert-branch-name branch-name 20 (current-buffer))))
-
-(defun my-run-good-auto ()
-  "Execute a Good-Auto query."
-  (interactive)
-
-  ;; if the current buffer is the git commit message, then run copilot-chat-insert-commit-message
-  (if (string-prefix-p "COMMIT_EDITMSG" (buffer-name))
-      (my-insert-commit-msg)
-    (progn
-
-      (error "This function is deprecated and only to be used in COMMIT_EDITMSG.")
-
-      ;; ;; else, do the whole good-auto thing...
-      ;;
-      ;; ;; Prompt for query and write it to input.txt
-      ;;
-      ;; (let ((query (my-get-query)))
-      ;;
-      ;;   ;; Delete existing answer file
-      ;;   (when (file-exists-p "~/bin/good-auto/data/answer.txt")
-      ;;     (delete-file "~/bin/good-auto/data/answer.txt"))
-      ;;
-      ;;   ;; TODO: query normally is a string. but sometimes it is an list. in this case, insert the first element of it (which will be a string)
-      ;;   (with-temp-buffer
-      ;;     (insert (if (and (listp query) (not (null query)))
-      ;;                 (nth 0 query)  ;; If query is a list, take the first element
-      ;;               query))
-      ;;     (write-region (point-min) (point-max) "~/bin/good-auto/data/input.txt"))
-      ;;
-      ;;   ;; Wait until the answer.txt exists, with timeout
-      ;;   (let ((file-exists nil)
-      ;;         (count 0))
-      ;;     (while (and (not file-exists) (< count (* 4 60)))
-      ;;       (setq file-exists (file-exists-p "~/bin/good-auto/data/answer.txt"))
-      ;;       (sleep-for 0.25)
-      ;;       (setq count (1+ count)))
-      ;;
-      ;;     (if file-exists
-      ;;         ;; Read answer content from the file
-      ;;         (let ((answer (with-temp-buffer
-      ;;                         (insert-file-contents "~/bin/good-auto/data/answer.txt")
-      ;;                         (buffer-string))))
-      ;;           ;; If query is a list with the t flag, just paste
-      ;;           (if (and (listp query)
-      ;;                    (eq (nth 1 query) t))
-      ;;               (insert answer)
-      ;;             ;; Process the answer content if it did not match the list case
-      ;;             (my-process-answer query answer)))
-      ;;
-      ;;       (message "No answer file found.")))))))
-      )))
-
-(global-set-key (kbd (if (eq system-type 'gnu/linux) "s-g" "©")) 'my-run-good-auto)
-
 ; bash-mode
 
 (add-to-list 'auto-mode-alist '("\.sh$" . bash-mode))
@@ -1711,61 +1076,6 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
 ;; (autoload 'gfm-mode "markdown-mode"
 ;;    "Major mode for editing GitHub Flavored Markdown files" t)
 (add-to-list 'auto-mode-alist '("README\\.md\\'" . gfm-mode))
-
-(my-banner "Copilot, ...")
-
-;;;;;;;; github copilot ;;;;;;;;;;;;;;
-;
-; -> https://github.com/copilot-emacs/copilot.el
-;
-; - brew install node / apt install npm nodejs
-;
-; -> ‘M-x copilot-install-server‘
-;
-; M-x copilot-install-server
-; M-x copilot-login
-
-(if (executable-find "node")
-    (progn
-      (use-package copilot
-        :straight (:host github :repo "copilot-emacs/copilot.el" :files ("*.el"))
-        :ensure t)
-
-      ;; first time:
-      ;; M-x copilot-install-server
-      ;; M-x copilot-login
-
-      ;; suppress ⛔ Warning (copilot): copilot--infer-indentation-offset found no mode-specific indentation offset.
-      (add-to-list 'warning-suppress-log-types '(copilot))
-
-      (dolist (mode '(ahk bash-ts c++ c++-ts c c-or-c++ c-or-c++-ts c-ts cmake cmake-ts css css-ts
-                          csv dockerfile dockerfile-ts elisp elisp-ts emacs-lisp emmet feature fundamental
-                          gfm go go-ts groovy html html-ts java java-ts javascript javascript-ts js-json js
-                          json json-ts lua make make-ts markdown markdown-ts nxml perl php plantuml powershell
-                          python python-ts ruby ruby-ts scss sgml sh sh-script shell-script sql text typescript
-                          typescript-ts web xml yaml yaml-ts))
-        (let ((hook (intern (concat (symbol-name mode) "-mode-hook"))))
-          (add-hook hook 'copilot-mode)
-          ;; (add-hook hook 'highlight-indent-guides-mode))
-          ))
-
-      ;; (add-hook 'after-change-major-mode-hook 'copilot-turn-on-unless-buffer-read-only)
-
-
-      (when (fboundp 'keymap-set)
-        (keymap-set copilot-completion-map "TAB" 'copilot-accept-completion)
-        (keymap-set copilot-completion-map "C-<tab>" 'copilot-accept-completion-by-word)
-        (keymap-set copilot-completion-map "S-<tab>" 'copilot-accept-completion-by-line)
-        (keymap-set copilot-completion-map "C-g" 'copilot-clear-overlay)
-        (keymap-set copilot-completion-map "C-<right>" 'copilot-next-completion)
-        (keymap-set copilot-completion-map "C-<left>" 'copilot-previous-completion)
-        ;; (define-key copilot-completion-map (kbd "") 'copilot-accept-completion-by-paragraph)
-        ;; (define-key copilot-mode-map (kbd "TAB") 'copilot-complete)
-        (keymap-set copilot-completion-map "C-<return>" 'copilot-panel-complete)))
-
-  ;; else, if `node` not found (Windows...):
-
-  (message "`node` not found, copilot not initialized"))
 
 (my-banner "ssh-agent, ...")
 
@@ -1890,175 +1200,11 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
 ;(set-default-directory-for-all-buffers-delayed)
 (add-hook 'desktop-after-read-hook 'set-default-directory-for-all-buffers-delayed)
 
-; aidermacs
-
-(my-banner "Aider, aidermacs...")
-
-(if (executable-find "aider")
-    (progn
-      (global-set-key (kbd "C-c a") 'aidermacs-transient-menu)
-
-      ;; aider-ce
-      ;; ========
-      ;;
-      ;; uv tool install --python python3.12 aider-ce
-      ;; Installed 5 executables: aider-ce, ce, ce-cli, ce.cli, cecli
-      ;;
-      ;; uv tool upgrade --python python3.12 aider-ce
-      ;;
-      ;; Github Copilot key
-      ;; ==================
-      ;;
-      ;; https://aider.chat/docs/llms/github.html (OPENAI_API_BASE,
-      ;; OPENAI_API_KEY in .bashrc) But then we get
-      ;; "forbidden". Instead: set aidermacs-default-model to
-      ;; github_copilot/gpt-4.1, aider will prompt for Github login,
-      ;; then set those variables from those files (see below)
-      ;;
-      ;; https://www.reddit.com/r/ChatGPTCoding/comments/1lk2mvv/aider_anyone_have_success_with_gh_copilot_oauth/
-      ;; https://github.com/Aider-AI/aider/issues/2227#issuecomment-3141551921
-      ;;
-      ;; Also ~/.aider.conf.yml for model defaults etc.
-      ;;
-      ;; Test with
-      ;;
-      ;;   curl -s $OPENAI_API_BASE/models -H "Authorization: Bearer $OPENAI_API_KEY" | jq -r '.data[].id'
-      ;;
-      ;;       gpt-4.1
-      ;;       gpt-5-mini
-      ;;       gpt-5
-      ;;       gpt-3.5-turbo
-      ;;       gpt-3.5-turbo-0613
-      ;;       gpt-4o-mini
-      ;;       gpt-4o-mini-2024-07-18
-      ;;       gpt-4
-      ;;       gpt-4-0613
-      ;;       gpt-4-0125-preview
-      ;;       gpt-4o
-      ;;       gpt-4o-2024-11-20
-      ;;       gpt-4o-2024-05-13
-      ;;       gpt-4-o-preview
-      ;;       gpt-4o-2024-08-06
-      ;;       grok-code-fast-1
-      ;;       text-embedding-ada-002
-      ;;       text-embedding-3-small
-      ;;       text-embedding-3-small-inference
-      ;;       claude-sonnet-4
-      ;;       claude-sonnet-4.5
-      ;;       gemini-2.5-pro
-      ;;       gpt-4.1-2025-04-14
-      ;;
-      ;;
-      ;; github_copilot Setup
-      ;; ====================
-      ;;
-      ;; github_copilot/gpt-5 seems not to work (doesn't have editor auth):
-      ;;   litellm.BadRequestError: Github_copilotException - bad request: missing
-      ;;   Editor-Version header for IDE auth
-      ;;
-      ;; Experiment with https://github.com/Aider-AI/aider/issues/2227#issuecomment-3141551921 :
-      ;;
-      ;; * OK: Current aider seems to use litellm==1.75.0
-      ;;
-      ;; * Create ~/.aider.model.settings.yml:
-      ;;
-      ;;   - name: github_copilot/gpt-4.1
-      ;;     # edit_format: diff
-      ;;     extra_params:
-      ;;       max_tokens: 80000
-      ;;       extra_headers:
-      ;;         User-Agent: GithubCopilot/1.155.0
-      ;;         Editor-Plugin-Version: copilot/1.155.0
-      ;;         Editor-Version: vscode/1.85.1
-      ;;         Copilot-Integration-Id: vscode-chat
-      ;;
-      ;; * But this is enough as default:
-      ;;
-      ;;   - name: aider/extra_params
-      ;;     extra_params:
-      ;;       extra_headers:
-      ;;         Editor-Version: vscode/42
-      ;;
-      ;; * Works again, this fixes the missing editor header.
-      ;;
-      ;; Quota
-      ;; =====
-      ;;
-      ;; Github Copilot has a "premium" quota (-> Web GUI, right at the top).
-      ;;
-      ;; Remove confusing/old tokens, re-login everything
-      ;; ================================================
-      ;;
-      ;;   find ~/.config -type f | xargs grep -l ghu_ |grep -v \~ | grep -v \.old
-      ;;   -rw-r--r--@ 1 xx  staff  41 Jun  5  2025 .config/copilot-chat/github-token
-      ;;     ghu_...
-      ;;   -rw-r--r--@ 1 xx  staff  90 Jun  4  2025 .config/github-copilot/hosts.json
-      ;;     {"github.com":{"user":"...","oauth_token":"ghu_..."}}
-      ;;   -rw-r--r--@ 1 xx  staff  40 Dec 10 14:14 .config/litellm/github_copilot/access-token
-      ;;     ghu_...
-
-      ;;
-      ;; mv ~/.config/copilot-chat ~/.config/copilot-chat.old
-      ;; mv ~/.config/github-copilot ~/.config/github-copilot.old
-      ;; mv ~/.config/litellm/github_copilot ~/.config/litellm/github_copilot.old
-      ;;
-      ;; unset OPENAI_API_BASE   # not needed for aider with gpt-4/gpt-5, but later with gpt-5-codex
-      ;; unset OPENAI_API_KEY
-      ;; aider
-      ;;  # github login procedure -> everything works, info stored in ~/.config/litellm/github_copilot
-      ;;
-      ;; M-x aidermacs works
-      ;;
-      ;; M-x copilot-chat does its own github_copilot login; works
-      ;;
-      ;; M-x copilot-login does its own login, works.
-      ;;
-      ;; The above 3 files are recreated.
-      ;;
-      ;; Get gpt-5-codex to work
-      ;; =======================
-      ;;
-      ;; .bash_profile ->
-      ;;
-      ;; export OPENAI_API_BASE=$(jq -r '.endpoints.api' ~/.config/litellm/github_copilot/api-key.json)
-      ;; -> https://api.business.githubcopilot.com
-      ;; export OPENAI_API_KEY=$(cat ~/.config/litellm/github_copilot/access-token)
-
-      (if (eq system-type 'darwin) ; MacOS
-          (progn
-            (message "Enabling special emacs_cecli.sh")
-            (customize-set-variable 'aidermacs-program "~/bin/emacs_cecli.sh")))
-      ))
-
-(defun my-get-aider-gpt-model (&optional interactive)
-  "Extract the GPT model name from the ~/.aider.conf.yml file."
-  (interactive)
-    (let ((model-line (with-temp-buffer
-                        (insert-file-contents "~/.aider.conf.yml")
-                        (goto-char (point-min))
-                        (if (re-search-forward "^model:[ \t]*\\(.*\\)$" nil t)
-                            (match-string 1)
-                            nil))))
-        (if model-line
-            (let* ((model-name (string-trim model-line))
-                   (slash-pos (string-match "/" model-name))
-                   (model-short-name (if slash-pos
-                                         (substring model-name (1+ slash-pos))
-                                       model-name)))
-              (progn
-                (message "Aider GPT model: %s" model-short-name)
-                model-short-name))
-          (message "No model found in ~/.aider.conf.yml"))))
-
-(progn
-  (setopt copilot-lsp-settings `(:copilot.model ,(my-get-aider-gpt-model)))
-  (setopt copilot-chat-default-model (my-get-aider-gpt-model))
-  (setopt copilot-chat-commit-model (my-get-aider-gpt-model)))
-
 (load-file (expand-file-name "init_notmuch.el" user-emacs-directory))
 (load-file (expand-file-name "init_pop_os.el" user-emacs-directory))
 (load-file (expand-file-name "init_projectile.el" user-emacs-directory))
 (load-file (expand-file-name "init_copilot_chat.el" user-emacs-directory))
+(load-file (expand-file-name "init_compilation.el" user-emacs-directory))
 
 ;; Emigo Aider alternative...
 
@@ -2136,8 +1282,6 @@ and preventing it from being removed by `delete-other-windows` (C-x 1)."
 ; Show possible key bindings after a short delay
 
 (which-key-mode 1)
-
-(global-set-key (kbd "C-c C-k") 'kill-compilation)
 
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
 
