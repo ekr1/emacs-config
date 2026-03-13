@@ -80,9 +80,10 @@
 (straight-use-package 'vterm)
 (straight-use-package 'lab)
 (straight-use-package 'emacs-everywhere)       ; ctrl-cmd-e to open an emacs frame in the current directory, with the current clipboard content as the initial buffer content
-(straight-use-package 'kind-icon) ; icons for corfu
-(when (straight-use-package 'corfu)
-  (global-corfu-mode))
+;; completion popups, a bit annoying
+;; (when (straight-use-package 'corfu)
+;;   (global-corfu-mode))
+;; (straight-use-package 'kind-icon) ; icons for corfu
 (straight-use-package 'shell-maker)
 ; (straight-use-package 'agent-shell)
 (straight-use-package 'ripgrep)
