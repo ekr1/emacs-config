@@ -1,7 +1,7 @@
 ;;; init_copilot_chat.el --- Copilot Chat configuration
 ;;; -*- lexical-binding: t; -*-
 
-(ekr-banner "copilot-chat")
+(my-banner "copilot-chat")
 
 (use-package copilot-chat
   :straight (:host github :repo "chep/copilot-chat.el" :files ("*.el"))
@@ -49,7 +49,7 @@
         (push instance copilot-chat--instances))
       instance)))
 
-(defun ekr-copilot-chat-ask-and-return-string (prompt)
+(defun my-copilot-chat-ask-and-return-string (prompt)
   "Ask copilot chat for a response to PROMPT and return the result."
   (let ((result nil)
         (tmp ""))

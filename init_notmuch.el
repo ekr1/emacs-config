@@ -1,18 +1,24 @@
 ;;; init_notmuch.el --- Notmuch configuration
 ;;; -*- lexical-binding: t; -*-
                                         ;
-(ekr-banner "Notmuch...")
+(my-banner "Notmuch...")
 
 ;; dpkg -L elpa-notmuch
 
 ;; if the file ~/Daten/Mail/notmuch exists...
-(if (file-exists-p "/home/ekr/Daten/Mail/notmuch")
+(if (file-exists-p (concat (getenv "HOME") "/Daten/Mail/notmuch"))
     (progn
       (message "Custom notmuch binary is available.")
-      (setopt notmuch-command "/home/ekr/Daten/Mail/notmuch")
+      (setopt notmuch-command (concat (getenv "HOME") "/Daten/Mail/notmuch"))
+      (unless (file-exists-p notmuch-command)
+        (error "Notmuch binary not found at %s. Please check your configuration."
+               notmuch-command))
 
       ;; (add-to-list 'load-path "/usr/share/emacs/site-lisp/elpa-src/notmuch-0.35")
-      (add-to-list 'load-path "/home/ekr/Daten/Mail/data/elisp/notmuch-0.37")
+      (add-to-list 'load-path (concat (getenv "HOME") "/Daten/Mail/data/elisp/notmuch-0.37"))
+      (error "Notmuch elisp directory not found at %s. Please check your configuration."
+             (concat (getenv "HOME") "/Daten/Mail/data/elisp/notmuch-0.37"))
+
       (require 'notmuch)
 
       (message "Notmuch sanity check ... if it hangs, make sure podman runs.")

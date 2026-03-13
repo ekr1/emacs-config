@@ -1,12 +1,12 @@
 ;;; package --- Summary
 
 ;; define a "banner" defun that outputs a message with a nice ASCII art border
-(defun ekr-banner (msg)
+(defun my-banner (msg)
   "Display a message in a bordered box."
   (let ((border (make-string (length msg) ?-)))
     (message "\n%s\n%s\n%s\n" border msg border)))
 
-(ekr-banner "Start init.el")
+(my-banner "Start init.el")
 
 ;; Initialization 'straight
 
@@ -25,7 +25,7 @@
 
 ;; Straight package versions, diff etc. -> see straight_versions.el
 
-(ekr-banner "Load straight-based packages")
+(my-banner "Load straight-based packages")
 
 (straight-use-package 'org)
 ; load the file ./straight/build/org/org-table.el for turn-on-orgtbl, else feature-mode breaks
@@ -97,7 +97,7 @@
 
 (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
 
-(ekr-banner "git blame in status line")
+(my-banner "git blame in status line")
 
 ; git blame in status line...
 (straight-use-package 'emacs-async)
@@ -132,7 +132,7 @@
 
 ;; ------------------------ flycheck plus additional modules
 
-(ekr-banner "flycheck")
+(my-banner "flycheck")
 
 (use-package flycheck
   :straight t
@@ -160,7 +160,7 @@
 ;; (with-eval-after-load 'flycheck (flycheck-status-emoji-mode))
 ;; (eval-after-load 'flycheck '(add-hook 'flycheck-mode-hook #'flycheck-checkbashisms-setup))
 
-(ekr-banner "compile, feature-mode")
+(my-banner "compile, feature-mode")
 
 ; required since some compilation vars are used later
 (require 'compile)
@@ -177,7 +177,7 @@
 ;(ido-mode t) ; use 'buffer rather than t to use only buffer switching
 ;(ido-everywhere t)
 
-(ekr-banner "Custom variables")
+(my-banner "Custom variables")
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -197,12 +197,7 @@
     "white"])
  '(auto-hscroll-mode t)
  '(auto-save-default t)
- '(auto-save-file-name-transforms
-   '(("\\`/[^/]*:\\([^/]*/\\)*\\([^/]*\\)\\'"
-      "d:/DOCUME~1/ekraemer/LOCALS~1/Temp/\\2" t)
-     (".*plink:\\(.*\\)" "d:/DOCUME~1/ekraemer/LOCALS~1/Temp/\\1" t)))
  '(backup-by-copying t)
- '(backup-directory-alist '(("." . "/home/ekr/.emacs.d/backups")))
  '(c-basic-offset 4)
  '(c-default-style '((awk-mode . "awk") (other . "ellemtel")))
  '(column-number-mode t)
@@ -446,7 +441,7 @@
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
 
-(ekr-banner "ekr compilation extensions")
+(my-banner "compilation extensions")
 
 ; (setopt special-display-buffer-names
 ;           '("*Async Shell Command*" "*grep*" "*compilation*" "*vc-dir*"))
@@ -454,45 +449,7 @@
 ; note: special-display-buffer-names is deprecated, use display-buffer-alist instead
 ; (setopt special-display-buffer-names nil)
 
-;; (defun ekr-wiki-update ()
-;;   (interactive)
-;;   "run ./wiki-update.cfg in the correct directory"
-;;   (if (eq 0 (string-match
-;; 	    "/home/ekr/src/rotlib_ekr/"
-;; 	    (buffer-file-name)))
-
-;;       ;; create rot-perl-lib docs (ekr)
-;;       (shell-command
-;;        "/home/ekr/src/rotlib_ekr/bin/pdoc-local.sh &")
-
-;;     ;; ... or wiki docs
-;;     (let ((buffer (find-file-noselect "/opt/rot/app/sdb1/system/quellen/docs/wiki-update.cfg"))
-;; 	  (old-window (selected-window))
-;; 	  (old-file-name (buffer-file-name)))
-;;       (if buffer
-;; 	  (progn
-;; 	    (delete-other-windows)
-;; 	    (set-buffer buffer)
-;; 	    (shell-command
-;; 	     (concat "./wiki-update.cfg -o '/"
-;; 		     (file-name-nondirectory old-file-name)
-;; 		     "$' &"))
-;; 	    (select-window old-window))
-;; 	(message "Open wiki-update.cfg first"))))
-;;   )
-
-;; (defun ekr-compile-plsql ()
-;;   (interactive)
-;;   "compile the current .sql file in the correct schema"
-;;   (if (eq 0 (string-match
-;; 	     "/opt/rot/app/release/dev-ekr/quellen/packages/"
-;; 	     (buffer-file-name)))
-;;       (progn (save-buffer)
-;;              (shell-command
-;;               (concat "date ; echo | node appsys_dev @"
-;;                       (file-name-nondirectory buffer-file-name))))))
-
-(defun ekr-recompile ()
+(defun my-recompile ()
   "Save all files, wait a little bit, then call (recompile).  For compilations that watch file-change-times (RotTestHelper...)."
   (interactive)
   (progn (save-some-buffers t)
@@ -524,21 +481,21 @@
                                  (delete-window win)))))
          ))
 
-(defun ekr-compilation-finished (buf result)
+(defun my-compilation-finished (buf result)
   "Play a beep when compilation finishes."
   ; if the "afplay" exec exists...
   (if (executable-find "afplay")
       (start-process "*Compilation Finished Beep*" nil "afplay" "/Users/KRAEME/.emacs.d/short_beep.m4a")))
-(remove-hook 'compilation-finish-functions 'ekr-compilation-finished)
-(add-hook 'compilation-finish-functions 'ekr-compilation-finished)
+(remove-hook 'compilation-finish-functions 'my-compilation-finished)
+(add-hook 'compilation-finish-functions 'my-compilation-finished)
 
-(defun ekr-git-gui ()
+(defun my-git-gui ()
   "Run 'git gui' without a buffer."
   (interactive)
   (start-process "git gui" nil "git" "gui")
   (message "'git gui' started"))
 
-(defun ekr-next-scenario ()
+(defun my-next-scenario ()
   "Jump to the next cucumber scenario in the compilation buffer."
   (interactive)
   (switch-to-buffer-other-window "*compilation*")
@@ -552,15 +509,15 @@
   (search-backward "Szenario:")
   (execute-kbd-macro (kbd "<return>")))
 
-;; (global-set-key (kbd "<f1>") 'ekr-wiki-update)
-(global-set-key (kbd "M-a") 'ekr-recompile)
-(global-set-key (kbd "M-c") 'ekr-recompile)
-;; (global-set-key (kbd "<f3>") 'ekr-compile-plsql)
-(global-set-key (kbd "<f5>") 'ekr-git-gui)
+;; (global-set-key (kbd "<f1>") 'my-wiki-update)
+(global-set-key (kbd "M-a") 'my-recompile)
+(global-set-key (kbd "M-c") 'my-recompile)
+;; (global-set-key (kbd "<f3>") 'my-compile-plsql)
+(global-set-key (kbd "<f5>") 'my-git-gui)
 (global-set-key (kbd "M-n") 'next-error)
 (global-set-key (kbd "M-p") 'previous-error)
-(global-set-key (kbd "C-M-n") 'ekr-next-scenario)
-(global-set-key (kbd "C-M-p") 'ekr-previous-scenario)
+(global-set-key (kbd "C-M-n") 'my-next-scenario)
+(global-set-key (kbd "C-M-p") 'my-previous-scenario)
 (global-set-key (kbd "C-/") 'comment-or-uncomment-region)
 (global-set-key (kbd "C-#") 'comment-or-uncomment-region)
 
@@ -579,20 +536,20 @@
 
 (global-set-key (kbd "C-x C-c") 'ask-before-closing)
 
-;(find-file-noselect "/ekr@10.226.93.5:/opt")
+;(find-file-noselect "/my@10.226.93.5:/opt")
 
-(defun starts-with-ekr (symb)
-      "Returns non-nil if symbol symb starts with 'ekr-'.  Else nil."
+(defun starts-with-my (symb)
+      "Returns non-nil if symbol symb starts with 'my-'.  Else nil."
       (let ((s (symbol-name symb)))
-        (cond ((>= (length s) (length "ekr-"))
-               (string-equal (substring s 0 (length "ekr-")) "ekr-"))
+        (cond ((>= (length s) (length "my-"))
+               (string-equal (substring s 0 (length "my-")) "my-"))
               (t nil))))
 
 (setopt compilation-error-regexp-alist-alist
-      (cl-remove-if (lambda (item) (starts-with-ekr (car item)))
+      (cl-remove-if (lambda (item) (starts-with-my (car item)))
                  compilation-error-regexp-alist-alist))
 (setopt compilation-error-regexp-alist
-      (cl-remove-if 'starts-with-ekr
+      (cl-remove-if 'starts-with-my
                  (mapcar 'car compilation-error-regexp-alist-alist)))
 
 ; M-x re-builder
@@ -605,224 +562,224 @@
 
 ; ignore spurious output
 ;      stmt.c:243:in oci8lib_230.bundle
-(add-to-list 'compilation-error-regexp-alist 'ekr-oci8-stmt)
+(add-to-list 'compilation-error-regexp-alist 'my-oci8-stmt)
 (add-to-list 'compilation-error-regexp-alist-alist
- 	     '(ekr-oci8-stmt "^ *\\(stmt.c\\):\\([0-9]+\\):"
+ 	     '(my-oci8-stmt "^ *\\(stmt.c\\):\\([0-9]+\\):"
 		     1 2 nil 0))
 
 ; comments on every cucumber line
 ; Wenn die REST-API für Mobilfunkverträge aufgerufen wird # features/step_definitions/api_mobilfunk_vertraege_steps.rb:17
-(add-to-list 'compilation-error-regexp-alist 'ekr-cucumber-comment)
+(add-to-list 'compilation-error-regexp-alist 'my-cucumber-comment)
 (add-to-list 'compilation-error-regexp-alist-alist
- 	     '(ekr-cucumber-comment "# \\(.+rb\\):\\([0-9]+\\)$"
+ 	     '(my-cucumber-comment "# \\(.+rb\\):\\([0-9]+\\)$"
 		     1 2 nil 0))
 
 ; build in docker... /app/ entfernen
 ; /app/src/emil/build.xml:226: Javadoc failed: java.io.IOException: Cannot run program "javadoc": error=2, No such file or directory
-(add-to-list 'compilation-error-regexp-alist 'ekr-container-remove-app)
+(add-to-list 'compilation-error-regexp-alist 'my-container-remove-app)
 (add-to-list 'compilation-error-regexp-alist-alist
- 	     '(ekr-container-remove-app "^/app/\\(.+?\\):\\([0-9]+\\):"
+ 	     '(my-container-remove-app "^/app/\\(.+?\\):\\([0-9]+\\):"
                                      1 2 nil 2))
 
 ; pytest/stacktrace
 ; file /app/tests/test_basics.py, line 14
-(add-to-list 'compilation-error-regexp-alist 'ekr-pytest-container-trace)
+(add-to-list 'compilation-error-regexp-alist 'my-pytest-container-trace)
 (add-to-list 'compilation-error-regexp-alist-alist
- 	     '(ekr-pytest-container-trace "^file /app/\\(.+?\\), line \\([0-9]+\\)$"
+ 	     '(my-pytest-container-trace "^file /app/\\(.+?\\), line \\([0-9]+\\)$"
                                      1 2 nil 2))
 
 ; pytest / yet another format
 ;  File "/app/application/routes/halerium.py", line 28
-(add-to-list 'compilation-error-regexp-alist 'ekr-pytest-app-error)
+(add-to-list 'compilation-error-regexp-alist 'my-pytest-app-error)
 (add-to-list 'compilation-error-regexp-alist-alist
- 	     '(ekr-pytest-app-error "^ *File \"/app/\\(.+?\\)\", line \\([0-9]+\\)$"
+ 	     '(my-pytest-app-error "^ *File \"/app/\\(.+?\\)\", line \\([0-9]+\\)$"
                                      1 2 nil 2))
 
 ; ignore pytest timing
 ; #13 3.878 test_main.py:79:4: E0602: Undefined variable '_clear_all' (undefined-variable)
-(add-to-list 'compilation-error-regexp-alist 'ekr-pytest-timing)
+(add-to-list 'compilation-error-regexp-alist 'my-pytest-timing)
 (add-to-list 'compilation-error-regexp-alist-alist
- 	     '(ekr-pytest-timing "^#[0-9]+ [0-9]+.[0-9]+ \\(.+?\\):\\([0-9]+\\):"
+ 	     '(my-pytest-timing "^#[0-9]+ [0-9]+.[0-9]+ \\(.+?\\):\\([0-9]+\\):"
                                      1 2 nil 2))
 
 ; ignore /usr/local...
 ; /usr/local/lib/python3.7/site-packages/urllib3/connection.py:170:
-(add-to-list 'compilation-error-regexp-alist 'ekr-ignore-usr-local)
+(add-to-list 'compilation-error-regexp-alist 'my-ignore-usr-local)
 (add-to-list 'compilation-error-regexp-alist-alist
- 	     '(ekr-ignore-usr-local "^/usr/local/"
+ 	     '(my-ignore-usr-local "^/usr/local/"
                                      nil nil nil 0))
 
 ; also jump between Szenarios...
 ;  Szenario: xxxxx           # /home/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.feature:242
-(add-to-list 'compilation-error-regexp-alist 'ekr-cucumber-scenario)
+(add-to-list 'compilation-error-regexp-alist 'my-cucumber-scenario)
 (add-to-list 'compilation-error-regexp-alist-alist
- 	     '(ekr-cucumber-scenario "Szenario:.*# \\(.+\\.feature\\):\\([0-9]+\\)"
+ 	     '(my-cucumber-scenario "Szenario:.*# \\(.+\\.feature\\):\\([0-9]+\\)"
                                      1 2 nil 1))
 
 ; stacktrace
 ;    [  0] "/Users/KRAEME/Documents/src/akp/acnneu/app/controllers/gps_controller.rb:128:in `block (2 levels) in show_analytics'",
-(add-to-list 'compilation-error-regexp-alist 'ekr-ruby-stacktrace)
+(add-to-list 'compilation-error-regexp-alist 'my-ruby-stacktrace)
 (add-to-list 'compilation-error-regexp-alist-alist
- 	     '(ekr-ruby-stacktrace "^ *.[ 0-9]+. \"\\(.+\\.rb\\):\\([0-9]+\\):"
+ 	     '(my-ruby-stacktrace "^ *.[ 0-9]+. \"\\(.+\\.rb\\):\\([0-9]+\\):"
                                      1 2 nil 2))
 
 ; ruby stack trace -> rbenv are low prio
 ;    [  1] "/Users/KRAEME/.rbenv/versions/2.3.3/lib/ruby/gems/2.3.0/gems/actionpack-4.0.6/lib/action_controller/metal/mime_responds.rb:191:in `respond_to'",
-(add-to-list 'compilation-error-regexp-alist 'ekr-rbenv)
+(add-to-list 'compilation-error-regexp-alist 'my-rbenv)
 (add-to-list 'compilation-error-regexp-alist-alist
- 	     '(ekr-rbenv "\\([a-zA-Z0-9_./-]*/.rbenv/.*?\\):\\([0-9]+\\):"
+ 	     '(my-rbenv "\\([a-zA-Z0-9_./-]*/.rbenv/.*?\\):\\([0-9]+\\):"
 		     1 2 nil 0))
 
 ; cucumber output => ignore HTML on first line of HTML stacktrace
 ;            <pre><code>app/models/concerns/gp_asp.rb:60:in `_update_kundenbetreuer_direktvertrieb&#39;
 ;        <h2>/Users/KRAEME/Documents/src/akp/acnneu/app/views/doculife_api/akte_index.json.jbuilder:14: syntax error, unexpected keyword_ensure, expecting end-of-input</h2>
-(add-to-list 'compilation-error-regexp-alist 'ekr-cucumber-html-pre)
+(add-to-list 'compilation-error-regexp-alist 'my-cucumber-html-pre)
 (add-to-list 'compilation-error-regexp-alist-alist
- 	     '(ekr-cucumber-html-pre ">\\([a-zA-Z0-9_./-]*?\\.[a-z]+\\):\\([0-9]+\\):"
+ 	     '(my-cucumber-html-pre ">\\([a-zA-Z0-9_./-]*?\\.[a-z]+\\):\\([0-9]+\\):"
 		     1 2 nil 2))
 
 ; weird capybara output
 ;          Showing <i>/Users/KRAEME/Documents/src/akp/acnneu/app/views/doculife_api/akte_index.json.jbuilder</i> where line <b>#5</b> raised:
-(add-to-list 'compilation-error-regexp-alist 'ekr-cucumber-showing)
+(add-to-list 'compilation-error-regexp-alist 'my-cucumber-showing)
 (add-to-list 'compilation-error-regexp-alist-alist
- 	     '(ekr-cucumber-showing "Showing <i>\\(.*?\\)</i> where line <b>.\\([0-9]+\\)</b>"
+ 	     '(my-cucumber-showing "Showing <i>\\(.*?\\)</i> where line <b>.\\([0-9]+\\)</b>"
 		     1 2 nil 2))
 
 ;; ; rspec... # entfernen
 ;; ;      # ./spec/acceptance/doculife_api_spec.rb:17:in `block (3 levels) in <top (required)>'
-;; (add-to-list 'compilation-error-regexp-alist 'ekr-remove-hash)
+;; (add-to-list 'compilation-error-regexp-alist 'my-remove-hash)
 ;; (add-to-list 'compilation-error-regexp-alist-alist
-;;  	     '(ekr-remove-hash "# \\(.+?\\):\\([0-9]+\\)$"
+;;  	     '(my-remove-hash "# \\(.+?\\):\\([0-9]+\\)$"
 ;;                                      1 2 nil 2))
 
 ; Yet another style of ruby errors...
 ;	 3: from /Users/xx/Documents/src/akp/acn_neu_tools/bin/acn_tools_jira.rb:146:in `add_watcher'
-(add-to-list 'compilation-error-regexp-alist 'ekr-ruby-acntools)
+(add-to-list 'compilation-error-regexp-alist 'my-ruby-acntools)
 (add-to-list 'compilation-error-regexp-alist-alist
- 	     '(ekr-ruby-acntools "from \\([^:]+\\):\\([0-9]+\\):" 1 2 nil 2))
+ 	     '(my-ruby-acntools "from \\([^:]+\\):\\([0-9]+\\):" 1 2 nil 2))
 
 ; ignore API warnings...
 ; /app/src/emil/src/de/edag/fps/emil/AnwendungEMIL.java:54: warning: Signal is internal proprietary API and may be removed in a future release
-(add-to-list 'compilation-error-regexp-alist 'ekr-ignore-sunapi)
+(add-to-list 'compilation-error-regexp-alist 'my-ignore-sunapi)
 (add-to-list 'compilation-error-regexp-alist-alist
- 	     '(ekr-ignore-sunapi ".*is internal proprietary API and may be removed in a future release.*"
+ 	     '(my-ignore-sunapi ".*is internal proprietary API and may be removed in a future release.*"
 		     nil nil nil 0))
 
 ; ignore cucumber artifact...
 ; -e:1:in `<main>'
-(add-to-list 'compilation-error-regexp-alist 'ekr-ignore-minuse)
+(add-to-list 'compilation-error-regexp-alist 'my-ignore-minuse)
 (add-to-list 'compilation-error-regexp-alist-alist
- 	     '(ekr-ignore-minuse "^-e:1:in"
+ 	     '(my-ignore-minuse "^-e:1:in"
 		     nil nil nil 0))
 
 ; saxon / xslt errors
 ; Error at xsl:param on line 770 of ipp_measurement.xsl:
-(add-to-list 'compilation-error-regexp-alist 'ekr-saxon-error)
+(add-to-list 'compilation-error-regexp-alist 'my-saxon-error)
 (add-to-list 'compilation-error-regexp-alist-alist
- 	     '(ekr-saxon-error "^Error at .*? on line \\([0-9]+\\) of \\(.+\\):$"
+ 	     '(my-saxon-error "^Error at .*? on line \\([0-9]+\\) of \\(.+\\):$"
                                      2 1 nil 2))
 
 ; saxon / xslt error with column
 ; Error at xsl:call-template on line 598 column 78 of ipp_measurement.xsl:
-(add-to-list 'compilation-error-regexp-alist 'ekr-saxon-error-col)
+(add-to-list 'compilation-error-regexp-alist 'my-saxon-error-col)
 (add-to-list 'compilation-error-regexp-alist-alist
- 	     '(ekr-saxon-error-col "^Error at .*? on line \\([0-9]+\\) column \\([0-9]+\\) of \\(.+\\):$"
+ 	     '(my-saxon-error-col "^Error at .*? on line \\([0-9]+\\) column \\([0-9]+\\) of \\(.+\\):$"
                                      3 1 2 2))
 
 ; saxon / backtrace
 ;  at xsl:call-template name="tolerances" (file:/Users/KRAEME/Documents/src/doorfitting/process-adapter/config/ipp_measurement.xsl#598)
-(add-to-list 'compilation-error-regexp-alist 'ekr-saxon-backtrace)
+(add-to-list 'compilation-error-regexp-alist 'my-saxon-backtrace)
 (add-to-list 'compilation-error-regexp-alist-alist
- 	     '(ekr-saxon-backtrace " at .*? (file:\\(.+\\)#\\([0-9]+\\))$"
+ 	     '(my-saxon-backtrace " at .*? (file:\\(.+\\)#\\([0-9]+\\))$"
                                      1 2 nil 2))
 
 ; PHP with docker prefix
 ; #1 /opt/app-root/src/webroot/php/application/AjaxConnector.php(2063): Tools::convertTimestampToDate('@1662716581', false)
-(add-to-list 'compilation-error-regexp-alist 'ekr-php-approot)
+(add-to-list 'compilation-error-regexp-alist 'my-php-approot)
 (add-to-list 'compilation-error-regexp-alist-alist
- 	     '(ekr-php-approot "#[0-9]+ /opt/app-root/src/\\(.+?.php\\)(\\([0-9]+\\)): "
+ 	     '(my-php-approot "#[0-9]+ /opt/app-root/src/\\(.+?.php\\)(\\([0-9]+\\)): "
                                      1 2 nil 2))
 
 ; #2  /opt/app-root/src/tests/unit/KafkaTest.php:134
-(add-to-list 'compilation-error-regexp-alist 'ekr-php-codeception-backtrace)
+(add-to-list 'compilation-error-regexp-alist 'my-php-codeception-backtrace)
 (add-to-list 'compilation-error-regexp-alist-alist
- 	     '(ekr-php-codeception-backtrace "/opt/app-root/src/\\(.+?.php\\):\\([0-9]+\\)"
+ 	     '(my-php-codeception-backtrace "/opt/app-root/src/\\(.+?.php\\):\\([0-9]+\\)"
                                      1 2 nil 2))
 
 ; PHP Codeception snapshots
 ;  [Snapshot Saved] file:///opt/app-root/src/tests/_output/debug/2023-01-18_14-02-03_63c7fbdb9f1029.50598734.html
-(add-to-list 'compilation-error-regexp-alist 'ekr-php-codeception-snapshot)
+(add-to-list 'compilation-error-regexp-alist 'my-php-codeception-snapshot)
 (add-to-list 'compilation-error-regexp-alist-alist
- 	     '(ekr-php-codeception-snapshot ".*\\[Snapshot Saved\\] file:///opt/app-root/src/\\(.+?.html\\)"
+ 	     '(my-php-codeception-snapshot ".*\\[Snapshot Saved\\] file:///opt/app-root/src/\\(.+?.html\\)"
                                      1 nil nil 2))
 
 ; PHP Codeception HTML
 ;Html: /opt/app-root/src/tests/_output/ArchivedMeasurementPlanCest.showListOfArchivedPlans.fail.html
-(add-to-list 'compilation-error-regexp-alist 'ekr-php-codeception-html)
+(add-to-list 'compilation-error-regexp-alist 'my-php-codeception-html)
 (add-to-list 'compilation-error-regexp-alist-alist
- 	     '(ekr-php-codeception-html "Html: /opt/app-root/src/\\(.+?.html\\)"
+ 	     '(my-php-codeception-html "Html: /opt/app-root/src/\\(.+?.html\\)"
                                      1 nil nil 2))
 
 ; PHP Codeception Response
 ;Response: /opt/app-root/src/tests/_output/ArchivedMeasurementPlanCest.showListOfArchivedPlans.fail.html
-(add-to-list 'compilation-error-regexp-alist 'ekr-php-codeception-response)
+(add-to-list 'compilation-error-regexp-alist 'my-php-codeception-response)
 (add-to-list 'compilation-error-regexp-alist-alist
- 	     '(ekr-php-codeception-response "Response: /opt/app-root/src/\\(.+?.html\\)"
+ 	     '(my-php-codeception-response "Response: /opt/app-root/src/\\(.+?.html\\)"
                                      1 nil nil 2))
 
 ; PHP Codeception Png
 ;Png: /opt/app-root/src/tests/_output/ArchivedMeasurementPlanCest.showListOfArchivedPlans.fail.png
-(add-to-list 'compilation-error-regexp-alist 'ekr-php-codeception-png)
+(add-to-list 'compilation-error-regexp-alist 'my-php-codeception-png)
 (add-to-list 'compilation-error-regexp-alist-alist
- 	     '(ekr-php-codeception-png "Png: /opt/app-root/src/\\(.+?.png\\)"
+ 	     '(my-php-codeception-png "Png: /opt/app-root/src/\\(.+?.png\\)"
                                      1 nil nil 2))
 
 ; rspec error
 ;     # ./spec/models/dtag_spec.rb:9:in `block (3 levels) in <top (required)>'
-(add-to-list 'compilation-error-regexp-alist 'ekr-rspec-error)
+(add-to-list 'compilation-error-regexp-alist 'my-rspec-error)
 (add-to-list 'compilation-error-regexp-alist-alist
- 	     '(ekr-rspec-error "# \\(.+?\\):\\([0-9]+\\):"
+ 	     '(my-rspec-error "# \\(.+?\\):\\([0-9]+\\):"
                                      1 2 nil 2))
 
 ; "helm template" error
 ; Error: template: legacy-webserver-backup/templates/pvc.yaml:10:25:
-(add-to-list 'compilation-error-regexp-alist 'ekr-helm-template-error)
+(add-to-list 'compilation-error-regexp-alist 'my-helm-template-error)
 (add-to-list 'compilation-error-regexp-alist-alist
- 	     '(ekr-helm-template-error "Error: template: .*/\\(templates/.+?\\):\\([0-9]+\\):\\([0-9]+\\):"
+ 	     '(my-helm-template-error "Error: template: .*/\\(templates/.+?\\):\\([0-9]+\\):\\([0-9]+\\):"
                                      1 2 3 2))
 
 ; "helm YAML parse" error
 ; Error: YAML parse error on legacy-webserver-backup/templates/cronjob.yaml: error converting YAML to JSON: yaml: line 28: did not find expected '-' indicator
-(add-to-list 'compilation-error-regexp-alist 'ekr-helm-yaml-parse-error)
+(add-to-list 'compilation-error-regexp-alist 'my-helm-yaml-parse-error)
 (add-to-list 'compilation-error-regexp-alist-alist
- 	     '(ekr-helm-yaml-parse-error "Error: YAML parse error on .*/\\(templates/.+?\\): error converting YAML to JSON: yaml: line \\([0-9]+\\):"
+ 	     '(my-helm-yaml-parse-error "Error: YAML parse error on .*/\\(templates/.+?\\): error converting YAML to JSON: yaml: line \\([0-9]+\\):"
                                      1 2 nil 2))
 
 ; internal helm go errors, ignore
 ; install.go:222: [debug] Original chart version: ""
-(add-to-list 'compilation-error-regexp-alist 'ekr-helm-ignore-go)
+(add-to-list 'compilation-error-regexp-alist 'my-helm-ignore-go)
 (add-to-list 'compilation-error-regexp-alist-alist
- 	     '(ekr-helm-ignore-go "[^.:]+\\.go:[0-9]+:"
+ 	     '(my-helm-ignore-go "[^.:]+\\.go:[0-9]+:"
                                      nil nil nil 0))
 
 ; yaml image tag, ignore
 ;            image: mtr.devops.telekom.de/akp/legacy-webserver-backup:1.0.0
-(add-to-list 'compilation-error-regexp-alist 'ekr-yaml-image-tag-ignore)
+(add-to-list 'compilation-error-regexp-alist 'my-yaml-image-tag-ignore)
 (add-to-list 'compilation-error-regexp-alist-alist
- 	     '(ekr-yaml-image-tag-ignore "[\t ]image:[\t ]"
+ 	     '(my-yaml-image-tag-ignore "[\t ]image:[\t ]"
                                      nil nil nil 0))
 
 ; Dockerfiles
 ; Dockerfile.akp-web:98
-(add-to-list 'compilation-error-regexp-alist 'ekr-dockerfile)
+(add-to-list 'compilation-error-regexp-alist 'my-dockerfile)
 (add-to-list 'compilation-error-regexp-alist-alist
- 	     '(ekr-dockerfile "^\\(Dockerfile[^:]+\\):\\([0-9]+\\)$"
+ 	     '(my-dockerfile "^\\(Dockerfile[^:]+\\):\\([0-9]+\\)$"
                                      1 2 nil 2))
 
 ;  File "/.../xxx.py", line 43, in parse_under_cursor
-(add-to-list 'compilation-error-regexp-alist 'ekr-python-parse)
+(add-to-list 'compilation-error-regexp-alist 'my-python-parse)
 (add-to-list 'compilation-error-regexp-alist-alist
-             '(ekr-python-parse "^ *File \"\\(.*?\.py\\)\", line \\([0-9]+\\)"
+             '(my-python-parse "^ *File \"\\(.*?\.py\\)\", line \\([0-9]+\\)"
                                 1 2 nil 2))
 
 ; undo the last add-to-list:
@@ -923,10 +880,10 @@
 ;; C-c ,f	Verify all features in project. (Available in feature and ruby files)
 ;; C-c ,r	Repeat the last verification process.
 ;; C-c ,g	Go to step-definition under point (requires ruby_parser gem >= 2.0.5)
-(define-key feature-mode-map  (kbd "C-c ,v") 'ekr-feature-verify-dev-scenarios-in-buffer)
+(define-key feature-mode-map  (kbd "C-c ,v") 'my-feature-verify-dev-scenarios-in-buffer)
 (define-key feature-mode-map  (kbd "C-c ,V") 'feature-verify-all-scenarios-in-buffer)
 
-(defun ekr-feature-verify-dev-scenarios-in-buffer ()
+(defun my-feature-verify-dev-scenarios-in-buffer ()
   "Run all the @dev tagged scenarios defined in current buffer."
   (interactive)
   (let* ((abs-file-name (buffer-file-name))
@@ -942,7 +899,7 @@
 ;(prefer-coding-system 'utf-8)
 ; ... wird aber in .dir-locals.el eingestellt (auf andere Weise - genügt das?)
 
-(ekr-banner "ANSI colors")
+(my-banner "ANSI colors")
 
 ;; included in 28.2, not required anymore
 ;; ANSI coloring in compilation buffers
@@ -958,7 +915,7 @@
 (add-hook 'compilation-filter-hook 'ansi-color-compilation-filter)
 
 
-(defun ekr-compilation-start-add-fold (args)
+(defun my-compilation-start-add-fold (args)
   "Add '| fold -w <visible-width>' to the command passed to compilation-start.
 If the *compilation* buffer is not visible or does not exist, default to 100."
   (let* ((command (nth 0 args)))
@@ -966,7 +923,7 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
           (concat "( " command " ) 2>&1 | LC_ALL=C   awk '{LEN=400; while (length($0) > LEN) {print substr($0, 1, LEN), \"↩\"; $0 = substr($0, LEN+1)} print $0}' # see init.el"))
     args))
 
-(advice-add 'compilation-start :filter-args #'ekr-compilation-start-add-fold)
+(advice-add 'compilation-start :filter-args #'my-compilation-start-add-fold)
 
 ; ANSI coloring for any buffer
 ; (require 'tty-format)
@@ -992,7 +949,7 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
 
 ;; starten mit "TERM=xterm-256color emacs -nw"
 ;; Font: Consolas 11 Point, Cleartype
-;; SSH cmd:   screen -dR ekremacs bash -c "TERM=xterm-256color emacs -nw"
+;; SSH cmd:   screen -dR myemacs bash -c "TERM=xterm-256color emacs -nw"
 
 ;; Autohotkey:
 
@@ -1100,7 +1057,7 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
 ;; (setopt interprogram-cut-function nil)
 ;; (setopt interprogram-paste-function nil)
 
-(ekr-banner "auto-mode-alist, recent, git, etc.")
+(my-banner "auto-mode-alist, recent, git, etc.")
 
 ;; .html.erb etc.
 
@@ -1239,7 +1196,7 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
 ;; (add-to-list 'compilation-finish-functions
 ;; 	     'notify-compilation-result)
 
-(ekr-banner "Ruby, projectile, ...")
+(my-banner "Ruby, projectile, ...")
 
 ;;;;;;; special ruby stuff (packages installed specifically for that)
 ; https://lorefnon.me/2014/02/02/configuring-emacs-for-rails.html
@@ -1334,7 +1291,7 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
 ;(when (version<= "26.0.50" emacs-version )
 ;  (global-display-line-numbers-mode))
 
-(ekr-banner "Go, org-jira, unicode, fonts...")
+(my-banner "Go, org-jira, unicode, fonts...")
 
 ; golang
 
@@ -1417,7 +1374,7 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
 ;;                         - <Tab> to see all detailled font descriptors
 ;; ALSO!!! Shift-click the frame to visually choose font!
 
-(defun ekr-set-fonts ()
+(defun my-set-fonts ()
   "Setup fonts."
   (interactive)
   (message (cond ((eq system-type 'gnu/linux)
@@ -1442,9 +1399,9 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
 ;;   (pp (current-frame-configuration)))
 
 (add-hook 'emacs-startup-hook
-          (lambda () (run-at-time "1 sec" nil 'ekr-set-fonts)))
+          (lambda () (run-at-time "1 sec" nil 'my-set-fonts)))
 
-(ekr-banner "plantuml, good-auto, ...")
+(my-banner "plantuml, good-auto, ...")
 
 ; plantuml
 
@@ -1459,14 +1416,14 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
 
 ; good-auto
 
-;; (defun ekr-open-chat-file ()
+;; (defun my-open-chat-file ()
 ;;   "Open or create a chat file with the name format chat-YYYYMMDD.md in ~/Documents/src/ai."
 ;;   (let* ((current-date (format-time-string "%Y%m%d"))  ; Get current date in YYYYMMDD format
 ;;          (file-name (concat "~/Documents/ai/chat-" current-date ".md"))  ; Construct file name
 ;;          (file-path (expand-file-name file-name)))  ; Expand to full path
 ;;     (find-file-noselect file-path)))  ; Open the file but don't switch to it
 
-;; (defun ekr-get-query ()
+;; (defun my-get-query ()
 ;;   "Prompt the user for a query, returning the selected region,
 ;;   user input, or the output of a shell command if the current buffer
 ;;   is named COMMIT_EDITMSG."
@@ -1510,13 +1467,13 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
 ;;    (t
 ;;     (read-string "Enter query: "))))
 
-;; (defun ekr-process-answer (query answer)
+;; (defun my-process-answer (query answer)
 ;;   "Process the provided ANSWER content and insert it into the buffer.
 ;; QUERY is the original query used to generate the answer."
 ;;   (let ((answer (with-temp-buffer
 ;;                   (insert-file-contents "~/bin/good-auto/data/answer.txt")
 ;;                   (buffer-string)))
-;;         (answer-buffer (ekr-open-chat-file)))
+;;         (answer-buffer (my-open-chat-file)))
 ;;
 ;;     (with-current-buffer answer-buffer
 ;;       (let ((start-pos (point-max)))
@@ -1569,11 +1526,11 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
 ;;         ;; Return to previous window
 ;;         (other-window 1)))))
 
-(defun ekr-try-insert-branch-name (branch-name reps commit-buffer)
+(defun my-try-insert-branch-name (branch-name reps commit-buffer)
   "Wait until copilot has finished (by busy waiting on the *Messages* buffer) and insert the BRANCH-NAME into the commit message.  REPS is the countdown to timeout."
 
   (if (< reps 0)
-      (message "ekr-try-insert-branch-name: did not find completion message, giving up.")
+      (message "my-try-insert-branch-name: did not find completion message, giving up.")
     (progn
       ;; extract the last 3 lines from the buffer *Messages* into a string
       (let ((finished nil))
@@ -1589,9 +1546,9 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
                 (goto-char (point-min))
                 (insert (concat branch-name ": ")))
             (progn
-              (run-at-time "0.5 sec" nil 'ekr-try-insert-branch-name branch-name (- reps 1) commit-buffer))))))))
+              (run-at-time "0.5 sec" nil 'my-try-insert-branch-name branch-name (- reps 1) commit-buffer))))))))
 
-(defun ekr-insert-commit-msg ()
+(defun my-insert-commit-msg ()
   "Run copilot to figure out a commit message.  Make sure the branch name is included."
   (copilot-mode -1)
   (let ((branch-name (string-trim (shell-command-to-string "git rev-parse --abbrev-ref HEAD 2>/dev/null"))))
@@ -1601,15 +1558,15 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
     (message "flush 4")
     ;; (copilot-chat-insert-commit-message)   ; has a 1 sec timer
     (copilot-chat-insert-commit-message-when-ready)   ; is async with aio
-    (run-at-time "1 sec" nil 'ekr-try-insert-branch-name branch-name 20 (current-buffer))))
+    (run-at-time "1 sec" nil 'my-try-insert-branch-name branch-name 20 (current-buffer))))
 
-(defun ekr-run-good-auto ()
+(defun my-run-good-auto ()
   "Execute a Good-Auto query."
   (interactive)
 
   ;; if the current buffer is the git commit message, then run copilot-chat-insert-commit-message
   (if (string-prefix-p "COMMIT_EDITMSG" (buffer-name))
-      (ekr-insert-commit-msg)
+      (my-insert-commit-msg)
     (progn
 
       (error "This function is deprecated and only to be used in COMMIT_EDITMSG.")
@@ -1618,7 +1575,7 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
       ;;
       ;; ;; Prompt for query and write it to input.txt
       ;;
-      ;; (let ((query (ekr-get-query)))
+      ;; (let ((query (my-get-query)))
       ;;
       ;;   ;; Delete existing answer file
       ;;   (when (file-exists-p "~/bin/good-auto/data/answer.txt")
@@ -1649,12 +1606,12 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
       ;;                    (eq (nth 1 query) t))
       ;;               (insert answer)
       ;;             ;; Process the answer content if it did not match the list case
-      ;;             (ekr-process-answer query answer)))
+      ;;             (my-process-answer query answer)))
       ;;
       ;;       (message "No answer file found.")))))))
       )))
 
-(global-set-key (kbd (if (eq system-type 'gnu/linux) "s-g" "©")) 'ekr-run-good-auto)
+(global-set-key (kbd (if (eq system-type 'gnu/linux) "s-g" "©")) 'my-run-good-auto)
 
 ; bash-mode
 
@@ -1662,7 +1619,7 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
 
 ; tree-sitter
 
-(ekr-banner "tree-sitter")
+(my-banner "tree-sitter")
 
 ;; brew upgrade tree-sitter tree-sitter-cli
 
@@ -1702,11 +1659,11 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
                                         ; (typescript "https://github.com/tree-sitter/tree-sitter-typescript") ; wont build
               ))
 
-      (defvar ekr-treesitter-timestamp-file "~/.emacs.d/tree-sitter/timestamp.txt"
+      (defvar my-treesitter-timestamp-file "~/.emacs.d/tree-sitter/timestamp.txt"
         "The path to the file containing the timestamp.")
 
-      (when (or (not (file-exists-p ekr-treesitter-timestamp-file))
-                (time-less-p (time-add (file-attribute-modification-time (file-attributes ekr-treesitter-timestamp-file)) (* 7 86400))
+      (when (or (not (file-exists-p my-treesitter-timestamp-file))
+                (time-less-p (time-add (file-attribute-modification-time (file-attributes my-treesitter-timestamp-file)) (* 7 86400))
                              (current-time)))
         (dolist (language-source
                  treesit-language-source-alist)
@@ -1714,7 +1671,7 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
             (message
              "Installing Treesitter grammar for %s" language-name)
             (treesit-install-language-grammar language-name)))
-        (with-temp-file ekr-treesitter-timestamp-file (insert (format-time-string "%Y-%m-%d %H:%M:%S"))))
+        (with-temp-file my-treesitter-timestamp-file (insert (format-time-string "%Y-%m-%d %H:%M:%S"))))
 
       (add-to-list 'major-mode-remap-alist '(bash-mode . bash-ts-mode))
       (add-to-list 'major-mode-remap-alist '(cmake-mode . cmake-ts-mode))
@@ -1752,7 +1709,7 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
 ;;    "Major mode for editing GitHub Flavored Markdown files" t)
 (add-to-list 'auto-mode-alist '("README\\.md\\'" . gfm-mode))
 
-(ekr-banner "Copilot, ...")
+(my-banner "Copilot, ...")
 
 ;;;;;;;; github copilot ;;;;;;;;;;;;;;
 ;
@@ -1807,7 +1764,7 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
 
   (message "`node` not found, copilot not initialized"))
 
-(ekr-banner "ssh-agent, ...")
+(my-banner "ssh-agent, ...")
 
 ; ssh-agent on WSL
 
@@ -1904,7 +1861,7 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
 
 ; fix local working directory for desktop-loaded files
 
-(ekr-banner "Fix desktop CWD's...")
+(my-banner "Fix desktop CWD's...")
 
 (defun set-default-directory-for-all-buffers ()
   "Set the default directory for all buffers to their respective file directories."
@@ -1932,7 +1889,7 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
 
 ; aidermacs
 
-(ekr-banner "Aider, aidermacs...")
+(my-banner "Aider, aidermacs...")
 
 (if (executable-find "aider")
     ;; package-install -> aidermacs
@@ -2078,7 +2035,7 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
 
       ))
 
-(defun ekr-get-aider-gpt-model (&optional interactive)
+(defun my-get-aider-gpt-model (&optional interactive)
   "Extract the GPT model name from the ~/.aider.conf.yml file."
   (interactive)
     (let ((model-line (with-temp-buffer
@@ -2099,9 +2056,9 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
           (message "No model found in ~/.aider.conf.yml"))))
 
 (progn
-  (setopt copilot-lsp-settings `(:copilot.model ,(ekr-get-aider-gpt-model)))
-  (setopt copilot-chat-default-model (ekr-get-aider-gpt-model))
-  (setopt copilot-chat-commit-model (ekr-get-aider-gpt-model)))
+  (setopt copilot-lsp-settings `(:copilot.model ,(my-get-aider-gpt-model)))
+  (setopt copilot-chat-default-model (my-get-aider-gpt-model))
+  (setopt copilot-chat-commit-model (my-get-aider-gpt-model)))
 
 (load-file (expand-file-name "init_notmuch.el" user-emacs-directory))
 (load-file (expand-file-name "init_pop_os.el" user-emacs-directory))
@@ -2179,10 +2136,10 @@ Also try to discover and set `lab-token` using the `glab` CLI config."
 
 ; run server
 
-(ekr-banner "Start Server...")
+(my-banner "Start Server...")
 
 (server-start)
 
 (provide 'init)
 
-(ekr-banner "init.el loaded successfully!")
+(my-banner "init.el loaded successfully!")

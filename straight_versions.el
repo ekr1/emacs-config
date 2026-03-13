@@ -3,7 +3,7 @@
 
 ;; write lockfile: straight-freeze-versions -> straight/versions/default.el, copy to straight/versions/default.el-YYYY-MM-DD
 
-;; (defun ekr-compare-straight-version-files (file1 file2)
+;; (defun my-compare-straight-version-files (file1 file2)
 ;;   "Compare two straight.el version files and print keys whose hashes differ.
 ;; FILE1 and FILE2 should be paths to the version files."
 ;;   (let* ((alist1 (with-temp-buffer
@@ -28,7 +28,7 @@
 ;;           (unless (equal val1 val2)
 ;;             (message "%s: %s (file1) vs %s (file2)" key val1 val2)))))))
 
-;; (defun ekr-compare-straight-version-files-with-git-log (file1 file2)
+;; (defun my-compare-straight-version-files-with-git-log (file1 file2)
 ;;   "Compare two straight.el version files and show git log for differing hashes.
 ;; FILE1 and FILE2 should be paths to the version files."
 ;;   (let* ((alist1 (with-temp-buffer
@@ -72,7 +72,7 @@
 
 (require 'seq)
 
-(defun ekr--git-current-branch ()
+(defun my--git-current-branch ()
   "Return the current branch name in `default-directory`, or \"\" on error."
   (string-trim
    (with-output-to-string
@@ -80,7 +80,7 @@
        (call-process "git" nil t nil
                      "rev-parse" "--abbrev-ref" "HEAD")))))
 
-(defun ekr--insert-remote-only-commits-section (branch)
+(defun my--insert-remote-only-commits-section (branch)
   "Insert the \"Remote-only commits\" section for BRANCH into the current buffer.
 Return non-nil iff there are any remote-only commits.
 Assumes `default-directory` is a git repo and point is at the place
@@ -111,7 +111,7 @@ to insert Org content."
                 ;; line is "<sha> <message>" from --oneline
                 (insert (format "  - %s\n" line)))
               (insert "\n")
-              (message "DEBUG: ekr--insert-remote-only-commits-section: found remote-only commits for branch %s"
+              (message "DEBUG: my--insert-remote-only-commits-section: found remote-only commits for branch %s"
                        branch)
               t))
         ;; log failed: keep error info, but signal nil so caller
@@ -122,7 +122,7 @@ to insert Org content."
                  branch log-exit-code))
         nil))))
 
-(defun ekr--get-changelog-diff (branch)
+(defun my--get-changelog-diff (branch)
   "Return plist describing the changelog diff for BRANCH, or nil.
 
 The return value is either nil (no relevant changelog diff)
@@ -185,13 +185,13 @@ Assumes `default-directory` is a git repo."
                          "\n")))
                   (list :file rel-name :diff cleaned))))))))))
 
-(defun ekr--insert-changelog-diff-section (branch)
+(defun my--insert-changelog-diff-section (branch)
   "Compute and insert the changelog diff section for BRANCH into current buffer.
 Returns non-nil iff a changelog diff was found and inserted.
 
 Assumes `default-directory` is a git repo and point is where
 the Org section should be inserted."
-  (let ((result (ekr--get-changelog-diff branch)))
+  (let ((result (my--get-changelog-diff branch)))
     (when result
       (let ((rel-name (plist-get result :file))
             (diff-text (plist-get result :diff)))
@@ -202,15 +202,15 @@ the Org section should be inserted."
         (dolist (line (split-string diff-text "\n"))
           (insert line "\n"))
         (insert "\n")
-        (message "DEBUG: ekr--insert-changelog-diff-section: real diff for branch %s"
+        (message "DEBUG: my--insert-changelog-diff-section: real diff for branch %s"
                  branch)
         t))))
 
-(defun ekr-fetch-remote-main-branches-and-diff-with-local-main-branch ()
+(defun my-fetch-remote-main-branches-and-diff-with-local-main-branch ()
   "For each straight repo, fetch the remote for the current branch and
 show commits that are on origin but not on the local branch, in an Org buffer."
   (interactive)
-  (message "DEBUG: entering ekr-fetch-remote-main-branches-and-diff-with-local-main-branch")
+  (message "DEBUG: entering my-fetch-remote-main-branches-and-diff-with-local-main-branch")
   (let* ((buf-name "*straight-remote-diff*")
          (output-buf (get-buffer-create buf-name))
          (repos-dir (expand-file-name "straight/repos/" user-emacs-directory)))
@@ -232,9 +232,9 @@ show commits that are on origin but not on the local branch, in an Org buffer."
             (message "DEBUG: repo %S is a directory, processing" repo)
             (let* ((default-directory repo)
                    (repo-name (file-name-nondirectory repo))
-                   (branch (ekr--git-current-branch))
+                   (branch (my--git-current-branch))
                    (repo-buf (generate-new-buffer
-                              (format " *ekr-straight-repo-%s*" repo-name)))
+                              (format " *my-straight-repo-%s*" repo-name)))
                    (had-changes nil))
               (message "DEBUG: [%s] initial had-changes=%S" repo-name had-changes)
               (unwind-protect
@@ -260,7 +260,7 @@ show commits that are on origin but not on the local branch, in an Org buffer."
                         (message "DEBUG: [%s] before diff helpers, had-changes=%S"
                                  repo-name had-changes)
                         (let ((changelog-had-diff
-                               (ekr--insert-changelog-diff-section branch)))
+                               (my--insert-changelog-diff-section branch)))
                           (message "DEBUG: [%s] changelog-had-diff=%S (had-changes was %S)"
                                    repo-name changelog-had-diff had-changes)
                           (when changelog-had-diff
@@ -271,7 +271,7 @@ show commits that are on origin but not on the local branch, in an Org buffer."
                                    repo-name had-changes)
                           (unless changelog-had-diff
                             (let ((commits-had-diff
-                                   (ekr--insert-remote-only-commits-section branch)))
+                                   (my--insert-remote-only-commits-section branch)))
                               (message "DEBUG: [%s] commits-had-diff=%S (had-changes was %S)"
                                        repo-name commits-had-diff had-changes)
                               (when commits-had-diff
@@ -307,5 +307,5 @@ show commits that are on origin but not on the local branch, in an Org buffer."
     )
 
 ;; Usage example (output in *Messages*):
-;; (ekr-compare-straight-version-files-with-git-log "straight/versions/default.el"
+;; (my-compare-straight-version-files-with-git-log "straight/versions/default.el"
 ;;                                                  "straight/versions/default.el-2025-07-16")

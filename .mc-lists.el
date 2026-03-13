@@ -21,7 +21,7 @@
 
 (setq mc/cmds-to-run-once
       '(
-        ekr-recompile
+        my-recompile
         mouse-set-region
         projectile-find-file
         switch-to-buffer
