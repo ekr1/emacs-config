@@ -69,7 +69,7 @@
 (straight-use-package 'highlight-indent-guides)
 (straight-use-package 'compile)
 (straight-use-package 'plantuml-mode)
-;; (straight-use-package 'deadgrep)
+(straight-use-package 'deadgrep)
 (straight-use-package 'dumb-jump)
 (straight-use-package 'load-env-vars)
 ; (straight-use-package 'show-font)  ; https://protesilaos.com/emacs/show-font - install manually
@@ -232,6 +232,7 @@
  '(cperl-invalid-face 'default)
  '(cperl-merge-trailing-else nil)
  '(custom-enabled-themes '(tango-dark))
+ '(deadgrep-display-buffer-function 'switch-to-buffer)
  '(desktop-files-not-to-save '"xyzzy (will crash if this is nil)")
  '(desktop-globals-to-clear
    '(kill-ring-yank-pointer search-ring search-ring-yank-pointer
@@ -359,6 +360,7 @@
  '(markdown-fontify-code-blocks-natively t)
  '(max-mini-window-height 1)
  '(max-specpdl-size 10000 t)
+ '(message-log-max 10000)
  '(mouse-highlight t)
  '(mouse-wheel-down-event 'mouse-4)
  '(mouse-wheel-mode t)
@@ -2125,6 +2127,18 @@ Also try to discover and set `lab-token` using the `glab` CLI config."
 ;; Fix sed/GNU sed issue for M-x man
 
 (setq Man-sed-command "gsed")
+
+;; fix a window
+
+(defun my/toggle-fixate-window ()
+  "Toggle dedicating the selected window to its buffer, fixing its size,
+and preventing it from being removed by `delete-other-windows` (C-x 1)."
+  (interactive)
+  (let* ((win (selected-window))
+         (new (not (window-dedicated-p win))))
+    (set-window-dedicated-p win new)
+    (set-window-parameter win 'window-size-fixed new)
+    (set-window-parameter win 'no-delete-other-windows new)))
 
 ; Show possible key bindings after a short delay
 
