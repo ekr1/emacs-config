@@ -187,6 +187,7 @@
  '(ahk-indentation 2)
  '(aidermacs-backend 'comint)
  '(aidermacs-default-model "see ~/.aider.conf.yml instead!")
+ '(aidermacs-extra-args '("--watch-files"))
  '(aidermacs-show-diff-after-change nil)
  '(aidermacs-subtree-only t)
  '(aidermacs-watch-files t)
@@ -1894,10 +1895,9 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
 (my-banner "Aider, aidermacs...")
 
 (if (executable-find "aider")
-    ;; package-install -> aidermacs
-    (use-package aidermacs
-      :bind (("C-c a" . aidermacs-transient-menu))
-      :config
+    (progn
+      (global-set-key (kbd "C-c a") 'aidermacs-transient-menu)
+
       ;; aider-ce
       ;; ========
       ;;
@@ -2024,17 +2024,10 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
       ;; -> https://api.business.githubcopilot.com
       ;; export OPENAI_API_KEY=$(cat ~/.config/litellm/github_copilot/access-token)
 
-      :custom
-                                        ; See the Configuration section below
-      (aidermacs-use-architect-mode t)
-      ;; (aidermacs-default-model "sonnet")
-
       (if (eq system-type 'darwin) ; MacOS
           (progn
-            (customize-set-variable 'aidermacs-extra-args '("--watch-files --no-tui"))
-            (customize-set-variable 'aidermacs-program "~/bin/emacs_cecli.sh"))
-        (customize-set-variable 'aidermacs-extra-args '("--watch-files")))
-
+            (message "Enabling special emacs_cecli.sh")
+            (customize-set-variable 'aidermacs-program "~/bin/emacs_cecli.sh")))
       ))
 
 (defun my-get-aider-gpt-model (&optional interactive)
