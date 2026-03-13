@@ -88,6 +88,10 @@
 ; (straight-use-package 'agent-shell)
 (straight-use-package 'ripgrep)
 (straight-use-package 'rg)
+(use-package expreg
+  :straight t
+  :bind (("C-+" . expreg-expand)
+         ("C--" . expreg-contract)))
 
 ;; maybe try:
 ;;
@@ -204,11 +208,11 @@
  '(compilation-context-lines 3)
  '(compilation-mode-hook nil)
  '(compilation-scroll-output t)
- '(copilot-chat-commit-model "gpt-4.1" t)
+ '(copilot-chat-commit-model "gpt-4.1")
  '(copilot-chat-commit-prompt
    "Here is the result of running `git diff --cached`. Please suggest a commit message. Don't add anything else to the response. The following describes conventional commits.\12Do not use any markers around the commit message. Do not add the conventional commit prefix.\12\12Here is the result of `git diff --cached`:\12")
  '(copilot-chat-debug nil)
- '(copilot-chat-default-model "gpt-4.1" t)
+ '(copilot-chat-default-model "gpt-4.1")
  '(copilot-chat-follow nil)
  '(copilot-chat-frontend 'shell-maker)
  '(copilot-chat-model-ignore-picker t)
@@ -323,6 +327,8 @@
       "gitlab.caps.nttdata-emea.com/api/v4/"
       "gitlab.caps.nttdata-emea.com" forge-gitlab-repository)))
  '(git-commit-summary-max-length 2000)
+ '(global-visual-line-mode t)
+ '(global-visual-wrap-prefix-mode t)
  '(grep-find-ignored-files
    '(".#*" "*.o" "*~" "*.bin" "*.lbin" "*.so" "*.a" "*.ln" "*.blg"
      "*.bbl" "*.elc" "*.lof" "*.glo" "*.idx" "*.lot" "*.fmt" "*.tfm"
@@ -423,6 +429,7 @@
  '(use-file-dialog nil)
  '(vc-handled-backends '(RCS SVN SCCS Bzr Git Hg Arch))
  '(vc-svn-diff-switches "-x -b")
+ '(visual-line-fringe-indicators '(left-curly-arrow right-curly-arrow))
  '(vterm-keymap-exceptions
    '("C-c" "C-x" "C-u" "C-g" "C-h" "C-l" "M-x" "M-o" "C-y" "M-y"
      "<prior>"))
