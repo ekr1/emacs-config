@@ -391,8 +391,11 @@
  '(projectile-globally-ignored-files '("TAGS" "#*#" ".aider*"))
  '(ruby-insert-encoding-magic-comment nil)
  '(safe-local-variable-values
-   '((package-lint-main-file . "copilot-chat.el") (ahk-indentation . 2)
-     (buffer-file-coding-system . iso-8859-1)
+   '((web-mode-indent-style . 2) (web-mode-block-padding . 2)
+     (web-mode-script-padding . 2) (web-mode-style-padding . 2)
+     (feature-indent-offset . 2) (feature-indent-level . 2)
+     (package-lint-main-file . "copilot-chat.el")
+     (ahk-indentation . 2) (buffer-file-coding-system . iso-8859-1)
      (buffer-file-coding-system . utf-8)))
  '(save-interprogram-paste-before-kill t)
  '(scroll-error-top-bottom t)
