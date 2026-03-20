@@ -312,12 +312,13 @@
 (defun my-get-aider-gpt-model (&optional interactive)
   "Extract the GPT model name from the ~/.emacs.d/aider.conf.yml file."
   (interactive)
-    (let ((model-line (with-temp-buffer
-                        (insert-file-contents (expand-file-name "~/aider.conf.yml" user-emacs-directory))
-                        (goto-char (point-min))
-                        (if (re-search-forward "^model:[ \t]*\\(.*\\)$" nil t)
-                            (match-string 1)
-                            nil))))
+    (let* ((aider-config-file (expand-file-name "~/aider.conf.yml" user-emacs-directory))
+           (model-line (with-temp-buffer
+                         (insert-file-contents aider-config-file)
+                         (goto-char (point-min))
+                         (if (re-search-forward "^model:[ \t]*\\(.*\\)$" nil t)
+                             (match-string 1)
+                             nil))))
         (if model-line
             (let* ((model-name (string-trim model-line))
                    (slash-pos (string-match "/" model-name))
