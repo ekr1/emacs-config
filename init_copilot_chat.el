@@ -328,7 +328,7 @@
               (progn
                 (message "Aider GPT model: %s" model-short-name)
                 model-short-name))
-          (message "No model found in ~/.aider.conf.yml"))))
+          (message "No model found in %s" aider-config-file))))
 
 (progn
   (setopt copilot-lsp-settings `(:copilot.model ,(my-get-aider-gpt-model)))
