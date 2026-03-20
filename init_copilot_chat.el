@@ -301,7 +301,7 @@
 ;; -> https://api.business.githubcopilot.com
 ;; export OPENAI_API_KEY=$(cat ~/.config/litellm/github_copilot/access-token)
 
-(setopt aidermacs-program (expand-file-name "emacs_cecli.sh" user-emacs-directory)))
+(setopt aidermacs-program (expand-file-name "emacs_cecli.sh" user-emacs-directory))
 
 (defun my-get-aider-gpt-model (&optional interactive)
   "Extract the GPT model name from the ~/.emacs.d/aider.conf.yml file."
