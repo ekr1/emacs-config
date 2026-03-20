@@ -306,7 +306,7 @@
       (if (eq system-type 'darwin) ; MacOS
           (progn
             (message "Enabling special emacs_cecli.sh")
-            (customize-set-variable 'aidermacs-program "~/bin/emacs_cecli.sh")))
+            (setopt aidermacs-program (expand-file-name "emacs_cecli.sh" user-emacs-directory))))
       ))
 
 (defun my-get-aider-gpt-model (&optional interactive)
