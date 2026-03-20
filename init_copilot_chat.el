@@ -1,6 +1,63 @@
 ;;; init_copilot_chat.el --- Copilot Chat configuration
 ;;; -*- lexical-binding: t; -*-
 
+(my-banner "Copilot, ...")
+
+;;;;;;;; github copilot ;;;;;;;;;;;;;;
+;
+; -> https://github.com/copilot-emacs/copilot.el
+;
+; - brew install node / apt install npm nodejs
+;
+; -> ‘M-x copilot-install-server‘
+;
+; M-x copilot-install-server
+; M-x copilot-login
+
+(if (executable-find "node")
+    (progn
+      (use-package copilot
+        :straight (:host github :repo "copilot-emacs/copilot.el" :files ("*.el"))
+        :ensure t)
+
+      ;; first time:
+      ;; M-x copilot-install-server
+      ;; M-x copilot-login
+
+      ;; suppress ⛔ Warning (copilot): copilot--infer-indentation-offset found no mode-specific indentation offset.
+      (add-to-list 'warning-suppress-log-types '(copilot))
+
+      (dolist (mode '(ahk bash-ts c++ c++-ts c c-or-c++ c-or-c++-ts c-ts cmake cmake-ts css css-ts
+                          csv dockerfile dockerfile-ts elisp elisp-ts emacs-lisp emmet feature fundamental
+                          gfm go go-ts groovy html html-ts java java-ts javascript javascript-ts js-json js
+                          json json-ts lua make make-ts markdown markdown-ts nxml perl php plantuml powershell
+                          python python-ts ruby ruby-ts scss sgml sh sh-script shell-script sql text typescript
+                          typescript-ts web xml yaml yaml-ts))
+        (let ((hook (intern (concat (symbol-name mode) "-mode-hook"))))
+          (add-hook hook 'copilot-mode)
+          ;; (add-hook hook 'highlight-indent-guides-mode))
+          ))
+
+      ;; (add-hook 'after-change-major-mode-hook 'copilot-turn-on-unless-buffer-read-only)
+
+
+      (when (fboundp 'keymap-set)
+        (keymap-set copilot-completion-map "TAB" 'copilot-accept-completion)
+        (keymap-set copilot-completion-map "C-<tab>" 'copilot-accept-completion-by-word)
+        (keymap-set copilot-completion-map "S-<tab>" 'copilot-accept-completion-by-line)
+        (keymap-set copilot-completion-map "C-g" 'copilot-clear-overlay)
+        (keymap-set copilot-completion-map "C-<right>" 'copilot-next-completion)
+        (keymap-set copilot-completion-map "C-<left>" 'copilot-previous-completion)
+        ;; (define-key copilot-completion-map (kbd "") 'copilot-accept-completion-by-paragraph)
+        ;; (define-key copilot-mode-map (kbd "TAB") 'copilot-complete)
+        (keymap-set copilot-completion-map "C-<return>" 'copilot-panel-complete)))
+
+  ;; else, if `node` not found (Windows...):
+
+  (message "`node` not found, copilot not initialized"))
+
+;;; copilot-chat afterwards, or it will get some functions overridden by copilot.el
+
 (my-banner "copilot-chat")
 
 (use-package copilot-chat
@@ -111,61 +168,6 @@
 
 ; © is option-g
 (global-set-key (kbd "©") 'my-run-good-auto)
-
-(my-banner "Copilot, ...")
-
-;;;;;;;; github copilot ;;;;;;;;;;;;;;
-;
-; -> https://github.com/copilot-emacs/copilot.el
-;
-; - brew install node / apt install npm nodejs
-;
-; -> ‘M-x copilot-install-server‘
-;
-; M-x copilot-install-server
-; M-x copilot-login
-
-(if (executable-find "node")
-    (progn
-      (use-package copilot
-        :straight (:host github :repo "copilot-emacs/copilot.el" :files ("*.el"))
-        :ensure t)
-
-      ;; first time:
-      ;; M-x copilot-install-server
-      ;; M-x copilot-login
-
-      ;; suppress ⛔ Warning (copilot): copilot--infer-indentation-offset found no mode-specific indentation offset.
-      (add-to-list 'warning-suppress-log-types '(copilot))
-
-      (dolist (mode '(ahk bash-ts c++ c++-ts c c-or-c++ c-or-c++-ts c-ts cmake cmake-ts css css-ts
-                          csv dockerfile dockerfile-ts elisp elisp-ts emacs-lisp emmet feature fundamental
-                          gfm go go-ts groovy html html-ts java java-ts javascript javascript-ts js-json js
-                          json json-ts lua make make-ts markdown markdown-ts nxml perl php plantuml powershell
-                          python python-ts ruby ruby-ts scss sgml sh sh-script shell-script sql text typescript
-                          typescript-ts web xml yaml yaml-ts))
-        (let ((hook (intern (concat (symbol-name mode) "-mode-hook"))))
-          (add-hook hook 'copilot-mode)
-          ;; (add-hook hook 'highlight-indent-guides-mode))
-          ))
-
-      ;; (add-hook 'after-change-major-mode-hook 'copilot-turn-on-unless-buffer-read-only)
-
-
-      (when (fboundp 'keymap-set)
-        (keymap-set copilot-completion-map "TAB" 'copilot-accept-completion)
-        (keymap-set copilot-completion-map "C-<tab>" 'copilot-accept-completion-by-word)
-        (keymap-set copilot-completion-map "S-<tab>" 'copilot-accept-completion-by-line)
-        (keymap-set copilot-completion-map "C-g" 'copilot-clear-overlay)
-        (keymap-set copilot-completion-map "C-<right>" 'copilot-next-completion)
-        (keymap-set copilot-completion-map "C-<left>" 'copilot-previous-completion)
-        ;; (define-key copilot-completion-map (kbd "") 'copilot-accept-completion-by-paragraph)
-        ;; (define-key copilot-mode-map (kbd "TAB") 'copilot-complete)
-        (keymap-set copilot-completion-map "C-<return>" 'copilot-panel-complete)))
-
-  ;; else, if `node` not found (Windows...):
-
-  (message "`node` not found, copilot not initialized"))
 
 ; aidermacs
 
