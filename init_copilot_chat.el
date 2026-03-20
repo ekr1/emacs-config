@@ -173,141 +173,135 @@
 
 (my-banner "Aider, aidermacs...")
 
-(if (executable-find "aider")
-    (progn
-      (global-set-key (kbd "C-c a") 'aidermacs-transient-menu)
+(global-set-key (kbd "C-c a") 'aidermacs-transient-menu)
 
-      ;; aider-ce
-      ;; ========
-      ;;
-      ;; uv tool install --python python3.12 aider-ce
-      ;; Installed 5 executables: aider-ce, ce, ce-cli, ce.cli, cecli
-      ;;
-      ;; uv tool upgrade --python python3.12 aider-ce
-      ;;
-      ;; Github Copilot key
-      ;; ==================
-      ;;
-      ;; https://aider.chat/docs/llms/github.html (OPENAI_API_BASE,
-      ;; OPENAI_API_KEY in .bashrc) But then we get
-      ;; "forbidden". Instead: set aidermacs-default-model to
-      ;; github_copilot/gpt-4.1, aider will prompt for Github login,
-      ;; then set those variables from those files (see below)
-      ;;
-      ;; https://www.reddit.com/r/ChatGPTCoding/comments/1lk2mvv/aider_anyone_have_success_with_gh_copilot_oauth/
-      ;; https://github.com/Aider-AI/aider/issues/2227#issuecomment-3141551921
-      ;;
-      ;; Also ~/.aider.conf.yml for model defaults etc.
-      ;;
-      ;; Test with
-      ;;
-      ;;   curl -s $OPENAI_API_BASE/models -H "Authorization: Bearer $OPENAI_API_KEY" | jq -r '.data[].id'
-      ;;
-      ;;       gpt-4.1
-      ;;       gpt-5-mini
-      ;;       gpt-5
-      ;;       gpt-3.5-turbo
-      ;;       gpt-3.5-turbo-0613
-      ;;       gpt-4o-mini
-      ;;       gpt-4o-mini-2024-07-18
-      ;;       gpt-4
-      ;;       gpt-4-0613
-      ;;       gpt-4-0125-preview
-      ;;       gpt-4o
-      ;;       gpt-4o-2024-11-20
-      ;;       gpt-4o-2024-05-13
-      ;;       gpt-4-o-preview
-      ;;       gpt-4o-2024-08-06
-      ;;       grok-code-fast-1
-      ;;       text-embedding-ada-002
-      ;;       text-embedding-3-small
-      ;;       text-embedding-3-small-inference
-      ;;       claude-sonnet-4
-      ;;       claude-sonnet-4.5
-      ;;       gemini-2.5-pro
-      ;;       gpt-4.1-2025-04-14
-      ;;
-      ;;
-      ;; github_copilot Setup
-      ;; ====================
-      ;;
-      ;; github_copilot/gpt-5 seems not to work (doesn't have editor auth):
-      ;;   litellm.BadRequestError: Github_copilotException - bad request: missing
-      ;;   Editor-Version header for IDE auth
-      ;;
-      ;; Experiment with https://github.com/Aider-AI/aider/issues/2227#issuecomment-3141551921 :
-      ;;
-      ;; * OK: Current aider seems to use litellm==1.75.0
-      ;;
-      ;; * Create ~/.aider.model.settings.yml:
-      ;;
-      ;;   - name: github_copilot/gpt-4.1
-      ;;     # edit_format: diff
-      ;;     extra_params:
-      ;;       max_tokens: 80000
-      ;;       extra_headers:
-      ;;         User-Agent: GithubCopilot/1.155.0
-      ;;         Editor-Plugin-Version: copilot/1.155.0
-      ;;         Editor-Version: vscode/1.85.1
-      ;;         Copilot-Integration-Id: vscode-chat
-      ;;
-      ;; * But this is enough as default:
-      ;;
-      ;;   - name: aider/extra_params
-      ;;     extra_params:
-      ;;       extra_headers:
-      ;;         Editor-Version: vscode/42
-      ;;
-      ;; * Works again, this fixes the missing editor header.
-      ;;
-      ;; Quota
-      ;; =====
-      ;;
-      ;; Github Copilot has a "premium" quota (-> Web GUI, right at the top).
-      ;;
-      ;; Remove confusing/old tokens, re-login everything
-      ;; ================================================
-      ;;
-      ;;   find ~/.config -type f | xargs grep -l ghu_ |grep -v \~ | grep -v \.old
-      ;;   -rw-r--r--@ 1 xx  staff  41 Jun  5  2025 .config/copilot-chat/github-token
-      ;;     ghu_...
-      ;;   -rw-r--r--@ 1 xx  staff  90 Jun  4  2025 .config/github-copilot/hosts.json
-      ;;     {"github.com":{"user":"...","oauth_token":"ghu_..."}}
-      ;;   -rw-r--r--@ 1 xx  staff  40 Dec 10 14:14 .config/litellm/github_copilot/access-token
-      ;;     ghu_...
+;; aider-ce
+;; ========
+;;
+;; uv tool install --python python3.12 aider-ce
+;; Installed 5 executables: aider-ce, ce, ce-cli, ce.cli, cecli
+;;
+;; uv tool upgrade --python python3.12 aider-ce
+;;
+;; Github Copilot key
+;; ==================
+;;
+;; https://aider.chat/docs/llms/github.html (OPENAI_API_BASE,
+;; OPENAI_API_KEY in .bashrc) But then we get
+;; "forbidden". Instead: set aidermacs-default-model to
+;; github_copilot/gpt-4.1, aider will prompt for Github login,
+;; then set those variables from those files (see below)
+;;
+;; https://www.reddit.com/r/ChatGPTCoding/comments/1lk2mvv/aider_anyone_have_success_with_gh_copilot_oauth/
+;; https://github.com/Aider-AI/aider/issues/2227#issuecomment-3141551921
+;;
+;; Also ~/.aider.conf.yml for model defaults etc.
+;;
+;; Test with
+;;
+;;   curl -s $OPENAI_API_BASE/models -H "Authorization: Bearer $OPENAI_API_KEY" | jq -r '.data[].id'
+;;
+;;       gpt-4.1
+;;       gpt-5-mini
+;;       gpt-5
+;;       gpt-3.5-turbo
+;;       gpt-3.5-turbo-0613
+;;       gpt-4o-mini
+;;       gpt-4o-mini-2024-07-18
+;;       gpt-4
+;;       gpt-4-0613
+;;       gpt-4-0125-preview
+;;       gpt-4o
+;;       gpt-4o-2024-11-20
+;;       gpt-4o-2024-05-13
+;;       gpt-4-o-preview
+;;       gpt-4o-2024-08-06
+;;       grok-code-fast-1
+;;       text-embedding-ada-002
+;;       text-embedding-3-small
+;;       text-embedding-3-small-inference
+;;       claude-sonnet-4
+;;       claude-sonnet-4.5
+;;       gemini-2.5-pro
+;;       gpt-4.1-2025-04-14
+;;
+;;
+;; github_copilot Setup
+;; ====================
+;;
+;; github_copilot/gpt-5 seems not to work (doesn't have editor auth):
+;;   litellm.BadRequestError: Github_copilotException - bad request: missing
+;;   Editor-Version header for IDE auth
+;;
+;; Experiment with https://github.com/Aider-AI/aider/issues/2227#issuecomment-3141551921 :
+;;
+;; * OK: Current aider seems to use litellm==1.75.0
+;;
+;; * Create ~/.aider.model.settings.yml:
+;;
+;;   - name: github_copilot/gpt-4.1
+;;     # edit_format: diff
+;;     extra_params:
+;;       max_tokens: 80000
+;;       extra_headers:
+;;         User-Agent: GithubCopilot/1.155.0
+;;         Editor-Plugin-Version: copilot/1.155.0
+;;         Editor-Version: vscode/1.85.1
+;;         Copilot-Integration-Id: vscode-chat
+;;
+;; * But this is enough as default:
+;;
+;;   - name: aider/extra_params
+;;     extra_params:
+;;       extra_headers:
+;;         Editor-Version: vscode/42
+;;
+;; * Works again, this fixes the missing editor header.
+;;
+;; Quota
+;; =====
+;;
+;; Github Copilot has a "premium" quota (-> Web GUI, right at the top).
+;;
+;; Remove confusing/old tokens, re-login everything
+;; ================================================
+;;
+;;   find ~/.config -type f | xargs grep -l ghu_ |grep -v \~ | grep -v \.old
+;;   -rw-r--r--@ 1 xx  staff  41 Jun  5  2025 .config/copilot-chat/github-token
+;;     ghu_...
+;;   -rw-r--r--@ 1 xx  staff  90 Jun  4  2025 .config/github-copilot/hosts.json
+;;     {"github.com":{"user":"...","oauth_token":"ghu_..."}}
+;;   -rw-r--r--@ 1 xx  staff  40 Dec 10 14:14 .config/litellm/github_copilot/access-token
+;;     ghu_...
 
-      ;;
-      ;; mv ~/.config/copilot-chat ~/.config/copilot-chat.old
-      ;; mv ~/.config/github-copilot ~/.config/github-copilot.old
-      ;; mv ~/.config/litellm/github_copilot ~/.config/litellm/github_copilot.old
-      ;;
-      ;; unset OPENAI_API_BASE   # not needed for aider with gpt-4/gpt-5, but later with gpt-5-codex
-      ;; unset OPENAI_API_KEY
-      ;; aider
-      ;;  # github login procedure -> everything works, info stored in ~/.config/litellm/github_copilot
-      ;;
-      ;; M-x aidermacs works
-      ;;
-      ;; M-x copilot-chat does its own github_copilot login; works
-      ;;
-      ;; M-x copilot-login does its own login, works.
-      ;;
-      ;; The above 3 files are recreated.
-      ;;
-      ;; Get gpt-5-codex to work
-      ;; =======================
-      ;;
-      ;; .bash_profile ->
-      ;;
-      ;; export OPENAI_API_BASE=$(jq -r '.endpoints.api' ~/.config/litellm/github_copilot/api-key.json)
-      ;; -> https://api.business.githubcopilot.com
-      ;; export OPENAI_API_KEY=$(cat ~/.config/litellm/github_copilot/access-token)
+;;
+;; mv ~/.config/copilot-chat ~/.config/copilot-chat.old
+;; mv ~/.config/github-copilot ~/.config/github-copilot.old
+;; mv ~/.config/litellm/github_copilot ~/.config/litellm/github_copilot.old
+;;
+;; unset OPENAI_API_BASE   # not needed for aider with gpt-4/gpt-5, but later with gpt-5-codex
+;; unset OPENAI_API_KEY
+;; aider
+;;  # github login procedure -> everything works, info stored in ~/.config/litellm/github_copilot
+;;
+;; M-x aidermacs works
+;;
+;; M-x copilot-chat does its own github_copilot login; works
+;;
+;; M-x copilot-login does its own login, works.
+;;
+;; The above 3 files are recreated.
+;;
+;; Get gpt-5-codex to work
+;; =======================
+;;
+;; .bash_profile ->
+;;
+;; export OPENAI_API_BASE=$(jq -r '.endpoints.api' ~/.config/litellm/github_copilot/api-key.json)
+;; -> https://api.business.githubcopilot.com
+;; export OPENAI_API_KEY=$(cat ~/.config/litellm/github_copilot/access-token)
 
-      (if (eq system-type 'darwin) ; MacOS
-          (progn
-            (message "Enabling special emacs_cecli.sh")
-            (setopt aidermacs-program (expand-file-name "emacs_cecli.sh" user-emacs-directory))))
-      ))
+(setopt aidermacs-program (expand-file-name "emacs_cecli.sh" user-emacs-directory))))
 
 (defun my-get-aider-gpt-model (&optional interactive)
   "Extract the GPT model name from the ~/.emacs.d/aider.conf.yml file."
