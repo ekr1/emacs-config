@@ -3,10 +3,10 @@
 
 # https://developers.openai.com/cookbook/examples/gpt-5/gpt-5_prompting_guide
 # model:           github_copilot/gpt-5.1
-#model:            github_copilot/gpt-4.1
-model:            github_copilot/gpt-5-mini
-weak-model:       github_copilot/gpt-5-mini
-editor-model:     github_copilot/gpt-5-mini
+model:            github_copilot/gpt-4.1
+# model:            github_copilot/gpt-5-mini
+# weak-model:       github_copilot/gpt-5-mini
+# editor-model:     github_copilot/gpt-5-mini
 
 
 # https://platform.claude.com/docs/en/about-claude/models/choosing-a-model
