@@ -16,8 +16,9 @@
 
       ;; (add-to-list 'load-path "/usr/share/emacs/site-lisp/elpa-src/notmuch-0.35")
       (add-to-list 'load-path (concat (getenv "HOME") "/Daten/Mail/data/elisp/notmuch-0.37"))
-      (error "Notmuch elisp directory not found at %s. Please check your configuration."
-             (concat (getenv "HOME") "/Daten/Mail/data/elisp/notmuch-0.37"))
+      (unless (file-exists-p (concat (getenv "HOME") "/Daten/Mail/data/elisp/notmuch-0.37"))
+        (error "Notmuch elisp directory not found at %s. Please check your configuration."
+               (concat (getenv "HOME") "/Daten/Mail/data/elisp/notmuch-0.37")))
 
       (require 'notmuch)
 
