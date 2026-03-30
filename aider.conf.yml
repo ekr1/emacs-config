@@ -7,7 +7,7 @@
 # https://github.com/openai/openai-cookbook
 
 # model:           github_copilot/gpt-5.1
-model:            github_copilot/gpt-4.1
+# model:            github_copilot/gpt-4.1
 # model:            github_copilot/gpt-5-mini
 # weak-model:       github_copilot/gpt-5-mini
 # editor-model:     github_copilot/gpt-5-mini
@@ -15,9 +15,9 @@ model:            github_copilot/gpt-4.1
 # --------------------- Claude -----------------------
 
 # https://platform.claude.com/docs/en/about-claude/models/choosing-a-model
-# model:            github_copilot/claude-opus-4.6
-# editor-model: github_copilot/claude-sonnet-4.5
-# weak-model: github_copilot/claude-sonnet-4.5
+model:            github_copilot/claude-opus-4.6
+editor-model: github_copilot/claude-sonnet-4.5
+weak-model: github_copilot/claude-sonnet-4.5
 
 # --------------------------------------------------------
 

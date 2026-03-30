@@ -1,7 +1,6 @@
 # whole, diff, diff-fenced, udiff
 # In architect mode: editor-diff, editor-whole
 
-
 - name: github_copilot/gpt-4.1
   edit_format: editor-diff
 #   extra_params:
@@ -26,3 +25,12 @@
   extra_params:
     extra_headers:
       Editor-Version: vscode/42
+
+- name: github_copilot/claude-opus-4.6
+  edit_format: editor-diff
+
+- name: github_copilot/claude-sonnet-4.5
+  edit_format: editor-diff
+
+- name: github_copilot/claude-sonnet-4.5
+  edit_format: editor-diff

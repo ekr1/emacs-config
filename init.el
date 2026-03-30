@@ -92,6 +92,7 @@
   :straight t
   :bind (("C-+" . expreg-expand)
          ("C--" . expreg-contract)))
+(straight-use-package 'ansi-color)
 
 ;; maybe try:
 ;;
@@ -279,7 +280,6 @@
 
 (my-banner "ANSI colors (also see init_compilation.el)...")
 
-(require 'ansi-color)
 (defun display-ansi-colors ()
   (interactive)
   (ansi-color-apply-on-region (point-min) (point-max)))
