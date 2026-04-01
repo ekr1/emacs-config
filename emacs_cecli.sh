@@ -1,9 +1,5 @@
 #!/bin/bash
 
-# With dumb terminal, --watch-files does not work (unless in fork)
-# Without dumb terminal, the spinner messes up the text
-export TERM=dumb
-
 if [ "$1" ]; then
     echo "Warning: ignoring any extra arguments: $@"
 fi
@@ -13,18 +9,26 @@ if [ -e "run-tests.sh" ] ; then
     AUTO_TEST_FLAG="--auto-test --test-cmd ./run-tests.sh"
 fi
 
-# With --no-tui --no-fancy-input, --watch-files does not work, even in non-dumb terminal
-# cecli --no-tui --no-fancy-input --no-pretty \
-#       --watch-files --subtree-only \
-#       --thinking-tokens 8k --show-thinking \
-#       --disable-playwright --disable-scraping \
-#       --architect --auto-accept-architect --yes-always $AUTO_TEST_FLAG
-
-aider --no-fancy-input --no-pretty \
+which cecli
+#      --no-fancy-input --no-pretty \
+# With dumb terminal, --watch-files does not work (unless in fork)
+# Without dumb terminal, the spinner messes up the text
+# export
+# TERM=dumb
+TERM=ansi cecli --no-tui  \
       --watch-files --subtree-only \
-      --thinking-tokens 8k \
-      --disable-playwright \
+      --thinking-tokens 8k --show-thinking \
+      --disable-playwright --disable-scraping \
       --architect --auto-accept-architect --yes-always $AUTO_TEST_FLAG
+
+# Works well...
+#
+# which aider
+# TERM=dumb aider --no-fancy-input --no-pretty \
+#       --watch-files --subtree-only \
+#       --thinking-tokens 8k \
+#       --disable-playwright \
+#       --architect --auto-accept-architect --yes-always $AUTO_TEST_FLAG
 
 # usage: cecli [-h] [--model MODEL] [--openai-api-key OPENAI_API_KEY]
 #              [--anthropic-api-key ANTHROPIC_API_KEY]
