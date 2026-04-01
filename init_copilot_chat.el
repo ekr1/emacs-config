@@ -303,7 +303,7 @@
 
 (setopt aidermacs-program (expand-file-name "emacs_cecli.sh" user-emacs-directory))
 
-(defun my-get-aider-gpt-model (&optional interactive)
+(defun my-get-aider-main-model (&optional interactive)
   "Extract the GPT model name from the ~/.emacs.d/aider.conf.yml file."
   (interactive)
     (let* ((aider-config-file (expand-file-name "aider.conf.yml" user-emacs-directory))
@@ -324,7 +324,28 @@
                 model-short-name))
           (message "No model found in %s" aider-config-file))))
 
+(defun my-get-aider-editor-model (&optional interactive)
+  "Extract the GPT model name from the ~/.emacs.d/aider.conf.yml file."
+  (interactive)
+    (let* ((aider-config-file (expand-file-name "aider.conf.yml" user-emacs-directory))
+           (model-line (with-temp-buffer
+                         (insert-file-contents aider-config-file)
+                         (goto-char (point-min))
+                         (if (re-search-forward "^editor-model:[ \t]*\\(.*\\)$" nil t)
+                             (match-string 1)
+                             nil))))
+        (if model-line
+            (let* ((model-name (string-trim model-line))
+                   (slash-pos (string-match "/" model-name))
+                   (model-short-name (if slash-pos
+                                         (substring model-name (1+ slash-pos))
+                                       model-name)))
+              (progn
+                (message "Aider GPT model: %s" model-short-name)
+                model-short-name))
+          (message "No model found in %s" aider-config-file))))
+
 (progn
-  (setopt copilot-lsp-settings `(:copilot.model ,(my-get-aider-gpt-model)))
-  (setopt copilot-chat-default-model (my-get-aider-gpt-model))
-  (setopt copilot-chat-commit-model (my-get-aider-gpt-model)))
+  (setopt copilot-lsp-settings `(:copilot.model ,(my-get-aider-main-model)))
+  (setopt copilot-chat-default-model (my-get-aider-main-model))
+  (setopt copilot-chat-commit-model (my-get-aider-editor-model)))

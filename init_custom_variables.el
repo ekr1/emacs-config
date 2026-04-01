@@ -13,7 +13,7 @@
  '(ahk-indentation 2)
  '(aidermacs-backend 'comint)
  '(aidermacs-default-model "see ~/.aider.conf.yml instead!")
- '(aidermacs-extra-args '("set this in init_copilot*el instead!"))
+ '(aidermacs-extra-args '(""))
  '(aidermacs-program "set this in init_copilot*el instead!")
  '(aidermacs-show-diff-after-change nil)
  '(aidermacs-subtree-only t)
@@ -38,7 +38,7 @@
  '(compilation-scroll-output t)
  '(copilot-chat-commit-model "gpt-4.1")
  '(copilot-chat-commit-prompt
-   "Here is the result of running `git diff --cached`. Please suggest a commit message. Don't add anything else to the response. The following describes conventional commits.\12Do not use any markers around the commit message. Do not add the conventional commit prefix.\12\12Here is the result of `git diff --cached`:\12")
+   "Here is the result of running `git diff --cached`. Please suggest a commit message. Don't add anything else to the response. The following describes conventional commits.\12Do not use any markers around the commit message. Do not add the conventional commit prefix. Stick to one line, shorter is better. No need to mention whitespace changes.\12\12Here is the result of `git diff --cached`:\12")
  '(copilot-chat-debug nil)
  '(copilot-chat-default-model "gpt-4.1")
  '(copilot-chat-follow nil)
