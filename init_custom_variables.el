@@ -270,3 +270,6 @@
  '(xslt-process-fop-log-level '(debug))
  '(xslt-process-xml-xslt-associations nil)
  '(xterm-mouse-mode t))
+
+(add-hook 'magit-log-mode-hook (lambda () (visual-line-mode -1)))
+(add-hook 'magit-status-mode-hook (lambda () (visual-line-mode -1)))
