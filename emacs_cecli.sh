@@ -9,6 +9,9 @@ if [ -e "run-tests.sh" ] ; then
     AUTO_TEST_FLAG="--auto-test --test-cmd ./run-tests.sh"
 fi
 
+# ~$ uv tool uninstall cecli-dev
+# ~$ uv tool install --python python3.12 --editable ~/Documents/src/cecli-fork
+
 which cecli
 #      --no-fancy-input --no-pretty \
 # With dumb terminal, --watch-files does not work (unless in fork)
@@ -72,7 +75,7 @@ TERM=ansi cecli --no-fancy-input --pretty --no-spinner \
       --disable-playwright --disable-scraping \
       --architect --auto-accept-architect --yes-always $AUTO_TEST_FLAG
 
-      # 2>&1 | tee /tmp/cecli.log.$$
+# 2>&1 | tee /tmp/cecli.log.$$
 
 # Works well...
 #
