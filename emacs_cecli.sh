@@ -15,11 +15,64 @@ which cecli
 # Without dumb terminal, the spinner messes up the text
 # export
 # TERM=dumb
-TERM=ansi cecli --no-tui  \
+#
+# If it hangs on startup with weird file descriptor messages, apply patch:
+#
+#     interruptible_input.py
+#     ```python
+#     <<<<<<< SEARCH
+#             self._cancel = threading.Event()
+#             self._sel = selectors.DefaultSelector()
+#     =======
+#             self._cancel = threading.Event()
+#
+#             # On macOS, the default KqueueSelector cannot handle pipe-based stdin
+#             # (e.g. when running inside Emacs comint-mode). Fall back to SelectSelector
+#             # which works with any file descriptor that supports select().
+#             if not sys.stdin.isatty():
+#                 self._sel = selectors.SelectSelector()
+#             else:
+#                 self._sel = selectors.DefaultSelector()
+#     >>>>>>> REPLACE
+#     ```
+#
+# To implement --no-spinner:
+#
+#     Add a new `--spinner` / `--no-spinner` boolean option (default: True) that controls whether the spinner and its associated status text (e.g. "Waiting for …", "Processing…", "Updating repo map", "Compacting…") are shown while waiting for LLM responses.
+#
+#     When `--no-spinner` is used:
+#     - All calls to `self.io.start_spinner(...)`, `self.io.update_spinner(...)`, and `self.io.update_spinner_suffix(...)` in `coders/base_coder.py` must be skipped. Gate each call behind `nested.getter(self.args, "spinner", True)`.
+#     - The cost/model information that would normally be shown in the spinner text (the "Waiting for {model} • ${cost} session" string in `send_message`) should instead be saved to `self._deferred_cost_text` and printed once via `self.io.tool_output()` just before
+#     the next user prompt — in both `_run_linear` and `input_task` (parallel mode), right after announcements are shown.
+#
+#     Changes required across files:
+#
+#     1. **`args.py`**: Add a `--spinner` argument using `argparse.BooleanOptionalAction`, default `True`, in the "Output settings" group, right after the `--stream` argument. Help text: `"Enable/disable the spinner while waiting for LLM responses (default: True)"`.
+#
+#     2. **`coders/base_coder.py`**: Gate every `self.io.start_spinner(...)`, `self.io.update_spinner(...)`, and `self.io.update_spinner_suffix(...)` call behind `if nested.getter(self.args, "spinner", True):`. In `send_message`, when spinner is disabled, store the
+#     cost text in `self._deferred_cost_text` instead of calling `start_spinner`. In `_run_linear` and `input_task`, after showing announcements and before recreating input, flush `self._deferred_cost_text` via `self.io.tool_output()` and reset it to `None`.
+#
+#     3. **`main.py`**: No changes needed (spinner arg is already read from `args` by the coder).
+#
+#     4. **`website/docs/config/options.md`**: Add a `### --spinner` entry after `--stream`, documenting the default (`True`), the environment variable (`CECLI_SPINNER`), and the aliases (`--spinner`, `--no-spinner`).
+#
+#     5. **`website/docs/config/aider_conf.md`**: Add a commented-out `#spinner: true` entry after `#stream: true` in the sample YAML config.
+#
+#     6. **repo.py**: Also handle this line: "Generating commit message with"
+#
+# TERM=dumb cecli                               # OK -> implicit --no-fancy-input --pretty
+# TERM=ansi cecli --fancy-input --pretty        # Seems to work but then quickly hangs and just acts very weidly
+# TERM=ansi cecli --no-fancy-input --pretty     # Sometimes cost lines interspersed..., but "/ask Where is the "powered by" menu item generated?" nicely executes grep commands
+# TERM=ansi cecli --no-fancy-input --no-pretty  # OK, but "/ask Where is the "powered by" menu item generated?" does not execute grep commands?
+# TERM=ansi cecli --no-fancy-input --no-pretty --no-spinner   # Pretty good!
+TERM=ansi cecli --no-fancy-input --pretty --no-spinner \
+      --no-tui \
       --watch-files --subtree-only \
       --thinking-tokens 8k --show-thinking \
       --disable-playwright --disable-scraping \
       --architect --auto-accept-architect --yes-always $AUTO_TEST_FLAG
+
+      # 2>&1 | tee /tmp/cecli.log.$$
 
 # Works well...
 #

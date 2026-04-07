@@ -1,5 +1,13 @@
 rules: [CONVENTIONS.md, AGENTS.md]
 
+mcp-servers:
+  mcpServers:
+    mcpJira:
+      transport: http
+      url: http://localhost:8000/mcp
+      headers:
+        Authorization: "Bearer secret"
+
 # https://github.com/settings/copilot/features
 # https://docs.github.com/en/copilot/reference/ai-models/model-comparison
 
@@ -19,7 +27,9 @@ rules: [CONVENTIONS.md, AGENTS.md]
 # https://platform.claude.com/docs/en/about-claude/models/choosing-a-model
 model:            github_copilot/claude-opus-4.6
 editor-model: github_copilot/claude-sonnet-4.5
-weak-model: github_copilot/claude-sonnet-4.5
+#weak-model: github_copilot/claude-sonnet-4.5
+# Maybe better commit messages?
+weak-model:            github_copilot/gpt-4.1
 
 # --------------------------------------------------------
 
