@@ -68,7 +68,8 @@ which cecli
 # TERM=ansi cecli --no-fancy-input --pretty     # Sometimes cost lines interspersed..., but "/ask Where is the "powered by" menu item generated?" nicely executes grep commands
 # TERM=ansi cecli --no-fancy-input --no-pretty  # OK, but "/ask Where is the "powered by" menu item generated?" does not execute grep commands?
 # TERM=ansi cecli --no-fancy-input --no-pretty --no-spinner   # Pretty good!
-TERM=ansi cecli --no-fancy-input --pretty --no-spinner \
+# TERM=ansi cecli --no-fancy-input --pretty --no-spinner # Tool prompts seem to hang...
+TERM=ansi cecli --no-fancy-input --no-pretty --no-spinner \
       --no-tui \
       --watch-files --subtree-only \
       --thinking-tokens 8k --show-thinking \

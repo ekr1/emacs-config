@@ -29,8 +29,8 @@
 - name: github_copilot/claude-opus-4.6
   edit_format: editor-diff
 
-- name: github_copilot/claude-sonnet-4.5
+- name: github_copilot/claude-sonnet-4.6
   edit_format: editor-diff
 
-- name: github_copilot/claude-sonnet-4.5
+- name: github_copilot/claude-sonnet-4.6
   edit_format: editor-diff
