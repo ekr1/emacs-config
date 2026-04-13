@@ -98,18 +98,23 @@ TERM=ansi cecli --no-fancy-input --no-pretty --no-spinner \
 #              [--show-thinking | --no-show-thinking]
 #              [--verify-ssl | --no-verify-ssl] [--timeout TIMEOUT]
 #              [--edit-format EDIT_FORMAT] [--ask] [--architect] [--agent]
+#              [--hashline]
 #              [--auto-accept-architect | --no-auto-accept-architect]
 #              [--weak-model WEAK_MODEL] [--editor-model EDITOR_MODEL]
 #              [--editor-edit-format EDITOR_EDIT_FORMAT]
 #              [--show-model-warnings | --no-show-model-warnings]
 #              [--check-model-accepts-settings | --no-check-model-accepts-settings]
 #              [--max-chat-history-tokens MAX_CHAT_HISTORY_TOKENS]
-#              [--retries RETRIES_JSON] [--custom CUSTOM_JSON]
-#              [--tui | --no-tui] [--tui-config TUI_CONFIG_JSON]
-#              [--agent-config AGENT_CONFIG_JSON] [--auto-save | --no-auto-save]
+#              [--max-reflections MAX_REFLECTIONS] [--cost-limit COST_LIMIT]
+#              [--file-diffs | --no-file-diffs] [--retries RETRIES_JSON]
+#              [--custom CUSTOM_JSON] [--tui | --no-tui]
+#              [--tui-config TUI_CONFIG_JSON] [--workspaces WORKSPACES]
+#              [--workspace-name WORKSPACE_NAME]
+#              [--agent-config AGENT_CONFIG_JSON] [--hooks HOOKS_CONFIG_JSON]
+#              [--agent-model AGENT_MODEL] [--auto-save | --no-auto-save]
 #              [--auto-save-session-name AUTO_SAVE_SESSION_NAME]
 #              [--auto-load | --no-auto-load] [--mcp-servers MCP_CONFIG_JSON]
-#              [--mcp-servers-file MCP_CONFIG_FILE]
+#              [--mcp-servers-files MCP_CONFIG_FILES]
 #              [--mcp-transport MCP_TRANSPORT] [--preserve-todo-list]
 #              [--use-enhanced-map] [--security-config SECURITY_CONFIG_JSON]
 #              [--enable-context-compaction | --no-enable-context-compaction]
@@ -126,7 +131,7 @@ TERM=ansi cecli --no-fancy-input --no-pretty --no-spinner \
 #              [--chat-history-file CHAT_HISTORY_FILE]
 #              [--terminal-setup | --no-terminal-setup] [--dark-mode]
 #              [--light-mode] [--pretty | --no-pretty] [--stream | --no-stream]
-#              [--user-input-color USER_INPUT_COLOR]
+#              [--spinner | --no-spinner] [--user-input-color USER_INPUT_COLOR]
 #              [--tool-output-color TOOL_OUTPUT_COLOR]
 #              [--tool-error-color TOOL_ERROR_COLOR]
 #              [--tool-warning-color TOOL_WARNING_COLOR]
@@ -160,8 +165,8 @@ TERM=ansi cecli --no-fancy-input --no-pretty --no-spinner \
 #              [--voice-format VOICE_FORMAT] [--voice-language VOICE_LANGUAGE]
 #              [--voice-input-device VOICE_INPUT_DEVICE] [--tweak-responses]
 #              [--yes-always] [--yes-always-commands] [--disable-playwright]
-#              [--disable-scraping] [--file FILE] [--read FILE] [--vim]
-#              [--chat-language CHAT_LANGUAGE]
+#              [--disable-scraping] [--file FILE] [--read FILE] [--rules FILE]
+#              [--vim] [--chat-language CHAT_LANGUAGE]
 #              [--commit-language COMMIT_LANGUAGE] [-v] [--load LOAD_FILE]
 #              [--encoding ENCODING] [--line-endings {platform,lf,crlf}]
 #              [-c CONFIG_FILE] [--env-file ENV_FILE]
@@ -246,6 +251,8 @@ TERM=ansi cecli --no-fancy-input --no-pretty --no-spinner \
 #                         CECLI_ARCHITECT]
 #   --agent               Use agent edit format for the main chat (autonomous
 #                         file management) [env var: CECLI_AGENT]
+#   --hashline            Use hashline edit format for the main chat [env var:
+#                         CECLI_HASHLINE]
 #   --auto-accept-architect, --no-auto-accept-architect
 #                         Enable/disable automatic acceptance of architect
 #                         changes (default: True) [env var:
@@ -273,6 +280,16 @@ TERM=ansi cecli --no-fancy-input --no-pretty --no-spinner \
 #                         summarization begins. If unspecified, defaults to the
 #                         model's max_chat_history_tokens. [env var:
 #                         CECLI_MAX_CHAT_HISTORY_TOKENS]
+#   --max-reflections MAX_REFLECTIONS
+#                         Maximum number of retries a model gets on malformed
+#                         outputs (default: 3) [env var: CECLI_MAX_REFLECTIONS]
+#   --cost-limit COST_LIMIT
+#                         Cost limit per session, exceeding this forces prompt
+#                         confirmation (default: None) [env var:
+#                         CECLI_COST_LIMIT]
+#   --file-diffs, --no-file-diffs
+#                         Whether to store file diffs in context or reload files
+#                         (default: True) [env var: CECLI_FILE_DIFFS]
 #   --retries RETRIES_JSON
 #                         Specify LLM retry configuration as a JSON string [env
 #                         var: CECLI_RETRIES]
@@ -288,10 +305,24 @@ TERM=ansi cecli --no-fancy-input --no-pretty --no-spinner \
 #                         Specify TUI Mode configuration as a JSON string [env
 #                         var: CECLI_TUI_CONFIG]
 #
+# Workspace Settings:
+#   --workspaces WORKSPACES
+#                         JSON/YAML configuration for workspace initialization
+#                         [env var: CECLI_WORKSPACES]
+#   --workspace-name WORKSPACE_NAME
+#                         Specify the workspace name to activate [env var:
+#                         CECLI_WORKSPACE_NAME]
+#
 # Agent Settings:
 #   --agent-config AGENT_CONFIG_JSON
 #                         Specify Agent Mode configuration as a JSON string [env
 #                         var: CECLI_AGENT_CONFIG]
+#   --hooks HOOKS_CONFIG_JSON
+#                         Specify hooks configuration as a JSON string [env var:
+#                         CECLI_HOOKS]
+#   --agent-model AGENT_MODEL
+#                         Specify the model to use for Agent mode (default
+#                         depends on --model) [env var: CECLI_AGENT_MODEL]
 #   --auto-save, --no-auto-save
 #                         Enable/disable automatic saving of sessions as --auto-
 #                         save-session-name (default: False) [env var:
@@ -307,9 +338,10 @@ TERM=ansi cecli --no-fancy-input --no-pretty --no-spinner \
 #   --mcp-servers MCP_CONFIG_JSON
 #                         Specify MCP server configurations as a JSON string
 #                         [env var: CECLI_MCP_SERVERS]
-#   --mcp-servers-file MCP_CONFIG_FILE
+#   --mcp-servers-files MCP_CONFIG_FILES
 #                         Specify a file path with MCP server configurations
-#                         [env var: CECLI_MCP_SERVERS_FILE]
+#                         (can be specified multiple times) [env var:
+#                         CECLI_MCP_SERVERS_FILES]
 #   --mcp-transport MCP_TRANSPORT
 #                         Specify the transport for MCP servers (default: stdio)
 #                         [env var: CECLI_MCP_TRANSPORT]
@@ -375,12 +407,12 @@ TERM=ansi cecli --no-fancy-input --no-pretty --no-spinner \
 # History Files:
 #   --input-history-file INPUT_HISTORY_FILE
 #                         Specify the chat input history file (default:
-#                         /Users/ekkehard.kraemer/bin/.cecli/input.history) [env
-#                         var: CECLI_INPUT_HISTORY_FILE]
+#                         $HOME/.emacs.d/.cecli/input.history)
+#                         [env var: CECLI_INPUT_HISTORY_FILE]
 #   --chat-history-file CHAT_HISTORY_FILE
 #                         Specify the chat history file (default:
-#                         /Users/ekkehard.kraemer/bin/.cecli/chat.history) [env
-#                         var: CECLI_CHAT_HISTORY_FILE]
+#                         $HOME/.emacs.d/.cecli/chat.history)
+#                         [env var: CECLI_CHAT_HISTORY_FILE]
 #
 # Input settings:
 #   --terminal-setup, --no-terminal-setup
@@ -399,6 +431,9 @@ TERM=ansi cecli --no-fancy-input --no-pretty --no-spinner \
 #   --stream, --no-stream
 #                         Enable/disable streaming responses (default: True)
 #                         [env var: CECLI_STREAM]
+#   --spinner, --no-spinner
+#                         Enable/disable the spinner while waiting for LLM
+#                         responses (default: True) [env var: CECLI_SPINNER]
 #   --user-input-color USER_INPUT_COLOR
 #                         Set the color for user input (default: #00cc00) [env
 #                         var: CECLI_USER_INPUT_COLOR]
@@ -595,6 +630,8 @@ TERM=ansi cecli --no-fancy-input --no-pretty --no-spinner \
 #                         glob patterns supported) [env var: CECLI_FILE]
 #   --read FILE           specify a read-only file (can be used multiple times,
 #                         glob patterns supported) [env var: CECLI_READ]
+#   --rules FILE          specify a rules file (can be used multiple times, glob
+#                         patterns supported) [env var: CECLI_RULES]
 #   --vim                 Use VI editing mode in the terminal (default: False)
 #                         [env var: CECLI_VIM]
 #   --chat-language CHAT_LANGUAGE
@@ -652,10 +689,10 @@ TERM=ansi cecli --no-fancy-input --no-pretty --no-spinner \
 #                         CECLI_SHELL_COMPLETIONS]
 #
 # Args that start with '--' can also be set in a config file
-# (/Users/ekkehard.kraemer/bin/.cecli.conf.yml or
-# /Users/ekkehard.kraemer/.cecli.conf.yml or specified via -c). The config file
-# uses YAML syntax and must represent a YAML 'mapping' (for details, see
-# http://learn.getgrav.org/advanced/yaml). In general, command-line values
+# ($HOME/.cecli.conf.yml or .cecli.conf.yml or
+# $HOME/.emacs.d/.cecli.conf.yml or specified via -c). The
+# config file uses YAML syntax and must represent a YAML 'mapping' (for details,
+# see http://learn.getgrav.org/advanced/yaml). In general, command-line values
 # override environment variables which override config file values which
 # override defaults.
 
