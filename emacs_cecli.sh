@@ -12,7 +12,6 @@ fi
 # ~$ uv tool uninstall cecli-dev
 # ~$ uv tool install --python python3.12 --editable ~/Documents/src/cecli-fork
 
-which cecli
 #      --no-fancy-input --no-pretty \
 # With dumb terminal, --watch-files does not work (unless in fork)
 # Without dumb terminal, the spinner messes up the text
@@ -75,8 +74,7 @@ TERM=ansi cecli --no-fancy-input --no-pretty --no-spinner \
       --thinking-tokens 8k --show-thinking \
       --disable-playwright --disable-scraping \
       --architect --auto-accept-architect --yes-always $AUTO_TEST_FLAG
-
-# 2>&1 | tee /tmp/cecli.log.$$
+#2>&1 | tee /tmp/cecli.log.$$
 
 # Works well...
 #
