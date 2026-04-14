@@ -273,3 +273,4 @@
 
 (add-hook 'magit-log-mode-hook (lambda () (visual-line-mode -1)))
 (add-hook 'magit-status-mode-hook (lambda () (visual-line-mode -1)))
+(add-hook 'compilation-mode-hook (lambda () (visual-line-mode -1)))

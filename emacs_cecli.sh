@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -E
+
 if [ "$1" ]; then
     echo "Warning: ignoring any extra arguments: $@"
 fi
@@ -13,10 +15,27 @@ echo "Update Cecli fork"
 
 (
     cd $HOME/Documents/src/cecli-fork
-    echo "  Pull"
-    git pull upstream main --rebase
-    echo "  Push"
-    git push origin main
+
+    # Make sure the pull runs at most once a day.
+    MARKER=".git/cecli-fork-pull-marker"
+    if [ -f "$MARKER" ] && [ -z "$(find "$MARKER" -mtime +0)" ]; then
+        echo "  Skipping fork sync (last pull less than 24h ago)"
+    else
+        HEAD_BEFORE=$(git rev-parse HEAD)
+        echo "  Pull"
+        git pull upstream main --rebase
+
+        # Only push if anything changed in the pull.
+        HEAD_AFTER=$(git rev-parse HEAD)
+        if [ "$HEAD_BEFORE" != "$HEAD_AFTER" ]; then
+            echo "  Push"
+            git push origin main
+        else
+            echo "  No changes to push"
+        fi
+
+        touch "$MARKER"
+    fi
 )
 
 
