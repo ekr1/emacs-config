@@ -9,6 +9,17 @@ if [ -e "run-tests.sh" ] ; then
     AUTO_TEST_FLAG="--auto-test --test-cmd ./run-tests.sh"
 fi
 
+echo "Update Cecli fork"
+
+(
+    cd $HOME/Documents/src/cecli-fork
+    echo "  Pull"
+    git pull upstream main --rebase
+    echo "  Push"
+    git push origin main
+)
+
+
 # ~$ uv tool uninstall cecli-dev
 # ~$ uv tool install --python python3.12 --editable ~/Documents/src/cecli-fork
 
