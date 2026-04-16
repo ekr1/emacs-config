@@ -103,7 +103,7 @@ TERM=ansi cecli --no-fancy-input --no-pretty --no-spinner \
       --watch-files --subtree-only \
       --thinking-tokens 8k --show-thinking \
       --disable-playwright --disable-scraping \
-      --architect --auto-accept-architect --yes-always $AUTO_TEST_FLAG
+      --agent --auto-accept-architect --yes-always $AUTO_TEST_FLAG
 #2>&1 | tee /tmp/cecli.log.$$
 
 # Works well...
