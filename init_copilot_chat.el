@@ -212,6 +212,47 @@ If the current buffer is not an aidermacs buffer, switch to the first one."
   (transient-append-suffix 'aidermacs-transient-menu '(0 0 -1)
     '("TAB" "Next Aidermacs Buffer" my-next-aidermacs-buffer)))
 
+(defun my-akp-unclone ()
+  "If the current buffer is under ~/Documents/src/akp/AKPPUB-NNNN/, save all buffers and run akp-unclone."
+  (interactive)
+  (let* ((buf-file (or (buffer-file-name) default-directory))
+         (expanded (expand-file-name buf-file))
+         (akp-root (expand-file-name "~/Documents/src/akp/"))
+         (rel (and (string-prefix-p akp-root expanded)
+                   (substring expanded (length akp-root)))))
+    (unless rel
+      (user-error "Current buffer is not under %s" akp-root))
+    (let* ((ticket (car (split-string rel "/")))
+           (ticket-dir (expand-file-name ticket akp-root)))
+      (unless (and ticket (string-match-p "\\`AKPPUB-[0-9]+\\'" ticket))
+        (user-error "Directory %s does not match AKPPUB-NNNN pattern" ticket))
+      (save-some-buffers t)
+      (message "Running akp-unclone %s ..." ticket)
+      (let* ((output-buf (get-buffer-create "*akp-unclone*"))
+             (ret (progn
+                    (with-current-buffer output-buf (erase-buffer))
+                    (call-process "~/bin/akp-unclone" nil output-buf nil ticket))))
+        (unless (= ret 0)
+          (display-buffer output-buf)
+          (user-error "akp-unclone %s failed with exit code %d" ticket ret)))
+      (when (file-directory-p ticket-dir)
+        (user-error "akp-unclone succeeded but %s still exists" ticket-dir))
+      ;; Kill all buffers whose file is under the removed tree
+      (let ((killed 0))
+        (dolist (buf (buffer-list))
+          (let ((f (or (buffer-file-name buf)
+                       (and (eq (buffer-local-value 'major-mode buf) 'dired-mode)
+                            (buffer-local-value 'default-directory buf)))))
+            (when (and f (string-prefix-p ticket-dir (expand-file-name f)))
+              (kill-buffer buf)
+              (cl-incf killed))))
+        (message "akp-unclone %s done, killed %d buffer(s)." ticket killed)))))
+
+(with-eval-after-load 'aidermacs
+  (transient-append-suffix 'aidermacs-transient-menu '(0 0 -1)
+    '("C-k" "AKP Unclone" my-akp-unclone)))
+
+
 ;; aider-ce
 ;; ========
 ;;
