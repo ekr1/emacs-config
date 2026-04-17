@@ -175,6 +175,21 @@
 
 (global-set-key (kbd "C-c a") 'aidermacs-transient-menu)
 
+(defun my-switch-to-aidermacs-buffer ()
+  "Display a list of *aidermacs:* buffers and switch to the selected one."
+  (interactive)
+  (let ((bufs (cl-remove-if-not
+               (lambda (b) (string-prefix-p "*aidermacs:" (buffer-name b)))
+               (buffer-list))))
+    (if (null bufs)
+        (message "No *aidermacs:* buffers found.")
+      (let ((name (completing-read "Switch to aidermacs buffer: "
+                                   (mapcar #'buffer-name bufs)
+                                   nil t)))
+        (switch-to-buffer name)))))
+
+(global-set-key (kbd "C-c a C-a") #'my-switch-to-aidermacs-buffer)
+
 ;; aider-ce
 ;; ========
 ;;
