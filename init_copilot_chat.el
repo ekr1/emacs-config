@@ -188,7 +188,29 @@
                                    nil t)))
         (switch-to-buffer name)))))
 
-(global-set-key (kbd "C-c a C-a") #'my-switch-to-aidermacs-buffer)
+(with-eval-after-load 'aidermacs
+  (transient-append-suffix 'aidermacs-transient-menu '(0 0 -1)
+    '("C-a" "Switch Aidermacs Buffer" my-switch-to-aidermacs-buffer)))
+
+(defun my-next-aidermacs-buffer ()
+  "Switch to the next *aidermacs:* buffer, cycling through them.
+If the current buffer is not an aidermacs buffer, switch to the first one."
+  (interactive)
+  (let ((bufs (cl-remove-if-not
+               (lambda (b) (string-prefix-p "*aidermacs:" (buffer-name b)))
+               (buffer-list))))
+    (if (null bufs)
+        (message "No *aidermacs:* buffers found.")
+      (let* ((cur (current-buffer))
+             (pos (cl-position cur bufs))
+             (next (if pos
+                       (nth (mod (1+ pos) (length bufs)) bufs)
+                     (car bufs))))
+        (switch-to-buffer next)))))
+
+(with-eval-after-load 'aidermacs
+  (transient-append-suffix 'aidermacs-transient-menu '(0 0 -1)
+    '("TAB" "Next Aidermacs Buffer" my-next-aidermacs-buffer)))
 
 ;; aider-ce
 ;; ========
