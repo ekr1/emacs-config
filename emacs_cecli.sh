@@ -21,18 +21,12 @@ echo "Update Cecli fork"
     if [ -f "$MARKER" ] && [ -z "$(find "$MARKER" -mtime +0)" ]; then
         echo "  Skipping fork sync (last pull less than 24h ago)"
     else
-        HEAD_BEFORE=$(git rev-parse HEAD)
-        echo "  Pull"
-        git pull upstream main --rebase
-
-        # Only push if anything changed in the pull.
-        HEAD_AFTER=$(git rev-parse HEAD)
-        if [ "$HEAD_BEFORE" != "$HEAD_AFTER" ]; then
-            echo "  Push"
-            git push origin main
-        else
-            echo "  No changes to push"
-        fi
+        git checkout main
+        git fetch origin
+        git fetch upstream
+        git rebase origin/main
+        git rebase upstream/main
+        git push origin main --force-with-lease
 
         touch "$MARKER"
     fi
@@ -101,7 +95,6 @@ echo "Update Cecli fork"
 TERM=ansi cecli --no-fancy-input --no-pretty --no-spinner \
       --no-tui \
       --watch-files --subtree-only \
-      --thinking-tokens 8k --show-thinking \
       --disable-playwright --disable-scraping \
       --agent --auto-accept-architect --yes-always $AUTO_TEST_FLAG
 #2>&1 | tee /tmp/cecli.log.$$
