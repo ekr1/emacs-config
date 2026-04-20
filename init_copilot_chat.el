@@ -248,6 +248,29 @@ If the current buffer is not an aidermacs buffer, switch to the first one."
   (transient-append-suffix 'aidermacs-transient-menu '(0 0 -1)
     '("C-k" "AKP Unclone" my-akp-unclone)))
 
+(defun my-akp-clone (digits)
+  "Prompt for the ticket number (digits only), run akp-clone AKPPUB-NNNN, open in dired and start aidermacs."
+  (interactive "sAKPPUB ticket number: ")
+  (unless (string-match-p "\\`[0-9]+\\'" digits)
+    (user-error "Expected only digits, got: %s" digits))
+  (let ((branch (concat "AKPPUB-" digits)))
+    (let* ((output-buf (get-buffer-create "*akp-clone*"))
+           (ret (progn
+                  (with-current-buffer output-buf (erase-buffer))
+                  (message "Running akp-clone %s ..." branch)
+                  (call-process "akp-clone" nil output-buf nil branch))))
+      (unless (= ret 0)
+        (display-buffer output-buf)
+        (user-error "akp-clone %s failed with exit code %d" branch ret)))
+    (let ((ticket-dir (expand-file-name (concat "~/Documents/src/akp/" branch "/"))))
+      (unless (file-directory-p ticket-dir)
+        (user-error "Expected directory %s does not exist after akp-clone" ticket-dir))
+      (dired ticket-dir)
+      (aidermacs-run))))
+
+(with-eval-after-load 'aidermacs
+  (transient-append-suffix 'aidermacs-transient-menu '(0 0 -1)
+    '("C-c" "AKP Clone" my-akp-clone)))
 
 ;; aider-ce
 ;; ========
