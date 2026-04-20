@@ -175,30 +175,14 @@
 
 (global-set-key (kbd "C-c a") 'aidermacs-transient-menu)
 
-(defun my-switch-to-aidermacs-buffer ()
-  "Display a list of *aidermacs:* buffers and switch to the selected one."
-  (interactive)
-  (let ((bufs (cl-remove-if-not
-               (lambda (b) (string-prefix-p "*aidermacs:" (buffer-name b)))
-               (buffer-list))))
-    (if (null bufs)
-        (message "No *aidermacs:* buffers found.")
-      (let ((name (completing-read "Switch to aidermacs buffer: "
-                                   (mapcar #'buffer-name bufs)
-                                   nil t)))
-        (switch-to-buffer name)))))
-
-(with-eval-after-load 'aidermacs
-  (transient-append-suffix 'aidermacs-transient-menu '(0 0 -1)
-    '("C-a" "Switch Aidermacs Buffer" my-switch-to-aidermacs-buffer)))
-
 (defun my-next-aidermacs-buffer ()
-  "Switch to the next *aidermacs:* buffer, cycling through them.
+  "Switch to the next *aidermacs:* buffer, cycling through them alphabetically.
 If the current buffer is not an aidermacs buffer, switch to the first one."
   (interactive)
-  (let ((bufs (cl-remove-if-not
-               (lambda (b) (string-prefix-p "*aidermacs:" (buffer-name b)))
-               (buffer-list))))
+  (let ((bufs (sort (cl-remove-if-not
+                    (lambda (b) (string-prefix-p "*aidermacs:" (buffer-name b)))
+                    (buffer-list))
+                   (lambda (a b) (string< (buffer-name a) (buffer-name b))))))
     (if (null bufs)
         (message "No *aidermacs:* buffers found.")
       (let* ((cur (current-buffer))
@@ -227,6 +211,15 @@ If the current buffer is not an aidermacs buffer, switch to the first one."
       (unless (and ticket (string-match-p "\\`AKPPUB-[0-9]+\\'" ticket))
         (user-error "Directory %s does not match AKPPUB-NNNN pattern" ticket))
       (save-some-buffers t)
+      ;; Kill the *aidermacs:* buffer for this ticket directory first
+      (let ((aider-buf (cl-find-if
+                        (lambda (b)
+                          (and (string-prefix-p "*aidermacs:" (buffer-name b))
+                               (string-match-p (regexp-quote ticket-dir) (buffer-name b))))
+                        (buffer-list))))
+        (when aider-buf
+          (message "  killing aidermacs buffer: %s" (buffer-name aider-buf))
+          (kill-buffer aider-buf)))
       (if (file-directory-p ticket-dir)
           (progn
             (message "Running akp-unclone %s ..." ticket)
