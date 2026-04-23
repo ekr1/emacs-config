@@ -13,25 +13,44 @@ fi
 
 echo "Update Cecli fork"
 
-(
-    cd $HOME/Documents/src/cecli-fork
+CECLI=cecli
 
-    # Make sure the pull runs at most once a day.
-    MARKER=".git/cecli-fork-pull-marker"
-    if [ -f "$MARKER" ] && [ -z "$(find "$MARKER" -mtime +0)" ]; then
-        echo "  Skipping fork sync (last pull less than 24h ago)"
+
+pushd $HOME/Documents/src/cecli-fork
+
+# Make sure the pull runs at most once a day.
+MARKER=".git/cecli-fork-pull-marker"
+if [ -f "$MARKER" ] && [ -z "$(find "$MARKER" -mtime +0)" ]; then
+    echo "  Skipping fork sync (last pull less than 24h ago)"
+else
+    git checkout main
+    git fetch origin
+    git fetch upstream
+    git rebase origin/main
+    git rebase upstream/main
+    git push origin main --force-with-lease
+
+    touch "$MARKER"
+fi
+
+popd
+
+if ! $CECLI --help 2>&1 | grep -q -- "--spinner"; then
+    echo "Error: cecli --help does not mention the --spinner option."
+
+    if [ ! -d $HOME/Documents/src/cecli-fork ] ; then
+        echo "  ... $HOME/Documents/src/cecli-fork does not exist, don't know how to re-install the tool."
     else
-        git checkout main
-        git fetch origin
-        git fetch upstream
-        git rebase origin/main
-        git rebase upstream/main
-        git push origin main --force-with-lease
-
-        touch "$MARKER"
+        echo "  ... reinstalling the tool..."
+        uv tool uninstall cecli-dev
+        uv tool install --python python3.12 --editable ~/Documents/src/cecli-fork
     fi
-)
+fi
 
+if ! $CECLI --help 2>&1 | grep -q -- "--spinner"; then
+    echo "Error: cecli --help does not mention the --spinner option, did the fork update and rebase correctly?"
+    exit 1
+fi
 
 # ~$ uv tool uninstall cecli-dev
 # ~$ uv tool install --python python3.12 --editable ~/Documents/src/cecli-fork
@@ -92,7 +111,7 @@ echo "Update Cecli fork"
 # TERM=ansi cecli --no-fancy-input --no-pretty  # OK, but "/ask Where is the "powered by" menu item generated?" does not execute grep commands?
 # TERM=ansi cecli --no-fancy-input --no-pretty --no-spinner   # Pretty good!
 # TERM=ansi cecli --no-fancy-input --pretty --no-spinner # Tool prompts seem to hang...
-TERM=ansi cecli --no-fancy-input --no-pretty --no-spinner \
+TERM=ansi $CECLI --no-fancy-input --no-pretty --no-spinner \
       --no-tui \
       --watch-files --subtree-only \
       --disable-playwright --disable-scraping \
