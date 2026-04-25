@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -E
+set -eE
 
 if [ "$1" ]; then
     echo "Warning: ignoring any extra arguments: $@"
@@ -14,7 +14,6 @@ fi
 echo "Update Cecli fork"
 
 CECLI=cecli
-
 
 pushd $HOME/Documents/src/cecli-fork
 
@@ -44,6 +43,8 @@ if ! $CECLI --help 2>&1 | grep -q -- "--spinner"; then
         echo "  ... reinstalling the tool..."
         uv tool uninstall cecli-dev
         uv tool install --python python3.12 --editable ~/Documents/src/cecli-fork
+        # Install new python packages if necessary:
+        uv tool upgrade cecli-dev
     fi
 fi
 
