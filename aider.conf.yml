@@ -15,19 +15,27 @@
 # --------------------- Claude -----------------------
 
 # https://platform.claude.com/docs/en/about-claude/models/choosing-a-model
+# Great but expensive:
 model:              github_copilot/claude-opus-4.6
+# Free:
+# model:              github_copilot/gpt-4.1
+# model:              github_copilot/gpt-5-mini
 
 # Very good:
 # editor-model:         github_copilot/claude-sonnet-4.6
 # Maybe faster? For sure cheaper:
 editor-model:         github_copilot/claude-haiku-4.5
+# Free, but fails Python whitespace:
+# editor-model:            github_copilot/gpt-4.1
+# editor-model:            github_copilot/gpt-5-mini
 
 # Had very verbose commit messages with this:
 # weak-model: github_copilot/claude-sonnet-4.5
-# This was fine (and free):
-# weak-model:            github_copilot/gpt-4.1
 # Super cheap:
-weak-model:         github_copilot/claude-haiku-4.5
+# weak-model:         github_copilot/claude-haiku-4.5
+# This was fine (and free):
+weak-model:            github_copilot/gpt-4.1
+#weak-model:            github_copilot/gpt-5-mini
 
 # --------------------------------------------------------
 
