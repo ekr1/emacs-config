@@ -74,7 +74,12 @@
 (straight-use-package 'dumb-jump)
 (straight-use-package 'load-env-vars)
 ; (straight-use-package 'show-font)  ; https://protesilaos.com/emacs/show-font - install manually
-(straight-use-package 'aidermacs)
+; (straight-use-package 'aidermacs)
+(straight-use-package
+ '(aidermacs
+   :host github
+   :repo "MatthewZMD/aidermacs"
+   :fork "ekr1"))
 (straight-use-package 'sqlite-mode)
 (straight-use-package 'jira-markup-mode)
 (straight-use-package 'vterm)
@@ -93,6 +98,7 @@
   :bind (("C-+" . expreg-expand)
          ("C--" . expreg-contract)))
 (straight-use-package 'ansi-color)
+(straight-use-package 'notifications)
 
 ;; maybe try:
 ;;
@@ -1046,6 +1052,28 @@ and preventing it from being removed by `delete-other-windows` (C-x 1)."
 (add-hook 'after-save-hook
           #'executable-make-buffer-file-executable-if-script-p)
 (setq set-mark-command-repeat-pop t)
+
+;; notify about finished processes
+
+(defun my-notify (title message)
+  "Send a desktop notification with TITLE and MESSAGE, unless selected Emacs frame is focused."
+  (interactive "sTitle: \nsMessage: ")
+  (unless (eq (frame-focus-state (selected-frame)) t)
+    (cond
+     ((eq system-type 'darwin)
+      (call-process "terminal-notifier" nil 0 nil
+                    "-title" title
+                    "-message" message
+                    "-activate" "org.gnu.Emacs"))
+
+     ((eq system-type 'windows-nt)
+      (call-process "powershell" nil 0 nil
+                    "-Command"
+                    (format "New-BurntToastNotification -Text '%s', '%s'"
+                            title message)))
+
+     ((eq system-type 'gnu/linux)
+      (call-process "notify-send" nil 0 nil title message)))))
 
 ; run server
 

@@ -22,11 +22,16 @@ MARKER=".git/cecli-fork-pull-marker"
 if [ -f "$MARKER" ] && [ -z "$(find "$MARKER" -mtime +0)" ]; then
     echo "  Skipping fork sync (last pull less than 24h ago)"
 else
+    echo "  Checkout..."
     git checkout main
+    echo "  Fetch..."
     git fetch origin
     git fetch upstream
+    echo "  Rebase on origin..."
     git rebase origin/main
+    echo "  Rebase on upstream..."
     git rebase upstream/main
+    echo "  Force push to origin..."
     git push origin main --force-with-lease
 
     touch "$MARKER"

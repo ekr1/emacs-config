@@ -49,7 +49,7 @@ mcp-servers:
       headers:
         Authorization: "Bearer secret"
 
-
+agent-config: '{"command_timeout": 600}'
 
 ##########################################################
 # Sample .aider.conf.yml
