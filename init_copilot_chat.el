@@ -296,32 +296,30 @@ If the current buffer is not an aidermacs buffer, switch to the first one."
 ;;
 ;; Test with
 ;;
-;;   curl -s $OPENAI_API_BASE/models -H "Authorization: Bearer $OPENAI_API_KEY" | jq -r '.data[].id'
+;;   curl -s $OPENAI_API_BASE/models -H "Authorization: Bearer $OPENAI_API_KEY" | jq -r '.data[].id' | sort
 ;;
-;;       gpt-4.1
-;;       gpt-5-mini
-;;       gpt-5
-;;       gpt-3.5-turbo
-;;       gpt-3.5-turbo-0613
-;;       gpt-4o-mini
-;;       gpt-4o-mini-2024-07-18
-;;       gpt-4
-;;       gpt-4-0613
-;;       gpt-4-0125-preview
-;;       gpt-4o
-;;       gpt-4o-2024-11-20
-;;       gpt-4o-2024-05-13
-;;       gpt-4-o-preview
-;;       gpt-4o-2024-08-06
-;;       grok-code-fast-1
-;;       text-embedding-ada-002
-;;       text-embedding-3-small
-;;       text-embedding-3-small-inference
-;;       claude-sonnet-4
+;;       claude-haiku-4.5
+;;       claude-opus-4.5
+;;       claude-opus-4.7
 ;;       claude-sonnet-4.5
 ;;       gemini-2.5-pro
+;;       gpt-3.5-turbo
+;;       gpt-3.5-turbo-0613
+;;       gpt-4
+;;       gpt-4-0613
+;;       gpt-4-o-preview
+;;       gpt-4.1
 ;;       gpt-4.1-2025-04-14
-;;
+;;       gpt-4o
+;;       gpt-4o-2024-05-13
+;;       gpt-4o-2024-08-06
+;;       gpt-4o-2024-11-20
+;;       gpt-4o-mini
+;;       gpt-4o-mini-2024-07-18
+;;       gpt-5-mini
+;;       text-embedding-3-small
+;;       text-embedding-3-small-inference
+;;       text-embedding-ada-002
 ;;
 ;; github_copilot Setup
 ;; ====================
