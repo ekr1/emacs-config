@@ -1089,4 +1089,9 @@ and preventing it from being removed by `delete-other-windows` (C-x 1)."
 
 (server-start)
 
+; restore reasonable GC settings after startup (raised in early-init.el)
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (setq gc-cons-threshold (* 16 1024 1024)
+                  gc-cons-percentage 0.1)))
 (my-banner "init.el loaded successfully!")

@@ -189,7 +189,6 @@
      ("shell" . sh-mode) ("bash" . sh-mode) ("dataviewjs" . js-mode)))
  '(markdown-fontify-code-blocks-natively t)
  '(max-mini-window-height 1)
- '(max-specpdl-size 10000 t)
  '(message-log-max 10000)
  '(mouse-highlight t)
  '(mouse-wheel-down-event 'mouse-4)

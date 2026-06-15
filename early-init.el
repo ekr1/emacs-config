@@ -1,5 +1,9 @@
 ;;; early-init.el --- pre-init configuration -*- lexical-binding: t; -*-
 
+; raise GC threshold during startup for faster init; restored in init.el
+(setq gc-cons-threshold most-positive-fixnum
+      gc-cons-percentage 0.6)
+
 ; using straight instead of package.el
 (setq package-enable-at-startup nil)
 
