@@ -141,9 +141,7 @@
 (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
 (add-to-list 'default-frame-alist '(ns-appearance . dark))
 
-(menu-bar-mode -1)
-(toggle-scroll-bar -1)
-
+; menu-bar-mode and toggle-scroll-bar are disabled in early-init.el to avoid startup flash
 ;; ------------------------ flycheck plus additional modules
 
 (my-banner "flycheck")
@@ -1090,7 +1088,5 @@ and preventing it from being removed by `delete-other-windows` (C-x 1)."
 (my-banner "Start Server...")
 
 (server-start)
-
-(provide 'init)
 
 (my-banner "init.el loaded successfully!")

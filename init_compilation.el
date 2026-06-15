@@ -1,4 +1,4 @@
-;;; init_compulation.el --- compilation mode specifics
+;;; init_compilation.el --- compilation mode specifics
 ;;; -*- lexical-binding: t; -*-
                                         ;
 (my-banner "Compilation...")
