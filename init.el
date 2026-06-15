@@ -209,79 +209,6 @@
 ; (setenv "PAGER" "cat")
 (setenv "EMACS" "1")
 
-;;;; obsolete X mode ;;;;
-;;;; obsolete X mode ;;;;;; Font
-;;;; obsolete X mode ;;;;;; ====
-;;;; obsolete X mode ;;;;
-;;;; obsolete X mode ;;;;;; http://emacs-fu.blogspot.de/2009/06/setting-fonts.html
-;;;; obsolete X mode ;;;;;; http://damieng.com/blog/2008/05/26/envy-code-r-preview-7-coding-font-released  => Put .ttfs in ~/.fonts
-;;;; obsolete X mode ;;;;
-;;;; obsolete X mode ;;;;;; .Xresources:
-;;;; obsolete X mode ;;;;; -- Usage: "xrdb .Xresources" to activate
-;;;; obsolete X mode ;;;;;
-;;;; obsolete X mode ;;;;; -- XTerm*faceName: Inconsolata
-;;;; obsolete X mode ;;;;; -- XTerm*faceSize: 10
-;;;; obsolete X mode ;;;;;
-;;;; obsolete X mode ;;;;; XTerm*faceName: Envy Code R
-;;;; obsolete X mode ;;;;; XTerm*faceSize: 10
-;;;; obsolete X mode ;;;;;
-;;;; obsolete X mode ;;;;; Emacs.font: Envy Code R-10
-;;;; obsolete X mode ;;;;
-;;;; obsolete X mode ;;;;;; Or, older:
-;;;; obsolete X mode ;;;;;  '(default-frame-alist (quote ((menu-bar-lines . 1) (font . "-unknown-Inconsolata-normal-normal-normal-*-14-*-*-*-m-0-iso10646-1"))))
-;;;; obsolete X mode ;;;;
-;;;; obsolete X mode ;;;;;;;;;;;; All of this works well and looks very good, but it slow. Fast mode:
-;;;; obsolete X mode ;;;;
-;;;; obsolete X mode ;;;;;Emacs*verticalScrollBars: off
-;;;; obsolete X mode ;;;;;Emacs.FontBackend: x
-;;;; obsolete X mode ;;;;
-;;;; obsolete X mode ;;;;
-;;;; obsolete X mode ;;;;;; Fontconfig
-;;;; obsolete X mode ;;;;;; ==========
-;;;; obsolete X mode ;;;;
-;;;; obsolete X mode ;;;;;; ~/.fonts/fonts.conf
-;;;; obsolete X mode ;;;;; <?xml version="1.0"?>
-;;;; obsolete X mode ;;;;; <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
-;;;; obsolete X mode ;;;;; <!-- /etc/fonts/fonts.conf file to configure system font access -->
-;;;; obsolete X mode ;;;;; <fontconfig>
-;;;; obsolete X mode ;;;;;
-;;;; obsolete X mode ;;;;; <match target="font">
-;;;; obsolete X mode ;;;;;     <edit name="antialias" mode="assign">
-;;;; obsolete X mode ;;;;;       <bool>true</bool>
-;;;; obsolete X mode ;;;;;     </edit>
-;;;; obsolete X mode ;;;;; </match>
-;;;; obsolete X mode ;;;;;
-;;;; obsolete X mode ;;;;; <match target="font">
-;;;; obsolete X mode ;;;;;     <edit name="hinting" mode="assign">
-;;;; obsolete X mode ;;;;;       <bool>true</bool>
-;;;; obsolete X mode ;;;;;     </edit>
-;;;; obsolete X mode ;;;;; </match>
-;;;; obsolete X mode ;;;;;
-;;;; obsolete X mode ;;;;; <match target="font">
-;;;; obsolete X mode ;;;;;     <edit name="autohint" mode="assign">
-;;;; obsolete X mode ;;;;;       <bool>false</bool>
-;;;; obsolete X mode ;;;;;     </edit>
-;;;; obsolete X mode ;;;;; </match>
-;;;; obsolete X mode ;;;;;
-;;;; obsolete X mode ;;;;; <match target="font">
-;;;; obsolete X mode ;;;;;     <edit name="hintstyle" mode="assign">
-;;;; obsolete X mode ;;;;;       <const>hintfull</const>
-;;;; obsolete X mode ;;;;;     </edit>
-;;;; obsolete X mode ;;;;; </match>
-;;;; obsolete X mode ;;;;;
-;;;; obsolete X mode ;;;;; <match target="font">
-;;;; obsolete X mode ;;;;;     <edit name="rgba" mode="assign">
-;;;; obsolete X mode ;;;;;       <const>rgb</const>
-;;;; obsolete X mode ;;;;;     </edit>
-;;;; obsolete X mode ;;;;; </match>
-;;;; obsolete X mode ;;;;;
-;;;; obsolete X mode ;;;;; <match target="font">
-;;;; obsolete X mode ;;;;;     <edit mode="assign" name="lcdfilter">
-;;;; obsolete X mode ;;;;;       <const>lcddefault</const>
-;;;; obsolete X mode ;;;;;     </edit>
-;;;; obsolete X mode ;;;;; </match>
-;;;; obsolete X mode ;;;;;
-;;;; obsolete X mode ;;;;; </fontconfig>
 
 (my-banner "ANSI colors (also see init_compilation.el)...")
 
@@ -621,12 +548,12 @@
   )
 (add-hook 'go-mode-hook 'go-mode-setup)
 
-(if (file-directory-p "~/Documents/src")
-  (run-at-time "2 sec" nil (lambda ()
-                             (dolist (buffer (buffer-list))
-                               (progn
-                                 (set-buffer buffer)
-                                 (cd "~/Documents/src"))))))
+(when (file-directory-p "~/Documents/src")
+  (run-at-time "2 sec" nil
+               (lambda ()
+                 (dolist (buffer (buffer-list))
+                   (set-buffer buffer)
+                   (cd "~/Documents/src")))))
 
 ;; org-jira
 
@@ -834,26 +761,23 @@
 ; ssh-agent on WSL
 
 (unless (file-exists-p "/tmp/ssh-agent.sh")
-  (progn
-    (message "Starting ssh-agent...")
-    (call-process-shell-command "ssh-agent > /tmp/ssh-agent.sh" nil nil)))
+  (message "Starting ssh-agent...")
+  (call-process-shell-command "ssh-agent > /tmp/ssh-agent.sh" nil nil))
 
-(if (file-exists-p "/tmp/ssh-agent.sh")
-    (progn
-      (message "Loading ssh-agent variables...")
+(when (file-exists-p "/tmp/ssh-agent.sh")
+  (message "Loading ssh-agent variables...")
 
-      ; Example /tmp/ssh-agent.sh:
-      ; SSH_AUTH_SOCK=/var/folders/06/76_lm2ss1p77xqwf5xzggzf80000gp/T//ssh-aBcA9sNHvSTb/agent.33249; export SSH_AUTH_SOCK;
-      ; SSH_AGENT_PID=33250; export SSH_AGENT_PID;
-      ; echo Agent pid 33250;
+  ; Example /tmp/ssh-agent.sh:
+  ; SSH_AUTH_SOCK=/var/folders/06/76_lm2ss1p77xqwf5xzggzf80000gp/T//ssh-aBcA9sNHvSTb/agent.33249; export SSH_AUTH_SOCK;
+  ; SSH_AGENT_PID=33250; export SSH_AGENT_PID;
+  ; echo Agent pid 33250;
 
-      (with-temp-buffer
-        (insert-file-contents "/tmp/ssh-agent.sh")
-        (goto-char (point-min))
-        (while (re-search-forward "\\([A-Z_]+\\)=\\([^;\n]*\\);?" nil t)
-          (progn
-            (message "Setting %s to '%s'" (match-string 1) (match-string 2))
-            (setenv (match-string 1) (match-string 2)))))))
+  (with-temp-buffer
+    (insert-file-contents "/tmp/ssh-agent.sh")
+    (goto-char (point-min))
+    (while (re-search-forward "\\([A-Z_]+\\)=\\([^;\n]*\\);?" nil t)
+      (message "Setting %s to '%s'" (match-string 1) (match-string 2))
+      (setenv (match-string 1) (match-string 2)))))
 
 ; yaml-mode
 
@@ -932,17 +856,14 @@
   "Set the default directory for all buffers to their respective file directories."
   (dolist (buffer (buffer-list))
     (with-current-buffer buffer
-      (progn
-        (when (and (buffer-file-name)
-                   (file-directory-p (file-name-directory (buffer-file-name))))
-          (progn
-            (message "Setting default-directory for buffer %s to %s" (buffer-name) (file-name-directory (buffer-file-name)))
-            (setq-local default-directory (file-name-directory (buffer-file-name)))))
-        (when (and (eq major-mode 'dired-mode)
-                   (file-directory-p default-directory))
-          (progn
-            (message "Setting default-directory for dired buffer %s to %s" (buffer-name) dired-directory)
-            (setq-local default-directory dired-directory))))))
+      (when (and (buffer-file-name)
+                 (file-directory-p (file-name-directory (buffer-file-name))))
+        (message "Setting default-directory for buffer %s to %s" (buffer-name) (file-name-directory (buffer-file-name)))
+        (setq-local default-directory (file-name-directory (buffer-file-name))))
+      (when (and (eq major-mode 'dired-mode)
+                 (file-directory-p default-directory))
+        (message "Setting default-directory for dired buffer %s to %s" (buffer-name) dired-directory)
+        (setq-local default-directory dired-directory))))
   (message "default-directories fixed for desktop-loaded files"))
 
 (defun set-default-directory-for-all-buffers-delayed ()
@@ -1037,18 +958,18 @@ and preventing it from being removed by `delete-other-windows` (C-x 1)."
 
 ;; small mostly performance tweaks
 
-(setq-default bidi-display-reordering 'left-to-right
-              bidi-paragraph-direction 'left-to-right)
-(setq bidi-inhibit-bpa t)
-(setq redisplay-skip-fontification-on-input t)
-(setq read-process-output-max (* 4 1024 1024))
-(setq-default cursor-in-non-selected-windows nil)
-(setq highlight-nonselected-windows nil)
-(setq kill-do-not-save-duplicates t)
-(setq ffap-machine-p-known 'reject)
+(setq-default bidi-display-reordering 'left-to-right    ; not a defcustom
+              bidi-paragraph-direction 'left-to-right)  ; not a defcustom
+(setopt bidi-inhibit-bpa t)
+(setq redisplay-skip-fontification-on-input t)          ; defvar, not a defcustom
+(setq read-process-output-max (* 4 1024 1024))          ; defvar, not a defcustom
+(setq-default cursor-in-non-selected-windows nil)       ; buffer-local default
+(setopt highlight-nonselected-windows nil)
+(setopt kill-do-not-save-duplicates t)
+(setopt ffap-machine-p-known 'reject)
 (add-hook 'after-save-hook
           #'executable-make-buffer-file-executable-if-script-p)
-(setq set-mark-command-repeat-pop t)
+(setopt set-mark-command-repeat-pop t)
 
 ;; notify about finished processes
 
