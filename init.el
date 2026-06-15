@@ -1075,6 +1075,17 @@ and preventing it from being removed by `delete-other-windows` (C-x 1)."
      ((eq system-type 'gnu/linux)
       (call-process "notify-send" nil 0 nil title message)))))
 
+;; no comments for LibreOffice formulas in *scratch*
+
+(defun my-disable-comments ()
+  "Disable comment syntax (especially ;) in the current buffer."
+  (interactive)
+  (setq-local comment-start nil)
+  (setq-local comment-end "")
+  (setq-local syntax-table (copy-syntax-table))
+  (modify-syntax-entry ?\; "." syntax-table)
+  (font-lock-flush))
+
 ; run server
 
 (my-banner "Start Server...")
