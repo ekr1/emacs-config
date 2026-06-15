@@ -1008,7 +1008,8 @@ and preventing it from being removed by `delete-other-windows` (C-x 1)."
 
 (my-banner "Start Server...")
 
-(server-start)
+(unless (and (fboundp 'server-running-p) (server-running-p))
+  (server-start))
 
 ; restore reasonable GC settings after startup (raised in early-init.el)
 (add-hook 'emacs-startup-hook

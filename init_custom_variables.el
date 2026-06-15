@@ -94,7 +94,7 @@
  '(display-buffer-reuse-frames t)
  '(display-line-numbers t)
  '(dumb-jump-debug t)
- '(dumb-jump-force-searcher 'ag)
+ '(dumb-jump-force-searcher 'rg)
  '(emacs-everywhere-frame-parameters
    '((name . "emacs-everywhere") (fullscreen) (width . 120) (height . 25)))
  '(emigo-python-command "~/.emacs.d/straight/repos/emigo/python3-venv")
