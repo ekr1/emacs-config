@@ -44,6 +44,7 @@
 (straight-use-package 'go-mode)
 ;(straight-use-package 'origami-predef)
 (straight-use-package 'dockerfile-mode)
+(straight-use-package 'editorconfig)
 (straight-use-package 'markdown-mode)
 ;(straight-use-package 'kubel)
 ;(straight-use-package 'kubernetes)
@@ -1032,9 +1033,7 @@ and preventing it from being removed by `delete-other-windows` (C-x 1)."
     (set-window-parameter win 'window-size-fixed new)
     (set-window-parameter win 'no-delete-other-windows new)))
 
-; Show possible key bindings after a short delay
-
-(which-key-mode 1)
+; Show possible key bindings after a short delay (already enabled above)
 
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
 

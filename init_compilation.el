@@ -48,10 +48,24 @@
          ))
 
 (defun my-compilation-finished (buf result)
-  "Play a beep when compilation finishes."
-  ; if the "afplay" exec exists...
-  (if (executable-find "afplay")
-      (start-process "*Compilation Finished Beep*" nil "afplay" "/Users/KRAEME/.emacs.d/short_beep.m4a")))
+  "Play a beep when compilation finishes.
+Looks for short_beep.m4a in `user-emacs-directory' and uses the first
+available platform-appropriate audio player."
+  (let ((sound-file (expand-file-name "short_beep.m4a" user-emacs-directory)))
+    (when (file-exists-p sound-file)
+      (cond
+       ;; macOS
+       ((executable-find "afplay")
+        (start-process "*Compilation Finished Beep*" nil "afplay" sound-file))
+       ;; Linux (PulseAudio first, fallback to ALSA)
+       ((executable-find "paplay")
+        (start-process "*Compilation Finished Beep*" nil "paplay" sound-file))
+       ((executable-find "aplay")
+        (start-process "*Compilation Finished Beep*" nil "aplay" "-q" sound-file))
+       ;; Windows
+       ((eq system-type 'windows-nt)
+        (start-process "*Compilation Finished Beep*" nil "powershell" "-c"
+                       (format "(New-Object Media.SoundPlayer '%s').PlaySync()" sound-file)))))))
 (remove-hook 'compilation-finish-functions 'my-compilation-finished)
 (add-hook 'compilation-finish-functions 'my-compilation-finished)
 
