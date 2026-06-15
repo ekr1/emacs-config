@@ -732,7 +732,9 @@
       (add-to-list 'major-mode-remap-alist '(js-json-mode . json-ts-mode))
       (add-to-list 'major-mode-remap-alist '(json-mode . json-ts-mode))
       (add-to-list 'major-mode-remap-alist '(make-mode . make-ts-mode))
-      (add-to-list 'major-mode-remap-alist '(markdown-mode . markdown-ts-mode))
+      ;; NOTE: do not remap markdown-mode to markdown-ts-mode — markdown-ts-mode
+      ;; is much less featureful than the third-party markdown-mode package.
+      ;; (add-to-list 'major-mode-remap-alist '(markdown-mode . markdown-ts-mode))
       (add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))
       (add-to-list 'major-mode-remap-alist '(ruby-mode . ruby-ts-mode))
       (add-to-list 'major-mode-remap-alist '(yaml-mode . yaml-ts-mode))
@@ -953,8 +955,6 @@ and preventing it from being removed by `delete-other-windows` (C-x 1)."
     (set-window-parameter win 'no-delete-other-windows new)))
 
 ; Show possible key bindings after a short delay (already enabled above)
-
-(add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
 
 ;; small mostly performance tweaks
 
