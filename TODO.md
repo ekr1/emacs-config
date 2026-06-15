@@ -1,26 +1,5 @@
 ## 🐛 Bugs / Likely Issues
 
-### 1. `init.el` — `which-key-mode` enabled twice
-Lines 908 and 1037 both call `(which-key-mode 1)`. The second call is redundant (will toggle off
-if the first one was effective).
-
-### 2. `init.el` — `editorconfig-mode` used without being installed
-Line 903 calls `(editorconfig-mode 1)` but `editorconfig` is never declared via
-`straight-use-package`. It probably works only because it's a transitive dependency of something
-else (e.g. `aidermacs`). Make the dependency explicit.
-
-### 3. `init_compilation.el` — Hardcoded macOS-only path for compile beep
-```elisp
-(start-process "*Compilation Finished Beep*" nil "afplay"
-               "/Users/KRAEME/.emacs.d/short_beep.m4a")
-```
-This will silently fail on Linux/Windows. Use `(expand-file-name "short_beep.m4a"
-user-emacs-directory)` and pick the player based on `system-type` (`afplay` / `paplay` /
-`powershell -c "(New-Object Media.SoundPlayer ...).Play()"`).
-
-### 4. `init_compilation.el` — Filename typo in header
-Line 1: `;;; init_compulation.el` → should be `init_compilation.el`.
-
 ### 5. `init_custom_variables.el` — `custom-file` set to relative path
 Line 6: `(setq custom-file "init_custom_variables.el")` — relative paths cause issues when
 `default-directory` differs. Use `expand-file-name`. (You actually already do it correctly in
@@ -31,20 +10,6 @@ This currently works only because `my-banner` is defined at the very top of `ini
 sub-files are loaded later. But `init_custom_variables.el` is loaded at line 177 (still safe).
 Worth noting: if you ever load any of these files standalone, they'll error.
 
-### 7. `init.el` — `provide 'init` at line 1095
-Misleading: `init.el` is not a feature meant to be `require`d. Harmless but unusual.
-
-### 8. `init.el` — `(menu-bar-mode -1)` and `(toggle-scroll-bar -1)` belong in `early-init.el`
-Doing them in `init.el` causes a brief visual flash of the menu/scroll bars at startup. Move them
-to `early-init.el` for a cleaner launch.
-
-### 9. `early-init.el` — Missing `lexical-binding` cookie
-Every other init file has it; for consistency add `;;; -*- lexical-binding: t; -*-`.
-
-### 10. `init_custom_variables.el` — Obsolete `max-specpdl-size`
-`max-specpdl-size` was made obsolete in Emacs 29 (merged into `max-lisp-eval-depth`). The
-trailing `t` even acknowledges it's "now-obsolete" form. Can be removed.
-
 ### 11. `init.el` — `(switch-to-buffer "*Messages*")` at top (line 11)
 Forces `*Messages*` as the initial buffer at every startup. Often you want `*scratch*` or
 whatever desktop restored. Consider gating this behind a debug flag.
@@ -52,19 +17,6 @@ whatever desktop restored. Consider gating this behind a debug flag.
 ---
 
 ## ⚡ Performance / Startup
-
-### 12. No GC tuning during startup
-A standard speedup: temporarily raise `gc-cons-threshold` in `early-init.el` and restore it after
-init. Easy 20–40% startup win:
-```elisp
-;; early-init.el
-(setq gc-cons-threshold most-positive-fixnum
-      gc-cons-percentage 0.6)
-;; init.el (at the very end)
-(add-hook 'emacs-startup-hook
-          (lambda () (setq gc-cons-threshold (* 16 1024 1024)
-                           gc-cons-percentage 0.1)))
-```
 
 ### 13. `(load-file ...)` for sub-inits → use `load`
 `load-file` does not consult `load-history` properly and re-evaluates always. Prefer `load`
@@ -89,10 +41,6 @@ Emacs).
 
 ## 🧹 Hygiene / Maintainability
 
-### 17. ~150+ lines of "obsolete X mode" commented blocks (init.el lines 252–419)
-Pure dead weight, never going to be re-enabled. **Delete them** — they live in git history if
-needed.
-
 ### 18. Many other large commented-out blocks
 - The xsel clipboard block (lines 451–500)
 - The `string-inflection` block (lines 580–600)
@@ -102,27 +50,9 @@ needed.
 
 Move long-form notes to a `NOTES.md`/`magit-hack.txt`-style file; keep `init.el` as actual code.
 
-### 19. Misuse of `(progn ...)` inside `if`/`when`
-Many places like:
-```elisp
-(if (file-directory-p "~/Documents/src")
-  (run-at-time "2 sec" nil (lambda ()
-                             (dolist (buffer (buffer-list))
-                               (progn ...)))))
-```
-`dolist` body is implicitly a `progn`; same for `when`/`unless`. The extra `progn`s are noise.
-
-### 20. Mix of `setq`, `setopt`, and `custom-set-variables`
-You use all three. `setopt` (Emacs 29+) is preferred for user options because it triggers `:set`
-functions. But `custom-set-variables` in `init_custom_variables.el` already handles many of the
-same vars — this can drift. Pick one strategy per variable.
-
 ### 21. `notmuch` config nests heavily — flatten
 `init_notmuch.el` has multiple nested `progn`s and an outer `if`. Refactor with early-return +
 `when` to drop one level of indentation.
-
-### 22. `init_projectile.el` keeps disabled `define-key` arity-detection block
-Lines 12–19 are commented-out exploration. Remove.
 
 ### 23. `setq` on `custom`-managed `lab-host`/`lab-token`
 `my-set-lab-host` uses `(setq lab-host ...)`. If `lab-host` is a defcustom, prefer
@@ -170,10 +100,6 @@ and give a hugely better completion experience. You note it as a TODO at line 11
 You remap `dabbrev-expand` → `hippie-expand` (good!), but the default
 `hippie-expand-try-functions-list` isn't customized. Add personally useful try-functions.
 
-### 30. Replace `ag` with `rg` everywhere
-`init_custom_variables.el` line: `'(dumb-jump-force-searcher 'ag)`. You also install/use `rg` and
-`deadgrep` (which uses rg). Switch to `'rg` for consistency and speed.
-
 ### 31. `desktop-globals-to-save` ends with literal `\...`
 Same with `tramp-remote-process-environment`. Looks like Custom truncated the value. Should be
 inspected — these are likely incomplete and should be cleaned up.
@@ -190,10 +116,6 @@ synchronously, or use `with-eval-after-load`.
 Will mangle Markdown intentional trailing spaces (line breaks) and patches/diffs. Make it
 mode-specific or whitelist-driven.
 
-### 35. `(server-start)` unconditionally
-If a server with the same name is already running, this errors at startup. Wrap in `(unless
-(server-running-p) (server-start))`.
-
 ---
 
 ## 📋 Suggested Quick-Win Priority
@@ -202,12 +124,6 @@ If you want a starting point, here's what I'd tackle first (high impact, low ris
 
 | # | Issue | Effort |
 |---|---|---|
-| 1 | Add `gc-cons-threshold` tuning to `early-init.el` | 5 min |
-| 8 | Move `menu-bar-mode -1` and `toggle-scroll-bar -1` to `early-init.el` | 5 min |
-| 1 (which-key) | Remove duplicate `(which-key-mode 1)` | 1 min |
-| 17 | Delete the "obsolete X mode" block | 2 min |
-| 35 | Wrap `server-start` in guard | 2 min |
-| 3 | Fix the hardcoded macOS beep path | 5 min |
 | 14 | Defer tree-sitter installation to idle time | 10 min |
 
 Want me to apply any of these? I can do them individually, in batches, or by category — let me
