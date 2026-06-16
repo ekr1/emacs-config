@@ -1,6 +1,9 @@
 # https://github.com/settings/copilot/features
 # https://docs.github.com/en/copilot/reference/ai-models/model-comparison
 
+# # These files exist after aider/litellm login with the "github_copilot" type.
+#   export OPENAI_API_BASE=$(jq -r '.endpoints.api' ~/.config/litellm/github_copilot/api-key.json)
+#   export OPENAI_API_KEY=$(cat ~/.config/litellm/github_copilot/access-token)
 #   curl -s $OPENAI_API_BASE/models -H "Authorization: Bearer $OPENAI_API_KEY" | jq -r '.data[].id' | sort
 #
 #       claude-haiku-4.5
@@ -41,7 +44,7 @@
 
 # https://platform.claude.com/docs/en/about-claude/models/choosing-a-model
 # Great but expensive:
-model:              github_copilot/claude-opus-4.7
+model:              github_copilot/claude-opus-4.6
 # Free:
 # model:              github_copilot/gpt-4.1
 # model:              github_copilot/gpt-5-mini
@@ -74,7 +77,31 @@ mcp-servers:
       headers:
         Authorization: "Bearer secret"
 
-agent-config: '{"command_timeout": 600}'
+agent-config: |
+  {
+    "command_timeout": 600,
+    "allowed_commands": [    # Commands matching these glob patterns will not prompt for confirmation
+      "wc -l*"
+    ]
+
+    # # Skills configuration
+    # "skills_paths": ["~/my-skills", "./project-skills"],  # Directories to search for skills
+    # "skills_includelist": ["python-refactoring", "react-components"],  # Optional: Whitelist of skills to include
+    # "skills_excludelist": ["legacy-tools"],  # Optional: Blacklist of skills to exclude
+    #
+    # # Other Agent Mode settings
+    # "large_file_token_threshold": 12500,  # Token threshold for large file warnings
+    # "skip_cli_confirmations": false,  # YOLO mode - be brave and let the LLM cook
+    # "allowed_commands": ["wc -l*"],  # Commands matching these glob patterns will not prompt for confirmation
+    # "tools_includelist": ["view", "makeeditable", "replacetext", "finished"],  # Optional: Whitelist of tools
+    # "tools_excludelist": ["command", "commandinteractive"],  # Optional: Blacklist of tools
+    # "include_context_blocks": ["todo_list", "git_status"],  # Optional: Context blocks to include
+    # "exclude_context_blocks": ["symbol_outline", "directory_structure"]  # Optional: Context blocks to exclude
+
+  }
+
+auto-save: true
+auto-load: true
 
 ##########################################################
 # Sample .aider.conf.yml
