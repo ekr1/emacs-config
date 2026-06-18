@@ -117,7 +117,14 @@ fi
 # TERM=ansi cecli --no-fancy-input --no-pretty  # OK, but "/ask Where is the "powered by" menu item generated?" does not execute grep commands?
 # TERM=ansi cecli --no-fancy-input --no-pretty --no-spinner   # Pretty good!
 # TERM=ansi cecli --no-fancy-input --pretty --no-spinner # Tool prompts seem to hang...
-TERM=ansi $CECLI --no-fancy-input --no-pretty --no-spinner \
+# TERM=ansi $CECLI --no-fancy-input --no-pretty --no-spinner   # Perfect
+#
+# --no-fancy-input --no-pretty --no-spinner      # tests with xterm-256color and xterm-color instead of ansi-color
+# TERM=xterm-256color $CECLI                     # quite broken, Ctrl-v does not work
+# TERM=xterm-256color $CECLI --no-fancy-input    # "Awaiting confirmation..." even on the normal prompt, unusable
+# TERM=xterm-256color $CECLI --no-pretty         # Looks shitty
+# TERM=xterm-256color $CECLI --no-fancy-input --no-pretty   # dito
+TERM=xterm-256color $CECLI --no-fancy-input --no-pretty --no-spinner \
       --no-tui \
       --watch-files --subtree-only \
       --disable-playwright --disable-scraping \

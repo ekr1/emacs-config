@@ -18,11 +18,6 @@
  '(aidermacs-show-diff-after-change nil)
  '(aidermacs-subtree-only t)
  '(aidermacs-watch-files t)
- '(ansi-color-bold-is-bright t)
- '(ansi-color-for-comint-mode t)
- '(ansi-color-names-vector
-   ["black" "#d55e00" "#009e73" "#f8ec59" "#0072b2" "#cc79a7" "#56b4e9"
-    "white"])
  '(auto-hscroll-mode t)
  '(auto-save-default t)
  '(backup-by-copying t)

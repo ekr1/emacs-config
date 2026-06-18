@@ -105,18 +105,16 @@ available platform-appropriate audio player."
 ;(prefer-coding-system 'utf-8)
 ; ... wird aber in .dir-locals.el eingestellt (auf andere Weise - genügt das?)
 
-;; included in 28.2, not required anymore
-;; ANSI coloring in compilation buffers
-;; (require 'ansi-color)
-;; (defun ff/ansi-colorize-buffer ()
-;; ;  (setopt buffer-read-only nil)
-;; ;  (ansi-color-apply-on-region (point-min) (point-max))
-;; ;  (setopt buffer-read-only t)
-;;   )
-;; (add-hook 'compilation-filter-hook 'ff/ansi-colorize-buffer)
-
-;; ; ANSI coloring in compilation buffers
-(add-hook 'compilation-filter-hook 'ansi-color-compilation-filter)
+(defun my-xterm-color-compilation-filter ()
+  "Render ANSI escape sequences in compilation output via xterm-color."
+  (let ((inhibit-read-only t))
+    (save-excursion
+      (let ((start compilation-filter-start)
+            (end (point)))
+        (goto-char start)
+        (insert (xterm-color-filter
+                 (delete-and-extract-region start end)))))))
+(add-hook 'compilation-filter-hook #'my-xterm-color-compilation-filter)
 
 (defun my-compilation-start-add-fold (args)
   "Add '| fold -w <visible-width>' to the command passed to compilation-start.
@@ -127,18 +125,6 @@ If the *compilation* buffer is not visible or does not exist, default to 100."
     args))
 
 (advice-add 'compilation-start :filter-args #'my-compilation-start-add-fold)
-
-; ANSI coloring for any buffer
-; (require 'tty-format)
-;; M-x display-ansi-colors to explicitly decode ANSI color escape sequences
-
-; this accesses variable ansi-color-regexp in tty_format; the variable is undefined
-;; (defun display-ansi-colors ()
-;;   "Enable ANSI colors in the current buffer."
-;;   (interactive)
-;;   (format-decode-buffer 'ansi-colors))
-;; ;; decode ANSI color escape sequences for *.txt or README files
-;; (add-hook 'find-file-hooks 'tty-format-guess)
 
 ; avoid extreme pauses on long compilation lines
 ;; (require 'truncated-compilation-mode)

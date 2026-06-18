@@ -98,7 +98,7 @@
   :straight t
   :bind (("C-+" . expreg-expand)
          ("C--" . expreg-contract)))
-(straight-use-package 'ansi-color)
+(straight-use-package 'xterm-color)
 (straight-use-package 'notifications)
 
 ;; maybe try:
@@ -210,11 +210,28 @@
 (setenv "EMACS" "1")
 
 
-(my-banner "ANSI colors (also see init_compilation.el)...")
+(my-banner "ANSI/xterm colors (also see init_compilation.el)...")
+
+;; Use xterm-color for shell modes instead of ansi-color (per xterm-color docs)
+(setq xterm-color-use-bold-for-bright t)
+(add-hook 'shell-mode-hook
+          (lambda ()
+            ;; Disable font-locking in this buffer to improve performance
+            (font-lock-mode -1)
+            ;; Prevent font-locking from being re-enabled in this buffer
+            (make-local-variable 'font-lock-function)
+            (setq font-lock-function (lambda (_) nil))
+            ;; Replace ansi-color-process-output with xterm-color-filter
+            (make-local-variable 'comint-output-filter-functions)
+            (remove-hook 'comint-output-filter-functions 'ansi-color-process-output t)
+            (add-hook 'comint-preoutput-filter-functions 'xterm-color-filter nil t)))
 
 (defun display-ansi-colors ()
+  "Render ANSI color escape sequences in the current buffer via xterm-color."
   (interactive)
-  (ansi-color-apply-on-region (point-min) (point-max)))
+  (let ((inhibit-read-only t))
+    (insert (xterm-color-filter
+             (delete-and-extract-region (point-min) (point-max))))))
 
 ;; decode ANSI color escape sequences for .log files
 (add-to-list 'auto-mode-alist '("\\.log\\'" . display-ansi-colors))
@@ -794,9 +811,6 @@
   "Disable (ignore) ctrl + mouse wheel text scaling by overriding the same def in mwheel.el."
   (interactive (list last-input-event))
   (ignore))
-
-
-
 
 ;; The following is not necessary on MacOS Emacs 30.1, scrolling just
 ;; worked out of the box.
