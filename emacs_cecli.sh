@@ -46,10 +46,10 @@ if ! $CECLI --help 2>&1 | grep -q -- "--spinner"; then
         echo "  ... $HOME/Documents/src/cecli-fork does not exist, don't know how to re-install the tool."
     else
         echo "  ... reinstalling the tool..."
-        uv tool uninstall cecli-dev
-        uv tool install --python python3.12 --editable ~/Documents/src/cecli-fork
+        uv tool uninstall cecli-dev || true
+        uv --no-progress tool install --python python3.12 --editable ~/Documents/src/cecli-fork
         # Install new python packages if necessary:
-        uv tool upgrade cecli-dev
+        uv --no-progress tool upgrade cecli-dev
     fi
 fi
 
