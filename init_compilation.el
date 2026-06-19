@@ -47,6 +47,39 @@
                                  (delete-window win)))))
          ))
 
+;; fix too wide reported COLUMNS in re-compile *compilation* buffers (bug in compile.el)
+(advice-add
+ 'comint-term-environment
+ :filter-return
+ (lambda (env)
+   (cons (format "COLUMNS=%d"
+                 (window-max-chars-per-line))
+         (seq-remove
+          (lambda (s) (string-prefix-p "COLUMNS=" s))
+          env))))
+
+;; inject a working COLUMNS when using M-x compile:
+
+(defun my-compilation-visible-width ()
+  "Return the usable text width of the *compilation* window."
+  (let* ((buf (get-buffer-create "*compilation*"))
+         (win (display-buffer buf)))
+    (with-selected-window win
+      (window-max-chars-per-line))))
+
+(defun my-compile-with-columns (orig-fun command &optional comint)
+  (let* ((cols (my-compilation-visible-width))
+         (compilation-environment
+          (cons (format "COLUMNS=%d" cols)
+                (seq-remove
+                 (lambda (s)
+                   (string-prefix-p "COLUMNS=" s))
+                 compilation-environment))))
+    (funcall orig-fun command comint)))
+
+(advice-add 'compile :around #'my-compile-with-columns)
+
+
 (defun my-compilation-finished (buf result)
   "Play a beep when compilation finishes.
 Looks for short_beep.m4a in `user-emacs-directory' and uses the first
