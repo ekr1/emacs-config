@@ -3,23 +3,35 @@
 
 - name: github_copilot/gpt-4.1
   edit_format: editor-diff
+  extra_params:
+      Editor-Version: vscode/42
 
 - name: github_copilot/gpt-5
   edit_format: editor-diff
+  extra_params:
+      Editor-Version: vscode/42
 
 - name: github_copilot/claude-opus-4.6
   edit_format: editor-diff
+  extra_params:
+      Editor-Version: vscode/42
 
 - name: github_copilot/claude-opus-4.7
   edit_format: editor-diff
+  extra_params:
+      Editor-Version: vscode/42
 
 - name: github_copilot/claude-sonnet-4.6
   edit_format: editor-diff
+  extra_params:
+      Editor-Version: vscode/42
 
 - name: github_copilot/claude-sonnet-4.6
   edit_format: editor-diff
+  extra_params:
+      Editor-Version: vscode/42
 
-- name: aider/extra_params
+- name: cecli/extra_params
   extra_params:
     # max_tokens: 80000
     extra_headers:
