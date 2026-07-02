@@ -44,7 +44,7 @@
 
 # https://platform.claude.com/docs/en/about-claude/models/choosing-a-model
 # Great but expensive:
-model:              github_copilot/claude-opus-4.6
+model:              github_copilot/claude-opus-4.7
 # Free:
 # model:              github_copilot/gpt-4.1
 # model:              github_copilot/gpt-5-mini
@@ -60,9 +60,9 @@ editor-model:         github_copilot/claude-haiku-4.5
 # Had very verbose commit messages with this:
 # weak-model: github_copilot/claude-sonnet-4.5
 # Super cheap:
-# weak-model:         github_copilot/claude-haiku-4.5
+weak-model:         github_copilot/claude-haiku-4.5
 # This was fine (and free):
-weak-model:            github_copilot/gpt-4.1
+# weak-model:            github_copilot/gpt-4.1
 #weak-model:            github_copilot/gpt-5-mini
 
 # --------------------------------------------------------
