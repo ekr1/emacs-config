@@ -85,7 +85,7 @@ agent-config: |
     ]
 
     # # Skills configuration
-    # "skills_paths": ["~/my-skills", "./project-skills"],  # Directories to search for skills
+    "skills_paths": ["~/.emacs.d/skills"],  # Directories to search for skills
     # "skills_includelist": ["python-refactoring", "react-components"],  # Optional: Whitelist of skills to include
     # "skills_excludelist": ["legacy-tools"],  # Optional: Blacklist of skills to exclude
     #
