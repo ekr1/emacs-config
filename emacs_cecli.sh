@@ -128,6 +128,7 @@ TERM=xterm-256color $CECLI --no-fancy-input --no-pretty --no-spinner \
       --no-tui \
       --watch-files --subtree-only \
       --disable-playwright --disable-scraping \
+      --load ~/.emacs.d/aider.autoload.txt \
       --agent --auto-accept-architect --yes-always $AUTO_TEST_FLAG
 #2>&1 | tee /tmp/cecli.log.$$
 

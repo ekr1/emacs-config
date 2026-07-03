@@ -82,11 +82,11 @@ agent-config: |
     "command_timeout": 600,
     "allowed_commands": [    # Commands matching these glob patterns will not prompt for confirmation
       "wc -l*"
-    ]
+    ],
 
     # # Skills configuration
     "skills_paths": ["~/.emacs.d/skills"],  # Directories to search for skills
-    # "skills_includelist": ["python-refactoring", "react-components"],  # Optional: Whitelist of skills to include
+    "skills_includelist": ["caveman"]  # Optional: Whitelist of skills to include
     # "skills_excludelist": ["legacy-tools"],  # Optional: Blacklist of skills to exclude
     #
     # # Other Agent Mode settings
@@ -101,7 +101,7 @@ agent-config: |
   }
 
 auto-save: true
-auto-load: true
+auto-load: false
 
 ##########################################################
 # Sample .aider.conf.yml
