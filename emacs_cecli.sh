@@ -130,8 +130,9 @@ spawn $CECLI --no-fancy-input --no-pretty --no-spinner \\
       --no-tui \\
       --watch-files --subtree-only \\
       --disable-playwright --disable-scraping \\
-      --load $HOME/.emacs.d/aider.autoload.txt \\
       --agent --auto-accept-architect --yes-always $AUTO_TEST_FLAG
+expect "agent>"
+send "/load-skill caveman\\r"
 expect "agent>"
 send "caveman mode\\r"
 interact
