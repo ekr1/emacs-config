@@ -124,7 +124,7 @@ fi
 # TERM=xterm-256color $CECLI --no-fancy-input    # "Awaiting confirmation..." even on the normal prompt, unusable
 # TERM=xterm-256color $CECLI --no-pretty         # Looks shitty
 # TERM=xterm-256color $CECLI --no-fancy-input --no-pretty   # dito
-TERM=xterm-256color expect <<EOF
+TERM=xterm-256color expect -f <(cat <<EOF
 set timeout -1
 spawn $CECLI --no-fancy-input --no-pretty --no-spinner \\
       --no-tui \\
@@ -136,6 +136,7 @@ expect "agent>"
 send "caveman mode\\r"
 interact
 EOF
+)
 #2>&1 | tee /tmp/cecli.log.$$
 
 # Works well...
