@@ -77,6 +77,7 @@ mcp-servers:
       headers:
         Authorization: "Bearer secret"
 
+# See https://cecli.dev/docs/config/agent-mode.html#complete-configuration-example
 agent-config: |
   {
     "command_timeout": 600,
@@ -84,19 +85,8 @@ agent-config: |
       "wc -l*"
     ],
 
-    # # Skills configuration
     "skills_paths": ["~/.emacs.d/skills"],  # Directories to search for skills
-    "skills_includelist": ["caveman"]  # Optional: Whitelist of skills to include
-    # "skills_excludelist": ["legacy-tools"],  # Optional: Blacklist of skills to exclude
-    #
-    # # Other Agent Mode settings
-    # "large_file_token_threshold": 12500,  # Token threshold for large file warnings
-    # "skip_cli_confirmations": false,  # YOLO mode - be brave and let the LLM cook
-    # "allowed_commands": ["wc -l*"],  # Commands matching these glob patterns will not prompt for confirmation
-    # "tools_includelist": ["view", "makeeditable", "replacetext", "finished"],  # Optional: Whitelist of tools
-    # "tools_excludelist": ["command", "commandinteractive"],  # Optional: Blacklist of tools
-    # "include_context_blocks": ["todo_list", "git_status"],  # Optional: Context blocks to include
-    # "exclude_context_blocks": ["symbol_outline", "directory_structure"]  # Optional: Context blocks to exclude
+    "skills_init": ["caveman"]
 
   }
 

@@ -11,7 +11,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(ahk-indentation 2)
- '(aidermacs-backend 'comint)
+ '(aidermacs-backend 'vterm)
  '(aidermacs-default-model "see ~/.aider.conf.yml instead!")
  '(aidermacs-extra-args '(""))
  '(aidermacs-program "set this in init_copilot*el instead!")
@@ -31,11 +31,11 @@
  '(compilation-context-lines 3)
  '(compilation-mode-hook nil)
  '(compilation-scroll-output t)
- '(copilot-chat-commit-model "gpt-4.1")
+ '(copilot-chat-commit-model "gpt-4.1" t)
  '(copilot-chat-commit-prompt
    "Here is the result of running `git diff --cached`. Please suggest a commit message. Don't add anything else to the response. The following describes conventional commits.\12Do not use any markers around the commit message. Do not add the conventional commit prefix. Stick to one line, shorter is better. No need to mention whitespace changes.\12\12Here is the result of `git diff --cached`:\12")
  '(copilot-chat-debug nil)
- '(copilot-chat-default-model "gpt-4.1")
+ '(copilot-chat-default-model "gpt-4.1" t)
  '(copilot-chat-follow nil)
  '(copilot-chat-frontend 'shell-maker)
  '(copilot-chat-model-ignore-picker t)
@@ -254,7 +254,7 @@
  '(visual-line-fringe-indicators '(left-curly-arrow right-curly-arrow))
  '(vterm-keymap-exceptions
    '("C-c" "C-x" "C-u" "C-g" "C-h" "C-l" "M-x" "M-o" "C-y" "M-y"
-     "<prior>"))
+     "<prior>" "M-w"))
  '(whitespace-global-modes '(yaml-mode))
  '(whitespace-line-column 80)
  '(whitespace-style
@@ -268,3 +268,10 @@
 (add-hook 'magit-log-mode-hook (lambda () (visual-line-mode -1)))
 (add-hook 'magit-status-mode-hook (lambda () (visual-line-mode -1)))
 (add-hook 'compilation-mode-hook (lambda () (visual-line-mode -1)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(line-number ((t (:foreground "gray38"))))
+ '(mode-line (nil)))

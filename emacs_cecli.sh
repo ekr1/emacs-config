@@ -124,20 +124,31 @@ fi
 # TERM=xterm-256color $CECLI --no-fancy-input    # "Awaiting confirmation..." even on the normal prompt, unusable
 # TERM=xterm-256color $CECLI --no-pretty         # Looks shitty
 # TERM=xterm-256color $CECLI --no-fancy-input --no-pretty   # dito
-TERM=xterm-256color expect -f <(cat <<EOF
-set timeout -1
-spawn $CECLI --no-fancy-input --no-pretty --no-spinner \\
-      --no-tui \\
-      --watch-files --subtree-only \\
-      --disable-playwright --disable-scraping \\
+#
+# Comint mode: spawn $CECLI --no-fancy-input --no-pretty --no-spinner  --- perfect
+# VTerm mode: spawn $CECLI --fancy-input --no-pretty --no-spinner   --- almost good, but still usable. Adds some color and makes cursor keys, tab completion for / and ...? work.
+
+TERM=xterm-256color $CECLI --fancy-input --no-pretty --spinner \
+      --no-tui \
+      --watch-files --subtree-only \
+      --disable-playwright --disable-scraping \
       --agent --auto-accept-architect --yes-always $AUTO_TEST_FLAG
-expect "agent>"
-send "/load-skill caveman\\r"
-expect "agent>"
-send "caveman mode\\r"
-interact
-EOF
-)
+
+# TERM=xterm-256color expect -f <(cat <<EOF
+# set timeout -1
+# spawn $CECLI --fancy-input --no-pretty --spinner \\
+#       --no-tui \\
+#       --watch-files --subtree-only \\
+#       --disable-playwright --disable-scraping \\
+#       --agent --auto-accept-architect --yes-always $AUTO_TEST_FLAG
+# expect "agent>"
+# send "/load-skill caveman\\r"
+# expect "agent>"
+# send "caveman mode\\r"
+# interact
+# EOF
+# )
+
 #2>&1 | tee /tmp/cecli.log.$$
 
 # Works well...
