@@ -254,7 +254,7 @@
  '(visual-line-fringe-indicators '(left-curly-arrow right-curly-arrow))
  '(vterm-keymap-exceptions
    '("C-c" "C-x" "C-u" "C-g" "C-h" "C-l" "M-x" "M-o" "C-y" "M-y"
-     "<prior>" "M-w"))
+     "<prior>" "M-w" "M-c"))
  '(whitespace-global-modes '(yaml-mode))
  '(whitespace-line-column 80)
  '(whitespace-style
