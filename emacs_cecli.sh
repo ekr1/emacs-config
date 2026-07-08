@@ -124,11 +124,9 @@ fi
 # TERM=xterm-256color $CECLI --no-fancy-input    # "Awaiting confirmation..." even on the normal prompt, unusable
 # TERM=xterm-256color $CECLI --no-pretty         # Looks shitty
 # TERM=xterm-256color $CECLI --no-fancy-input --no-pretty   # dito
-#
 # Comint mode: spawn $CECLI --no-fancy-input --no-pretty --no-spinner  --- perfect
-# VTerm mode: spawn $CECLI --fancy-input --no-pretty --no-spinner   --- almost good, but still usable. Adds some color and makes cursor keys, tab completion for / and ...? work. Works on MacOS but very janky
-
-TERM=xterm-256color $CECLI --no-fancy-input --no-pretty --no-spinner \
+# VTerm mode: TERM=xterm-256color $CECLI --fancy-input --no-pretty --spinner  --- usable. Adds some color and makes cursor keys, tab completion for / and ...? work.
+TERM=xterm-256color $CECLI --fancy-input --no-pretty --spinner \
       --no-tui \
       --watch-files --subtree-only \
       --disable-playwright --disable-scraping \
