@@ -1,311 +1,354 @@
-;; M-x straight-pull-recipe-repositories   # restart emacs after that...
-;; M-x straight-pull-all           # updates packages, not only the lists...
+;;; straight_versions.el --- Inspect straight.el package versions -*- lexical-binding: t; -*-
 
-;; write lockfile: straight-freeze-versions -> straight/versions/default.el, copy to straight/versions/default.el-YYYY-MM-DD
+;;; Commentary:
+;;
+;; Two workflows for keeping an eye on straight.el-managed packages:
+;;
+;; 1. Compare two frozen lockfiles under straight/versions/
+;;      M-x my-straight-compare-lockfiles
+;;
+;;    Typical flow:
+;;      M-x straight-freeze-versions
+;;        -> writes straight/versions/default.el
+;;      cp straight/versions/default.el straight/versions/default.el-YYYY-MM-DD
+;;      ... time passes, more freezes ...
+;;      M-x my-straight-compare-lockfiles OLD NEW
+;;
+;;    The Org buffer shows added / removed / changed packages, and for
+;;    every changed package a `git log --oneline OLD..NEW' run inside
+;;    the corresponding straight/repos/<pkg>/ checkout.
+;;
+;; 2. See what `straight-pull-all' would pull, without pulling
+;;      M-x my-straight-fetch-and-diff        ; fetches, then diffs
+;;      C-u M-x my-straight-fetch-and-diff    ; skip fetch, just diff
+;;
+;;    For each straight repo whose HEAD is on a branch, `git fetch
+;;    origin <branch>' is run.  If the branch's changelog file has
+;;    diffs against origin, or origin has commits HEAD doesn't, the
+;;    repo is included in the Org report.  Detached HEADs are skipped
+;;    silently (straight often pins revisions).
+;;
+;; Refresh recipe repositories (MELPA / GNU ELPA mirrors etc.):
+;;      M-x straight-pull-recipe-repositories   ; restart Emacs afterwards
 
-;; (defun my-compare-straight-version-files (file1 file2)
-;;   "Compare two straight.el version files and print keys whose hashes differ.
-;; FILE1 and FILE2 should be paths to the version files."
-;;   (let* ((alist1 (with-temp-buffer
-;;                    (insert-file-contents file1)
-;;                    (read (current-buffer))))
-;;          (alist2 (with-temp-buffer
-;;                    (insert-file-contents file2)
-;;                    (read (current-buffer))))
-;;          (ht1 (make-hash-table :test 'equal))
-;;          (ht2 (make-hash-table :test 'equal)))
-;;     ;; Populate hash tables for fast lookup
-;;     (dolist (pair alist1)
-;;       (puthash (car pair) (cdr pair) ht1))
-;;     (dolist (pair alist2)
-;;       (puthash (car pair) (cdr pair) ht2))
-;;     ;; Collect all keys from both files
-;;     (let ((all-keys (delete-dups (append (mapcar #'car alist1)
-;;                                          (mapcar #'car alist2)))))
-;;       (dolist (key all-keys)
-;;         (let ((val1 (gethash key ht1))
-;;               (val2 (gethash key ht2)))
-;;           (unless (equal val1 val2)
-;;             (message "%s: %s (file1) vs %s (file2)" key val1 val2)))))))
-
-;; (defun my-compare-straight-version-files-with-git-log (file1 file2)
-;;   "Compare two straight.el version files and show git log for differing hashes.
-;; FILE1 and FILE2 should be paths to the version files."
-;;   (let* ((alist1 (with-temp-buffer
-;;                    (insert-file-contents file1)
-;;                    (read (current-buffer))))
-;;          (alist2 (with-temp-buffer
-;;                    (insert-file-contents file2)
-;;                    (read (current-buffer))))
-;;          (ht1 (make-hash-table :test 'equal))
-;;          (ht2 (make-hash-table :test 'equal)))
-;;     ;; Populate hash tables for fast lookup
-;;     (dolist (pair alist1)
-;;       (puthash (car pair) (cdr pair) ht1))
-;;     (dolist (pair alist2)
-;;       (puthash (car pair) (cdr pair) ht2))
-;;     ;; Collect all keys from both files
-;;     (let ((all-keys (delete-dups (append (mapcar #'car alist1)
-;;                                          (mapcar #'car alist2)))))
-;;       (dolist (key all-keys)
-;;         (let ((val1 (gethash key ht1))
-;;               (val2 (gethash key ht2)))
-;;           (unless (equal val1 val2)
-;;             (let* ((repo-dir (expand-file-name (format "straight/repos/%s" key)
-;;                                                user-emacs-directory))
-;;                    (git-log-cmd (format "git log --oneline %s..%s"
-;;                                         (or val2 "") (or val1 ""))))
-;;               (message "Package: %s\n  file1: %s\n  file2: %s"
-;;                        key val1 val2)
-;;               (message "Git log cmd: %s" git-log-cmd)
-;;               (if (file-directory-p repo-dir)
-;;                   (let ((default-directory repo-dir))
-;;                     (message "Git log for %s:" key)
-;;                     (message "%s"
-;;                              (with-temp-buffer
-;;                                (let ((exit-code (call-process-shell-command
-;;                                                  git-log-cmd nil t)))
-;;                                  (if (eq exit-code 0)
-;;                                      (buffer-string)
-;;                                    (format "Error running git log in %s" repo-dir))))))
-;;                 (message "Repo directory not found: %s" repo-dir)))))))))
+;;; Code:
 
 (require 'seq)
+(require 'subr-x)
+(require 'cl-lib)
+(require 'pcase)
 
-(defun my--git-current-branch ()
-  "Return the current branch name in `default-directory`, or \"\" on error."
-  (string-trim
-   (with-output-to-string
-     (with-current-buffer standard-output
-       (call-process "git" nil t nil
-                     "rev-parse" "--abbrev-ref" "HEAD")))))
+;;;; Paths
 
-(defun my--insert-remote-only-commits-section (branch)
-  "Insert the \"Remote-only commits\" section for BRANCH into the current buffer.
-Return non-nil iff there are any remote-only commits.
-Assumes `default-directory` is a git repo and point is at the place
-to insert Org content."
-  (insert "** Remote-only commits\n")
-  (let ((start (point)))
-    (let ((log-exit-code
-           (call-process
-            "git" nil t nil "log" "--oneline"
-            (format "HEAD..origin/%s" branch))))
-      (if (eq log-exit-code 0)
-          (let ((log-output
-                 (buffer-substring-no-properties start (point))))
-            (if (string-empty-p (string-trim log-output))
-                (progn
-                  ;; No commits: clean up this whole section and signal nil
-                  (delete-region (save-excursion
-                                   (search-backward "** Remote-only commits")
-                                   (line-beginning-position))
-                                 (point))
-                  nil)
-              ;; We have commits: reformat region as list and return t
-              (delete-region start (point))
-              (insert
-               (format "- git log HEAD..origin/%s :: success (exit %d)\n\n"
-                       branch log-exit-code))
-              (dolist (line (split-string log-output "\n" t))
-                ;; line is "<sha> <message>" from --oneline
+(defun my-straight--repos-dir ()
+  "Absolute path to straight/repos/, with trailing slash."
+  (expand-file-name "straight/repos/" user-emacs-directory))
+
+(defun my-straight--versions-dir ()
+  "Absolute path to straight/versions/, with trailing slash."
+  (expand-file-name "straight/versions/" user-emacs-directory))
+
+;;;; Git helpers
+
+(defun my-straight--git (dir &rest args)
+  "Run git in DIR with ARGS.
+Return cons (EXIT-CODE . OUTPUT-STRING) where OUTPUT-STRING has no
+trailing whitespace."
+  (with-temp-buffer
+    (let* ((default-directory (file-name-as-directory dir))
+           (exit (apply #'call-process "git" nil t nil args)))
+      (cons exit (string-trim (buffer-string))))))
+
+(defun my-straight--current-branch (dir)
+  "Return the current branch name of git repo DIR, or nil if detached / error."
+  (pcase-let ((`(,exit . ,out)
+               (my-straight--git dir "symbolic-ref" "--short" "--quiet" "HEAD")))
+    (and (eq exit 0) (not (string-empty-p out)) out)))
+
+;;;; Lockfile helpers
+
+(defun my-straight--read-lockfile (file)
+  "Read straight.el lockfile FILE and return its alist of (NAME . HASH).
+Trailing metadata (e.g. `:epsilon') is ignored."
+  (with-temp-buffer
+    (insert-file-contents file)
+    (goto-char (point-min))
+    (let ((form (read (current-buffer))))
+      (unless (consp form)
+        (error "Unexpected lockfile shape in %s" file))
+      form)))
+
+(defun my-straight--lockfile-completing-read (prompt &optional default)
+  "Read a lockfile name from straight/versions/ with completion.
+PROMPT and DEFAULT are passed to `completing-read'."
+  (let* ((dir (my-straight--versions-dir))
+         (files (and (file-directory-p dir)
+                     (seq-filter (lambda (f)
+                                   (and (not (string-prefix-p "." f))
+                                        (string-match-p "\\`default\\.el" f)))
+                                 (directory-files dir)))))
+    (unless files
+      (error "No lockfiles matching default.el* in %s" dir))
+    (completing-read prompt (sort files #'string<) nil t nil nil default)))
+
+;;;; Repo helpers
+
+(defun my-straight--repo-dir-for (pkg)
+  "Return absolute path of straight repo for PKG, or nil if not present."
+  (let ((d (expand-file-name pkg (my-straight--repos-dir))))
+    (and (file-directory-p d) d)))
+
+(defun my-straight--repo-dirs ()
+  "Sorted list of absolute paths of all straight repo directories."
+  (let ((base (my-straight--repos-dir)))
+    (and (file-directory-p base)
+         (sort (seq-filter #'file-directory-p
+                           (directory-files base t "^[^.]"))
+               #'string<))))
+
+(defun my-straight--find-changelog (dir)
+  "Return the first changelog file in DIR, or nil.
+Matches basenames starting with CHANGELOG, Changelog, changelog, CHANGES,
+Changes, or changes."
+  (car (seq-filter
+        (lambda (f)
+          (and (file-regular-p f)
+               (string-match-p
+                (rx string-start
+                    (or "CHANGELOG" "Changelog" "changelog"
+                        "CHANGES"   "Changes"   "changes"))
+                (file-name-nondirectory f))))
+        (directory-files dir t "^[^.]"))))
+
+;;;; Compare two lockfiles
+
+(defun my-straight--classify-lockfile-diff (old new)
+  "Return (ADDED REMOVED CHANGED) from lockfile alists OLD and NEW.
+ADDED and REMOVED are lists of package names (sorted).
+CHANGED is a list of (NAME OLD-HASH NEW-HASH) (sorted by NAME)."
+  (let ((old-h (make-hash-table :test 'equal))
+        (new-h (make-hash-table :test 'equal))
+        added removed changed)
+    (dolist (p old) (puthash (car p) (cdr p) old-h))
+    (dolist (p new) (puthash (car p) (cdr p) new-h))
+    (dolist (name (sort (delete-dups (append (mapcar #'car old)
+                                             (mapcar #'car new)))
+                        #'string<))
+      (let ((o (gethash name old-h))
+            (n (gethash name new-h)))
+        (cond
+         ((and o (null n))  (push name removed))
+         ((and n (null o))  (push name added))
+         ((not (equal o n)) (push (list name o n) changed)))))
+    (list (nreverse added) (nreverse removed) (nreverse changed))))
+
+(defun my-straight--insert-changed-package (name old-hash new-hash)
+  "Insert an Org subsection for changed package NAME (OLD-HASH -> NEW-HASH)."
+  (insert (format "** %s\n" name))
+  (insert (format "- Old :: =%s=\n" old-hash))
+  (insert (format "- New :: =%s=\n" new-hash))
+  (let ((repo (my-straight--repo-dir-for name)))
+    (cond
+     ((not repo)
+      (insert "- Repo not found under straight/repos/.\n\n"))
+     (t
+      (pcase-let ((`(,exit . ,log)
+                   (my-straight--git repo "log" "--oneline"
+                                     (format "%s..%s" old-hash new-hash))))
+        (cond
+         ((not (eq exit 0))
+          (insert (format "- git log %s..%s :: *ERROR* (exit %d) -- one side may be missing locally; try `git fetch' first\n\n"
+                          old-hash new-hash exit)))
+         ((string-empty-p log)
+          ;; Empty forward log: try the reverse in case the branch was rewound.
+          (pcase-let ((`(,e2 . ,log2)
+                       (my-straight--git repo "log" "--oneline"
+                                         (format "%s..%s" new-hash old-hash))))
+            (cond
+             ((and (eq e2 0) (not (string-empty-p log2)))
+              (insert (format "- git log %s..%s (reverse) :: rewound / divergent\n"
+                              old-hash new-hash))
+              (dolist (line (split-string log2 "\n" t))
                 (insert (format "  - %s\n" line)))
-              (insert "\n")
-              (message "DEBUG: my--insert-remote-only-commits-section: found remote-only commits for branch %s"
-                       branch)
-              t))
-        ;; log failed: keep error info, but signal nil so caller
-        ;; can still decide what to do.
-        (delete-region start (point))
-        (insert
-         (format "- git log HEAD..origin/%s :: *ERROR* (exit %d)\n\n"
-                 branch log-exit-code))
-        nil))))
+              (insert "\n"))
+             (t
+              (insert (format "- git log %s..%s :: (no direct ancestry)\n\n"
+                              old-hash new-hash))))))
+         (t
+          (dolist (line (split-string log "\n" t))
+            (insert (format "- %s\n" line)))
+          (insert "\n"))))))))
 
-(defun my--get-changelog-diff (branch)
-  "Return plist describing the changelog diff for BRANCH, or nil.
+;;;###autoload
+(defun my-straight-compare-lockfiles (old-name new-name)
+  "Compare two straight.el lockfiles OLD-NAME and NEW-NAME.
+Both are looked up under straight/versions/.  Show added / removed /
+changed packages; for each changed package show `git log --oneline
+OLD..NEW' inside its straight/repos/<pkg>/ checkout.  Output is an Org
+buffer `*straight-lockfile-diff*'."
+  (interactive
+   (let* ((old (my-straight--lockfile-completing-read "Old lockfile: "))
+          (new (my-straight--lockfile-completing-read "New lockfile: "
+                                                      "default.el")))
+     (list old new)))
+  (let* ((dir (my-straight--versions-dir))
+         (old-path (expand-file-name old-name dir))
+         (new-path (expand-file-name new-name dir))
+         (old (my-straight--read-lockfile old-path))
+         (new (my-straight--read-lockfile new-path)))
+    (pcase-let* ((`(,added ,removed ,changed)
+                  (my-straight--classify-lockfile-diff old new))
+                 (out-buf (get-buffer-create "*straight-lockfile-diff*")))
+      (with-current-buffer out-buf
+        (let ((inhibit-read-only t))
+          (erase-buffer)
+          (org-mode)
+          (insert "#+TITLE: straight.el lockfile diff\n\n")
+          (insert (format "- Old :: =%s=\n"   old-path))
+          (insert (format "- New :: =%s=\n\n" new-path))
+          (insert (format "- Added   :: %d\n"   (length added)))
+          (insert (format "- Removed :: %d\n"   (length removed)))
+          (insert (format "- Changed :: %d\n\n" (length changed)))
+          (when added
+            (insert "* Added packages\n")
+            (dolist (n added) (insert (format "- %s\n" n)))
+            (insert "\n"))
+          (when removed
+            (insert "* Removed packages\n")
+            (dolist (n removed) (insert (format "- %s\n" n)))
+            (insert "\n"))
+          (when changed
+            (insert "* Changed packages\n")
+            (let ((reporter (make-progress-reporter
+                             "Comparing repos... " 0 (length changed)))
+                  (i 0))
+              (dolist (entry changed)
+                (pcase-let ((`(,name ,o ,n) entry))
+                  (progress-reporter-update reporter i (format "[%s]" name))
+                  (my-straight--insert-changed-package name o n))
+                (cl-incf i))
+              (progress-reporter-done reporter)))
+          (goto-char (point-min))
+          (when (fboundp 'outline-hide-sublevels)
+            (outline-hide-sublevels 1))))
+      (display-buffer out-buf))))
 
-The return value is either nil (no relevant changelog diff)
-or a plist of the form:
+;;;; Fetch and diff each straight repo against its origin
 
-  (:file REL-NAME :diff DIFF-TEXT)
+(defun my-straight--changelog-diff (dir branch)
+  "Return `git diff HEAD..origin/BRANCH -- <changelog>' for DIR, or nil.
+Returns a plist (:file REL-NAME :diff TEXT) if the diff is non-empty."
+  (when-let* ((changelog (my-straight--find-changelog dir))
+              (rel (file-relative-name changelog dir)))
+    (pcase-let ((`(,exit . ,out)
+                 (my-straight--git dir "diff"
+                                   (format "HEAD..origin/%s" branch)
+                                   "--" rel)))
+      (and (eq exit 0)
+           (not (string-empty-p out))
+           (list :file rel :diff out)))))
 
-where REL-NAME is the changelog file name relative to
-`default-directory` and DIFF-TEXT is the cleaned diff text.
+(defun my-straight--remote-only-commits (dir branch)
+  "Return `git log --oneline HEAD..origin/BRANCH' output for DIR, or nil.
+Nil if there are no remote-only commits or the command fails."
+  (pcase-let ((`(,exit . ,out)
+               (my-straight--git dir "log" "--oneline"
+                                 (format "HEAD..origin/%s" branch))))
+    (and (eq exit 0)
+         (not (string-empty-p out))
+         out)))
 
-A changelog file is any regular file in `default-directory`
-whose basename starts with one of:
+(defun my-straight--insert-repo-section (name branch repo clog log)
+  "Insert an Org section for repo NAME on BRANCH in REPO with CLOG or LOG.
+CLOG is a plist from `my-straight--changelog-diff' or nil.
+LOG is the string output from `my-straight--remote-only-commits' or nil."
+  (insert (format "* %s (%s)\n" name branch))
+  (insert ":PROPERTIES:\n")
+  (insert (format ":DIR:    %s\n" repo))
+  (insert (format ":BRANCH: %s\n" branch))
+  (insert ":END:\n")
+  (cond
+   (clog
+    (insert (format "** Changelog diff (=%s=)\n" (plist-get clog :file)))
+    (insert "#+BEGIN_SRC diff\n")
+    (insert (plist-get clog :diff))
+    (insert "\n#+END_SRC\n\n"))
+   (log
+    (insert "** Remote-only commits\n")
+    (dolist (line (split-string log "\n" t))
+      (insert (format "- %s\n" line)))
+    (insert "\n"))))
 
-  CHANGELOG, Changelog, changelog, CHANGES, Changes, changes
+;;;###autoload
+(defun my-straight-fetch-and-diff (&optional no-fetch)
+  "For each straight repo, fetch and report what would come in from origin.
+With prefix argument or non-nil NO-FETCH, skip `git fetch' and just
+inspect the existing origin refs.
 
-If `git diff HEAD..origin/BRANCH -- <file>` has non-empty output,
-the diff is cleaned line-by-line and returned. Otherwise nil is
-returned.
+Detached-HEAD repos are skipped silently (straight often pins revisions
+to a specific SHA).  A repo only appears in the report if it has a
+remote-only commit or a diff in its changelog file.
 
-Assumes `default-directory` is a git repo."
-  (let* ((changelog-file
-          (car
-           (seq-filter
-            (lambda (f)
-              (and (file-regular-p f)
-                   (string-match-p
-                    (rx string-start
-                        (or "CHANGELOG" "Changelog" "changelog"
-                            "CHANGES" "Changes" "changes"))
-                    (file-name-nondirectory f))))
-            (directory-files default-directory t "^[^.].*")))))
-    (when changelog-file
-      (with-temp-buffer
-        (let* ((rel-name (file-relative-name changelog-file default-directory))
-               (diff-exit-code
-                (call-process
-                 "git" nil t nil "diff"
-                 (format "HEAD..origin/%s" branch)
-                 "--" rel-name)))
-          (when (eq diff-exit-code 0)
-            (let ((raw (buffer-substring-no-properties (point-min) (point-max))))
-              (unless (string-empty-p (string-trim raw))
-                (let* ((lines (split-string raw "\n"))
-                       (cleaned
-                        (string-join
-                         (mapcar
-                          (lambda (line)
-                            (let ((clean-line line))
-                              ;; 1. Drop leading two spaces from diff hunks.
-                              (when (string-prefix-p "  " clean-line)
-                                (setq clean-line (substring clean-line 2)))
-                              ;; 2. Strip leading '+' (added lines).
-                              (when (string-match "^\\s-*\\+\\s-*" clean-line)
-                                (setq clean-line (replace-match "" t t clean-line)))
-                              ;; 3. If line now starts with '*', demote it by adding '**'.
-                              (when (string-prefix-p "*" clean-line)
-                                (setq clean-line (concat "**" clean-line)))
-                              clean-line))
-                          lines)
-                         "\n")))
-                  (list :file rel-name :diff cleaned))))))))))
-
-(defun my--insert-changelog-diff-section (branch)
-  "Compute and insert the changelog diff section for BRANCH into current buffer.
-Returns non-nil iff a changelog diff was found and inserted.
-
-Assumes `default-directory` is a git repo and point is where
-the Org section should be inserted."
-  (let ((result (my--get-changelog-diff branch)))
-    (when result
-      (let ((rel-name (plist-get result :file))
-            (diff-text (plist-get result :diff)))
-        (insert "** Changelog diff\n")
-        (insert (format "- File: =%s=\n" rel-name))
-        (insert (format "- git diff HEAD..origin/%s -- %s :: success\n\n"
-                        branch rel-name))
-        (dolist (line (split-string diff-text "\n"))
-          (insert line "\n"))
-        (insert "\n")
-        (message "DEBUG: my--insert-changelog-diff-section: real diff for branch %s"
-                 branch)
-        t))))
-
-(defun my-fetch-remote-main-branches-and-diff-with-local-main-branch ()
-  "For each straight repo, fetch the remote for the current branch and
-show commits that are on origin but not on the local branch, in an Org buffer."
-  (interactive)
-  (message "DEBUG: entering my-fetch-remote-main-branches-and-diff-with-local-main-branch")
-  (let* ((buf-name "*straight-remote-diff*")
-         (output-buf (get-buffer-create buf-name))
-         (repos-dir (expand-file-name "straight/repos/" user-emacs-directory)))
-    (message "DEBUG: let* bound buf-name=%S output-buf=%S repos-dir=%S"
-             buf-name output-buf repos-dir)
-    (with-current-buffer output-buf
-      (message "DEBUG: inside with-current-buffer, buffer=%S" (current-buffer))
+Output goes to Org buffer `*straight-remote-diff*'."
+  (interactive "P")
+  (let* ((repos (my-straight--repo-dirs))
+         (out-buf (get-buffer-create "*straight-remote-diff*"))
+         (reporter (make-progress-reporter
+                    (if no-fetch
+                        "Diffing straight repos... "
+                      "Fetching + diffing straight repos... ")
+                    0 (length repos)))
+         (i 0)
+         (detached 0)
+         (with-changes 0))
+    (unless repos
+      (user-error "No straight repos under %s" (my-straight--repos-dir)))
+    (with-current-buffer out-buf
       (let ((inhibit-read-only t))
         (erase-buffer)
         (org-mode)
         (insert "#+TITLE: straight.el remote diffs\n\n")
-        (insert (format "Checking straight repos under: =%s=\n\n" repos-dir))
-        (message "DEBUG: starting repo iteration over %s" repos-dir)
-
-        (dolist (repo (sort (directory-files repos-dir t "^[^.]")
-                            #'string<))
-          (message "DEBUG: considering repo path=%S" repo)
-          (when (file-directory-p repo)
-            (message "DEBUG: repo %S is a directory, processing" repo)
-            (let* ((default-directory repo)
-                   (repo-name (file-name-nondirectory repo))
-                   (branch (my--git-current-branch))
-                   (repo-buf (generate-new-buffer
-                              (format " *my-straight-repo-%s*" repo-name)))
-                   (had-changes nil))
-              (message "DEBUG: [%s] initial had-changes=%S" repo-name had-changes)
-              (unwind-protect
-                  (with-current-buffer repo-buf
-                    (org-mode)
-                    ;; Heading for this repo (we assume a normal branch)
-                    (insert
-                     (format "* %s (%s)\n:PROPERTIES:\n:DIR: %s\n:BRANCH: %s\n:END:\n"
-                             repo-name branch repo branch))
-                    ;; --- Fetch section ---
-                    (insert "** Fetch\n")
-                    (let ((fetch-exit-code
-                           (call-process "git" nil nil nil "fetch" "origin" branch)))
-                      (if (eq fetch-exit-code 0)
-                          (insert
-                           (format "- git fetch origin %s :: success (exit %d)\n"
-                                   branch fetch-exit-code))
-                        (insert
-                         (format "- git fetch origin %s :: *ERROR* (exit %d)\n\n"
-                                 branch fetch-exit-code)))
-                      ;; Only compute further sections if fetch succeeded.
-                      (when (eq fetch-exit-code 0)
-                        (message "DEBUG: [%s] before diff helpers, had-changes=%S"
-                                 repo-name had-changes)
-                        (let ((changelog-had-diff
-                               (my--insert-changelog-diff-section branch)))
-                          (message "DEBUG: [%s] changelog-had-diff=%S (had-changes was %S)"
-                                   repo-name changelog-had-diff had-changes)
-                          (when changelog-had-diff
-                            (message "DEBUG: had-changes set by changelog diff for %s (branch %s)\n%s"
-                                     repo-name branch changelog-had-diff))
-                          (setq had-changes (or had-changes changelog-had-diff))
-                          (message "DEBUG: [%s] after changelog, had-changes=%S"
-                                   repo-name had-changes)
-                          (unless changelog-had-diff
-                            (let ((commits-had-diff
-                                   (my--insert-remote-only-commits-section branch)))
-                              (message "DEBUG: [%s] commits-had-diff=%S (had-changes was %S)"
-                                       repo-name commits-had-diff had-changes)
-                              (when commits-had-diff
-                                (message "DEBUG: had-changes set by remote-only commits for %s (branch %s)"
-                                         repo-name branch))
-                              (setq had-changes (or had-changes commits-had-diff))
-                              (message "DEBUG: [%s] after commits, had-changes=%S"
-                                       repo-name had-changes)))))))
-                (message "DEBUG: [%s] before append, final had-changes=%S"
-                         repo-name had-changes)
-                ;; After building repo-buf, decide whether to copy it.
-                (when had-changes
-                  (message "DEBUG: repo %s had changes, appending to main buffer" repo-name)
-                  (with-current-buffer output-buf
-                    (goto-char (point-max))
-                    (insert-buffer-substring repo-buf)))
-                (when (buffer-live-p repo-buf)
-                  (kill-buffer repo-buf)))))))
+        (insert (format "- Repos scanned :: %d\n" (length repos)))
+        (insert (format "- Fetch         :: %s\n"
+                        (if no-fetch "skipped" "yes")))
+        ;; Placeholder lines; filled in at the end so we can report totals.
+        (insert "- Detached HEADs :: ...\n")
+        (insert "- With changes   :: ...\n\n")))
+    (dolist (repo repos)
+      (let* ((name (file-name-nondirectory repo))
+             (branch (my-straight--current-branch repo)))
+        (progress-reporter-update reporter i (format "[%s]" name))
+        (cond
+         ((null branch)
+          (cl-incf detached))
+         (t
+          (unless no-fetch
+            ;; Discard fetch output; success/failure is reflected by later commands.
+            (my-straight--git repo "fetch" "origin" branch))
+          (let* ((clog (my-straight--changelog-diff repo branch))
+                 (log  (unless clog
+                         (my-straight--remote-only-commits repo branch))))
+            (when (or clog log)
+              (cl-incf with-changes)
+              (with-current-buffer out-buf
+                (let ((inhibit-read-only t))
+                  (goto-char (point-max))
+                  (my-straight--insert-repo-section name branch repo clog log))))))))
+      (cl-incf i))
+    (progress-reporter-done reporter)
+    (with-current-buffer out-buf
+      (let ((inhibit-read-only t))
+        ;; Fill in the placeholders.
         (goto-char (point-min))
-        (message "DEBUG: before outline-hide-sublevels, buffer contents length=%d"
-                 (buffer-size))
+        (when (re-search-forward "^- Detached HEADs :: \\.\\.\\.$" nil t)
+          (replace-match (format "- Detached HEADs :: %d" detached) t t))
+        (goto-char (point-min))
+        (when (re-search-forward "^- With changes   :: \\.\\.\\.$" nil t)
+          (replace-match (format "- With changes   :: %d" with-changes) t t))
+        (goto-char (point-min))
         (when (fboundp 'outline-hide-sublevels)
-          (outline-hide-sublevels 1)))
-      ;; end with-current-buffer
-      (message "DEBUG: about to display-buffer, output-buf=%S (live=%S)"
-               output-buf (buffer-live-p output-buf))
-      (display-buffer output-buf)
-      )
+          (outline-hide-sublevels 1))))
+    (display-buffer out-buf)))
 
-
-    ;; Call display-buffer after the with-current-buffer form, so the
-    ;; number of closing parens matches the bindings above.
-    )
-
-;; Usage example (output in *Messages*):
-;; (my-compare-straight-version-files-with-git-log "straight/versions/default.el"
-;;                                                  "straight/versions/default.el-2025-07-16")
+(provide 'straight_versions)
+;;; straight_versions.el ends here
