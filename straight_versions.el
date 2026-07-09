@@ -30,6 +30,25 @@
 ;;
 ;; Refresh recipe repositories (MELPA / GNU ELPA mirrors etc.):
 ;;      M-x straight-pull-recipe-repositories   ; restart Emacs afterwards
+;;
+;; How to upgrade all packages?
+;;
+;;   1. Preview what would be pulled:
+;;        M-x my-straight-fetch-and-diff
+;;   2. Snapshot the current lockfile before upgrading:
+;;        cp straight/versions/default.el \
+;;           straight/versions/default.el-YYYY-MM-DD
+;;   3. Pull latest commits for every package:
+;;        M-x straight-pull-all
+;;   4. Rebuild everything (or restart Emacs):
+;;        M-x straight-rebuild-all
+;;   5. Write the new lockfile:
+;;        M-x straight-freeze-versions
+;;        -> overwrites straight/versions/default.el
+;;   6. Review what actually changed:
+;;        M-x my-straight-compare-lockfiles
+;;           OLD = default.el-YYYY-MM-DD  (the snapshot from step 2)
+;;           NEW = default.el
 
 ;;; Code:
 
