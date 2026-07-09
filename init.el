@@ -100,6 +100,7 @@
          ("C--" . expreg-contract)))
 (straight-use-package 'xterm-color)
 (straight-use-package 'notifications)
+(straight-use-package 'grip-mode)   ; live markdown preview in browser - open .md file and then M-x grip-mode
 
 ;; maybe try:
 ;;

@@ -126,7 +126,8 @@ fi
 # TERM=xterm-256color $CECLI --no-fancy-input --no-pretty   # dito
 # Comint mode: spawn $CECLI --no-fancy-input --no-pretty --no-spinner  --- perfect
 # VTerm mode: TERM=xterm-256color $CECLI --fancy-input --no-pretty --spinner  --- usable. Adds some color and makes cursor keys, tab completion for / and ...? work.
-TERM=xterm-256color $CECLI --fancy-input --no-pretty --spinner \
+# Bah, back to Comint...
+TERM=xterm-256color $CECLI --no-fancy-input --no-pretty --no-spinner \
       --no-tui \
       --watch-files --subtree-only \
       --disable-playwright --disable-scraping \
