@@ -140,15 +140,22 @@
              "[a-zA-Z]+\\(?:([^)]*)\\)?!?:[ \t]+")
         (replace-match "")))))
 
-(defun my-try-insert-branch-name (branch-name reps commit-buffer)
-  "Wait until copilot.el has inserted the commit message into COMMIT-BUFFER, then prepend BRANCH-NAME.  REPS is the countdown to timeout.
+(defun my-try-insert-branch-name (branch-name reps commit-buffer &optional last-tick)
+  "Wait until copilot.el has finished inserting the commit message into
+COMMIT-BUFFER, then prepend BRANCH-NAME.  REPS is the countdown to
+timeout.  LAST-TICK is the previous `buffer-chars-modified-tick' used to
+detect that inserting has stabilised.
 
-Detects completion by checking whether the first non-blank, non-comment
-line of COMMIT-BUFFER has any content (copilot.el's
-`copilot-chat-insert-commit-message' inserts asynchronously at point)."
+`copilot-chat-insert-commit-message' inserts asynchronously at a marker
+with default insertion type, so prepending BRANCH-NAME while the reply
+is still streaming races: the marker does not advance past our insert,
+and the model's text ends up AFTER the branch name (or, worse,
+interleaved).  Wait until the buffer has content AND its modified-tick
+has not changed since the last poll before prepending."
   (if (< reps 0)
-      (message "my-try-insert-branch-name: commit message not inserted in time, giving up.")
-    (let ((inserted nil))
+      (message "my-try-insert-branch-name: commit message not stable in time, giving up.")
+    (let ((has-content nil)
+          (tick (with-current-buffer commit-buffer (buffer-chars-modified-tick))))
       (with-current-buffer commit-buffer
         (save-excursion
           (goto-char (point-min))
@@ -157,13 +164,14 @@ line of COMMIT-BUFFER has any content (copilot.el's
             (forward-line 1))
           (when (and (not (eobp))
                      (not (looking-at-p "[ \t]*$")))
-            (setq inserted t))))
-      (if inserted
+            (setq has-content t))))
+      (if (and has-content last-tick (= tick last-tick))
           (with-current-buffer commit-buffer
             (my-strip-conventional-commit-prefix commit-buffer)
             (goto-char (point-min))
             (insert (concat branch-name ": ")))
-        (run-at-time "0.5 sec" nil 'my-try-insert-branch-name branch-name (- reps 1) commit-buffer)))))
+        (run-at-time "0.5 sec" nil 'my-try-insert-branch-name
+                     branch-name (- reps 1) commit-buffer tick)))))
 
 (defcustom my-insert-commit-msg-prompt
   "You are a commit message generator.
@@ -523,6 +531,7 @@ If the current buffer is not an aidermacs buffer, switch to the first one."
                 (message "Aider GPT model: %s" model-short-name)
                 model-short-name))
           (message "No model found in %s" aider-config-file))))
+
 
 (progn
   (setopt copilot-lsp-settings `(:copilot.model ,(my-get-aider-main-model)))
