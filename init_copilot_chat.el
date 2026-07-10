@@ -124,6 +124,18 @@
 
 ;;; commit messages
 
+(defun my-strip-conventional-commit-prefix (commit-buffer)
+  "Strip a leading Conventional Commits prefix (feat:, fix(scope)!:, ...) from COMMIT-BUFFER."
+  (with-current-buffer commit-buffer
+    (save-excursion
+      (goto-char (point-min))
+      (while (and (not (eobp))
+                  (looking-at-p "\\(?:[ \t]*$\\|#\\)"))
+        (forward-line 1))
+      (when (looking-at
+             "[a-zA-Z]+\\(?:([^)]*)\\)?!?:[ \t]+")
+        (replace-match "")))))
+
 (defun my-try-insert-branch-name (branch-name reps commit-buffer)
   "Wait until copilot has finished (by busy waiting on the *Messages* buffer) and insert the BRANCH-NAME into the commit message.  REPS is the countdown to timeout."
 
@@ -140,6 +152,8 @@
                 (setq finished t)))
           (if finished
               (with-current-buffer commit-buffer
+                ;; strip any Conventional Commits prefix the model may have added
+                (my-strip-conventional-commit-prefix commit-buffer)
                 ;; insert the branch name at the beginning of the buffer
                 (goto-char (point-min))
                 (insert (concat branch-name ": ")))
