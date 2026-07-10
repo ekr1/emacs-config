@@ -146,11 +146,27 @@
             (progn
               (run-at-time "0.5 sec" nil 'my-try-insert-branch-name branch-name (- reps 1) commit-buffer))))))))
 
+(defcustom my-insert-commit-msg-prompt
+  "You are a commit message generator.
+Your ONLY task is to produce a Git commit message.
+
+Return EXACTLY ONE short single-line commit message. No body, no footer,
+no blank lines, no bullet points, no code fences, no explanations.
+Hard limit: 72 characters. Prefer imperative mood.
+Follow Conventional Commits when a type is obvious (feat/fix/chore/...),
+otherwise a plain short subject line is fine.
+
+INPUTS: current branch, `git status`, `git diff --cached`.
+OUTPUT: the single-line commit message only."
+  "Short-form commit message prompt used by `my-insert-commit-msg'."
+  :type 'string
+  :group 'my)
 
 (defun my-insert-commit-msg ()
   "Run copilot to figure out a commit message.  Make sure the branch name is included."
   (copilot-mode -1)
-  (let ((branch-name (string-trim (shell-command-to-string "git rev-parse --abbrev-ref HEAD 2>/dev/null"))))
+  (let ((branch-name (string-trim (shell-command-to-string "git rev-parse --abbrev-ref HEAD 2>/dev/null")))
+        (gh-copilot-chat-commit-prompt my-insert-commit-msg-prompt))
     ;; (gh-copilot-chat-insert-commit-message)   ; has a 1 sec timer
     (gh-copilot-chat-insert-commit-message-when-ready)   ; is async with aio
     (run-at-time "1 sec" nil 'my-try-insert-branch-name branch-name 20 (current-buffer))))
