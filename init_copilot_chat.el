@@ -165,8 +165,12 @@ OUTPUT: the single-line commit message only."
 (defun my-insert-commit-msg ()
   "Run copilot to figure out a commit message.  Make sure the branch name is included."
   (copilot-mode -1)
-  (let ((branch-name (string-trim (shell-command-to-string "git rev-parse --abbrev-ref HEAD 2>/dev/null")))
-        (gh-copilot-chat-commit-prompt my-insert-commit-msg-prompt))
+  ;; NOTE: `gh-copilot-chat-insert-commit-message-when-ready' is async (aio),
+  ;; so a `let'-binding of `gh-copilot-chat-commit-prompt' would go out of
+  ;; scope before the async request actually reads the variable, causing the
+  ;; upstream default (verbose multi-line) prompt to be used. Set it globally.
+  (setq gh-copilot-chat-commit-prompt my-insert-commit-msg-prompt)
+  (let ((branch-name (string-trim (shell-command-to-string "git rev-parse --abbrev-ref HEAD 2>/dev/null"))))
     ;; (gh-copilot-chat-insert-commit-message)   ; has a 1 sec timer
     (gh-copilot-chat-insert-commit-message-when-ready)   ; is async with aio
     (run-at-time "1 sec" nil 'my-try-insert-branch-name branch-name 20 (current-buffer))))
