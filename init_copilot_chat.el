@@ -56,63 +56,63 @@
 
   (message "`node` not found, copilot not initialized"))
 
-;;; copilot-chat afterwards, or it will get some functions overridden by copilot.el
+;;; gh-copilot-chat afterwards, or it will get some functions overridden by copilot.el
 
-(my-banner "copilot-chat")
+(my-banner "gh-copilot-chat")
 
-(use-package copilot-chat
+(use-package gh-copilot-chat
   :straight (:host github :repo "chep/copilot-chat.el" :files ("*.el"))
   :after (request org markdown-mode shell-maker))
 
-(global-set-key (kbd "Ì") 'copilot-chat-display)
+(global-set-key (kbd "Ì") 'gh-copilot-chat-display)
 
-(define-prefix-command 'copilot-chat-prefix)
+(define-prefix-command 'gh-copilot-chat-prefix)
 
-(global-set-key (kbd (if (eq system-type 'gnu/linux) "s-c" "ç")) 'copilot-chat-prefix)
+(global-set-key (kbd (if (eq system-type 'gnu/linux) "s-c" "ç")) 'gh-copilot-chat-prefix)
 
-(define-key copilot-chat-prefix (if (eq system-type 'gnu/linux) "s-c" "ç") 'copilot-chat-transient)
-(define-key copilot-chat-prefix (kbd "d") 'copilot-chat-display)
-(define-key copilot-chat-prefix (kbd "y") 'copilot-chat-yank)
-(define-key copilot-chat-prefix (kbd "a") 'copilot-chat-add-current-buffer)
-(define-key copilot-chat-prefix (kbd "l") 'copilot-chat-list)
-(define-key copilot-chat-prefix (kbd "e") 'copilot-chat-explain)
-(define-key copilot-chat-prefix (kbd "r") 'copilot-chat-review)
-(define-key copilot-chat-prefix (kbd "o") 'copilot-chat-doc)
-(define-key copilot-chat-prefix (kbd "f") 'copilot-chat-fix)
-(define-key copilot-chat-prefix (kbd "p") 'copilot-chat-optimize)
-(define-key copilot-chat-prefix (kbd "t") 'copilot-chat-test)
-(define-key copilot-chat-prefix (kbd "u") 'copilot-chat-explain-defun)
-(define-key copilot-chat-prefix (kbd "m") 'copilot-chat-insert-commit-message)
+(define-key gh-copilot-chat-prefix (if (eq system-type 'gnu/linux) "s-c" "ç") 'gh-copilot-chat-transient)
+(define-key gh-copilot-chat-prefix (kbd "d") 'gh-copilot-chat-display)
+(define-key gh-copilot-chat-prefix (kbd "y") 'gh-copilot-chat-yank)
+(define-key gh-copilot-chat-prefix (kbd "a") 'gh-copilot-chat-add-current-buffer)
+(define-key gh-copilot-chat-prefix (kbd "l") 'gh-copilot-chat-list)
+(define-key gh-copilot-chat-prefix (kbd "e") 'gh-copilot-chat-explain)
+(define-key gh-copilot-chat-prefix (kbd "r") 'gh-copilot-chat-review)
+(define-key gh-copilot-chat-prefix (kbd "o") 'gh-copilot-chat-doc)
+(define-key gh-copilot-chat-prefix (kbd "f") 'gh-copilot-chat-fix)
+(define-key gh-copilot-chat-prefix (kbd "p") 'gh-copilot-chat-optimize)
+(define-key gh-copilot-chat-prefix (kbd "t") 'gh-copilot-chat-test)
+(define-key gh-copilot-chat-prefix (kbd "u") 'gh-copilot-chat-explain-defun)
+(define-key gh-copilot-chat-prefix (kbd "m") 'gh-copilot-chat-insert-commit-message)
 
 ; simplify the instances - only use one
-(with-eval-after-load 'copilot-chat
-  (defun copilot-chat--ask-for-instance ()
+(with-eval-after-load 'gh-copilot-chat
+  (defun gh-copilot-chat--ask-for-instance ()
     "Reuse an existing Copilot Chat instance, or create one if none exist."
-    (if copilot-chat--instances
-        (copilot-chat--choose-instance)
-      (copilot-chat--create-instance))))
+    (if gh-copilot-chat--instances
+        (gh-copilot-chat--choose-instance)
+      (gh-copilot-chat--create-instance))))
 
 ; always use home dir
-(with-eval-after-load 'copilot-chat
-  (defun copilot-chat--create-instance ()
+(with-eval-after-load 'gh-copilot-chat
+  (defun gh-copilot-chat--create-instance ()
     "Create a new copilot chat instance for your home directory."
     (let* ((directory (expand-file-name "~")) ; Always use home directory
-           (found (copilot-chat--find-instance directory))
+           (found (gh-copilot-chat--find-instance directory))
            (instance
             (if found
                 found
-              (copilot-chat--create directory))))
+              (gh-copilot-chat--create directory))))
       (unless found
-        (push instance copilot-chat--instances))
+        (push instance gh-copilot-chat--instances))
       instance)))
 
-(defun my-copilot-chat-ask-and-return-string (prompt)
+(defun my-gh-copilot-chat-ask-and-return-string (prompt)
   "Ask copilot chat for a response to PROMPT and return the result."
   (let ((result nil)
         (tmp ""))
-    (copilot-chat--ask prompt
+    (gh-copilot-chat--ask prompt
                        (lambda (content)
-                         (if (string= content copilot-chat--magic)
+                         (if (string= content gh-copilot-chat--magic)
                              (setq result tmp)
                            (setq tmp (concat tmp content))))
                        t)
@@ -146,22 +146,19 @@
             (progn
               (run-at-time "0.5 sec" nil 'my-try-insert-branch-name branch-name (- reps 1) commit-buffer))))))))
 
+
 (defun my-insert-commit-msg ()
   "Run copilot to figure out a commit message.  Make sure the branch name is included."
   (copilot-mode -1)
   (let ((branch-name (string-trim (shell-command-to-string "git rev-parse --abbrev-ref HEAD 2>/dev/null"))))
-    (message "flush 1")
-    (message "flush 2")
-    (message "flush 3")
-    (message "flush 4")
-    ;; (copilot-chat-insert-commit-message)   ; has a 1 sec timer
-    (copilot-chat-insert-commit-message-when-ready)   ; is async with aio
+    ;; (gh-copilot-chat-insert-commit-message)   ; has a 1 sec timer
+    (gh-copilot-chat-insert-commit-message-when-ready)   ; is async with aio
     (run-at-time "1 sec" nil 'my-try-insert-branch-name branch-name 20 (current-buffer))))
 
 (defun my-run-good-auto ()
   "Execute a Good-Auto query."
   (interactive)
-  ;; if the current buffer is the git commit message, then run copilot-chat-insert-commit-message
+  ;; if the current buffer is the git commit message, then run gh-copilot-chat-insert-commit-message
   (if (string-prefix-p "COMMIT_EDITMSG" (buffer-name))
       (my-insert-commit-msg)
     (error "This function is deprecated and only to be used in COMMIT_EDITMSG.")))
@@ -381,7 +378,7 @@ If the current buffer is not an aidermacs buffer, switch to the first one."
 ;;
 ;; M-x aidermacs works
 ;;
-;; M-x copilot-chat does its own github_copilot login; works
+;; M-x gh-copilot-chat does its own github_copilot login; works
 ;;
 ;; M-x copilot-login does its own login, works.
 ;;
@@ -442,5 +439,5 @@ If the current buffer is not an aidermacs buffer, switch to the first one."
 
 (progn
   (setopt copilot-lsp-settings `(:copilot.model ,(my-get-aider-main-model)))
-  (setopt copilot-chat-default-model (my-get-aider-main-model))
-  (setopt copilot-chat-commit-model (my-get-aider-editor-model)))
+  (setopt gh-copilot-chat-default-model (my-get-aider-main-model))
+  (setopt gh-copilot-chat-commit-model (my-get-aider-editor-model)))
