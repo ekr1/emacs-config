@@ -58,69 +58,73 @@
 
 ;;; gh-copilot-chat afterwards, or it will get some functions overridden by copilot.el
 
-(my-banner "gh-copilot-chat")
+;; DISABLED: copilot.el (copilot-emacs/copilot.el) now provides
+;; `copilot-chat-insert-commit-message'.  gh-copilot-chat is no longer
+;; used; kept commented for quick revert.
 
-(use-package gh-copilot-chat
-  :straight (:host github :repo "chep/copilot-chat.el" :files ("*.el"))
-  :after (request org markdown-mode shell-maker))
-
-(global-set-key (kbd "Ì") 'gh-copilot-chat-display)
-
-(define-prefix-command 'gh-copilot-chat-prefix)
-
-(global-set-key (kbd (if (eq system-type 'gnu/linux) "s-c" "ç")) 'gh-copilot-chat-prefix)
-
-(define-key gh-copilot-chat-prefix (if (eq system-type 'gnu/linux) "s-c" "ç") 'gh-copilot-chat-transient)
-(define-key gh-copilot-chat-prefix (kbd "d") 'gh-copilot-chat-display)
-(define-key gh-copilot-chat-prefix (kbd "y") 'gh-copilot-chat-yank)
-(define-key gh-copilot-chat-prefix (kbd "a") 'gh-copilot-chat-add-current-buffer)
-(define-key gh-copilot-chat-prefix (kbd "l") 'gh-copilot-chat-list)
-(define-key gh-copilot-chat-prefix (kbd "e") 'gh-copilot-chat-explain)
-(define-key gh-copilot-chat-prefix (kbd "r") 'gh-copilot-chat-review)
-(define-key gh-copilot-chat-prefix (kbd "o") 'gh-copilot-chat-doc)
-(define-key gh-copilot-chat-prefix (kbd "f") 'gh-copilot-chat-fix)
-(define-key gh-copilot-chat-prefix (kbd "p") 'gh-copilot-chat-optimize)
-(define-key gh-copilot-chat-prefix (kbd "t") 'gh-copilot-chat-test)
-(define-key gh-copilot-chat-prefix (kbd "u") 'gh-copilot-chat-explain-defun)
-(define-key gh-copilot-chat-prefix (kbd "m") 'gh-copilot-chat-insert-commit-message)
-
-; simplify the instances - only use one
-(with-eval-after-load 'gh-copilot-chat
-  (defun gh-copilot-chat--ask-for-instance ()
-    "Reuse an existing Copilot Chat instance, or create one if none exist."
-    (if gh-copilot-chat--instances
-        (gh-copilot-chat--choose-instance)
-      (gh-copilot-chat--create-instance))))
-
-; always use home dir
-(with-eval-after-load 'gh-copilot-chat
-  (defun gh-copilot-chat--create-instance ()
-    "Create a new copilot chat instance for your home directory."
-    (let* ((directory (expand-file-name "~")) ; Always use home directory
-           (found (gh-copilot-chat--find-instance directory))
-           (instance
-            (if found
-                found
-              (gh-copilot-chat--create directory))))
-      (unless found
-        (push instance gh-copilot-chat--instances))
-      instance)))
-
-(defun my-gh-copilot-chat-ask-and-return-string (prompt)
-  "Ask copilot chat for a response to PROMPT and return the result."
-  (let ((result nil)
-        (tmp ""))
-    (gh-copilot-chat--ask prompt
-                       (lambda (content)
-                         (if (string= content gh-copilot-chat--magic)
-                             (setq result tmp)
-                           (setq tmp (concat tmp content))))
-                       t)
-    ; wait until result is not nil anymore
-    (while (string= result nil)
-      (sleep-for 0.5))
-    ; return the result
-    result))
+;; (my-banner "gh-copilot-chat")
+;;
+;; (use-package gh-copilot-chat
+;;   :straight (:host github :repo "chep/copilot-chat.el" :files ("*.el"))
+;;   :after (request org markdown-mode shell-maker))
+;;
+;; (global-set-key (kbd "Ì") 'gh-copilot-chat-display)
+;;
+;; (define-prefix-command 'gh-copilot-chat-prefix)
+;;
+;; (global-set-key (kbd (if (eq system-type 'gnu/linux) "s-c" "ç")) 'gh-copilot-chat-prefix)
+;;
+;; (define-key gh-copilot-chat-prefix (if (eq system-type 'gnu/linux) "s-c" "ç") 'gh-copilot-chat-transient)
+;; (define-key gh-copilot-chat-prefix (kbd "d") 'gh-copilot-chat-display)
+;; (define-key gh-copilot-chat-prefix (kbd "y") 'gh-copilot-chat-yank)
+;; (define-key gh-copilot-chat-prefix (kbd "a") 'gh-copilot-chat-add-current-buffer)
+;; (define-key gh-copilot-chat-prefix (kbd "l") 'gh-copilot-chat-list)
+;; (define-key gh-copilot-chat-prefix (kbd "e") 'gh-copilot-chat-explain)
+;; (define-key gh-copilot-chat-prefix (kbd "r") 'gh-copilot-chat-review)
+;; (define-key gh-copilot-chat-prefix (kbd "o") 'gh-copilot-chat-doc)
+;; (define-key gh-copilot-chat-prefix (kbd "f") 'gh-copilot-chat-fix)
+;; (define-key gh-copilot-chat-prefix (kbd "p") 'gh-copilot-chat-optimize)
+;; (define-key gh-copilot-chat-prefix (kbd "t") 'gh-copilot-chat-test)
+;; (define-key gh-copilot-chat-prefix (kbd "u") 'gh-copilot-chat-explain-defun)
+;; (define-key gh-copilot-chat-prefix (kbd "m") 'gh-copilot-chat-insert-commit-message)
+;;
+;; ; simplify the instances - only use one
+;; (with-eval-after-load 'gh-copilot-chat
+;;   (defun gh-copilot-chat--ask-for-instance ()
+;;     "Reuse an existing Copilot Chat instance, or create one if none exist."
+;;     (if gh-copilot-chat--instances
+;;         (gh-copilot-chat--choose-instance)
+;;       (gh-copilot-chat--create-instance))))
+;;
+;; ; always use home dir
+;; (with-eval-after-load 'gh-copilot-chat
+;;   (defun gh-copilot-chat--create-instance ()
+;;     "Create a new copilot chat instance for your home directory."
+;;     (let* ((directory (expand-file-name "~")) ; Always use home directory
+;;            (found (gh-copilot-chat--find-instance directory))
+;;            (instance
+;;             (if found
+;;                 found
+;;               (gh-copilot-chat--create directory))))
+;;       (unless found
+;;         (push instance gh-copilot-chat--instances))
+;;       instance)))
+;;
+;; (defun my-gh-copilot-chat-ask-and-return-string (prompt)
+;;   "Ask copilot chat for a response to PROMPT and return the result."
+;;   (let ((result nil)
+;;         (tmp ""))
+;;     (gh-copilot-chat--ask prompt
+;;                        (lambda (content)
+;;                          (if (string= content gh-copilot-chat--magic)
+;;                              (setq result tmp)
+;;                            (setq tmp (concat tmp content))))
+;;                        t)
+;;     ; wait until result is not nil anymore
+;;     (while (string= result nil)
+;;       (sleep-for 0.5))
+;;     ; return the result
+;;     result))
 
 ;;; commit messages
 
@@ -137,28 +141,29 @@
         (replace-match "")))))
 
 (defun my-try-insert-branch-name (branch-name reps commit-buffer)
-  "Wait until copilot has finished (by busy waiting on the *Messages* buffer) and insert the BRANCH-NAME into the commit message.  REPS is the countdown to timeout."
+  "Wait until copilot.el has inserted the commit message into COMMIT-BUFFER, then prepend BRANCH-NAME.  REPS is the countdown to timeout.
 
+Detects completion by checking whether the first non-blank, non-comment
+line of COMMIT-BUFFER has any content (copilot.el's
+`copilot-chat-insert-commit-message' inserts asynchronously at point)."
   (if (< reps 0)
-      (message "my-try-insert-branch-name: did not find completion message, giving up.")
-    (progn
-      ;; extract the last 3 lines from the buffer *Messages* into a string
-      (let ((finished nil))
-        (progn
-          ;; check if copilot is finished
+      (message "my-try-insert-branch-name: commit message not inserted in time, giving up.")
+    (let ((inserted nil))
+      (with-current-buffer commit-buffer
+        (save-excursion
+          (goto-char (point-min))
+          (while (and (not (eobp))
+                      (looking-at-p "\\(?:[ \t]*$\\|#\\)"))
+            (forward-line 1))
+          (when (and (not (eobp))
+                     (not (looking-at-p "[ \t]*$")))
+            (setq inserted t))))
+      (if inserted
           (with-current-buffer commit-buffer
-            (if (not (string-match "Generating commit message"
-                                   (buffer-substring-no-properties (point-min) (point-max))))
-                (setq finished t)))
-          (if finished
-              (with-current-buffer commit-buffer
-                ;; strip any Conventional Commits prefix the model may have added
-                (my-strip-conventional-commit-prefix commit-buffer)
-                ;; insert the branch name at the beginning of the buffer
-                (goto-char (point-min))
-                (insert (concat branch-name ": ")))
-            (progn
-              (run-at-time "0.5 sec" nil 'my-try-insert-branch-name branch-name (- reps 1) commit-buffer))))))))
+            (my-strip-conventional-commit-prefix commit-buffer)
+            (goto-char (point-min))
+            (insert (concat branch-name ": ")))
+        (run-at-time "0.5 sec" nil 'my-try-insert-branch-name branch-name (- reps 1) commit-buffer)))))
 
 (defcustom my-insert-commit-msg-prompt
   "You are a commit message generator.
@@ -177,25 +182,65 @@ OUTPUT: the single-line commit message only."
   :group 'my)
 
 (defun my-insert-commit-msg ()
-  "Run copilot to figure out a commit message.  Make sure the branch name is included."
+  "Run copilot.el to figure out a commit message.  Make sure the branch name is included."
   (copilot-mode -1)
-  ;; NOTE: `gh-copilot-chat-insert-commit-message-when-ready' is async (aio),
-  ;; so a `let'-binding of `gh-copilot-chat-commit-prompt' would go out of
-  ;; scope before the async request actually reads the variable, causing the
-  ;; upstream default (verbose multi-line, Conventional-Commits) prompt to be
-  ;; used. Set it globally.
-  (setq gh-copilot-chat-commit-prompt my-insert-commit-msg-prompt)
-  ;; Disable per-repo `.github/git-commit-instructions.md' which typically
-  ;; enforces Conventional Commits format.
-  (setq gh-copilot-chat-use-git-commit-instruction-files nil)
-  ;; Clear persistent commit instance so its cached history (with previous
-  ;; feat:/fix:/chore: examples) does not bias the model.
-  (when (fboundp 'gh-copilot-chat-clear-git-commit-instance)
-    (gh-copilot-chat-clear-git-commit-instance))
+  ;; copilot.el's `copilot-chat-insert-commit-message' first tries the
+  ;; language server's native `git/commitGenerate' (which honours the
+  ;; repo's commit-message instructions and recent commit style), and
+  ;; only falls back to a one-shot chat driven by
+  ;; `copilot-chat-commit-message-prompt' when the server is too old.
+  ;; Override the fallback prompt with our short single-line variant.
+  (setq copilot-chat-commit-message-prompt my-insert-commit-msg-prompt)
   (let ((branch-name (string-trim (shell-command-to-string "git rev-parse --abbrev-ref HEAD 2>/dev/null"))))
-    ;; (gh-copilot-chat-insert-commit-message)   ; has a 1 sec timer
-    (gh-copilot-chat-insert-commit-message-when-ready)   ; is async with aio
-    (run-at-time "1 sec" nil 'my-try-insert-branch-name branch-name 20 (current-buffer))))
+    (copilot-chat-insert-commit-message)
+    (run-at-time "1 sec" nil 'my-try-insert-branch-name branch-name 60 (current-buffer))))
+
+;; OLD (gh-copilot-chat based) implementation, kept commented for quick revert:
+;;
+;; (defun my-try-insert-branch-name (branch-name reps commit-buffer)
+;;   "Wait until copilot has finished (by busy waiting on the *Messages* buffer) and insert the BRANCH-NAME into the commit message.  REPS is the countdown to timeout."
+;;
+;;   (if (< reps 0)
+;;       (message "my-try-insert-branch-name: did not find completion message, giving up.")
+;;     (progn
+;;       ;; extract the last 3 lines from the buffer *Messages* into a string
+;;       (let ((finished nil))
+;;         (progn
+;;           ;; check if copilot is finished
+;;           (with-current-buffer commit-buffer
+;;             (if (not (string-match "Generating commit message"
+;;                                    (buffer-substring-no-properties (point-min) (point-max))))
+;;                 (setq finished t)))
+;;           (if finished
+;;               (with-current-buffer commit-buffer
+;;                 ;; strip any Conventional Commits prefix the model may have added
+;;                 (my-strip-conventional-commit-prefix commit-buffer)
+;;                 ;; insert the branch name at the beginning of the buffer
+;;                 (goto-char (point-min))
+;;                 (insert (concat branch-name ": ")))
+;;             (progn
+;;               (run-at-time "0.5 sec" nil 'my-try-insert-branch-name branch-name (- reps 1) commit-buffer))))))))
+;;
+;; (defun my-insert-commit-msg ()
+;;   "Run copilot to figure out a commit message.  Make sure the branch name is included."
+;;   (copilot-mode -1)
+;;   ;; NOTE: `gh-copilot-chat-insert-commit-message-when-ready' is async (aio),
+;;   ;; so a `let'-binding of `gh-copilot-chat-commit-prompt' would go out of
+;;   ;; scope before the async request actually reads the variable, causing the
+;;   ;; upstream default (verbose multi-line, Conventional-Commits) prompt to be
+;;   ;; used. Set it globally.
+;;   (setq gh-copilot-chat-commit-prompt my-insert-commit-msg-prompt)
+;;   ;; Disable per-repo `.github/git-commit-instructions.md' which typically
+;;   ;; enforces Conventional Commits format.
+;;   (setq gh-copilot-chat-use-git-commit-instruction-files nil)
+;;   ;; Clear persistent commit instance so its cached history (with previous
+;;   ;; feat:/fix:/chore: examples) does not bias the model.
+;;   (when (fboundp 'gh-copilot-chat-clear-git-commit-instance)
+;;     (gh-copilot-chat-clear-git-commit-instance))
+;;   (let ((branch-name (string-trim (shell-command-to-string "git rev-parse --abbrev-ref HEAD 2>/dev/null"))))
+;;     ;; (gh-copilot-chat-insert-commit-message)   ; has a 1 sec timer
+;;     (gh-copilot-chat-insert-commit-message-when-ready)   ; is async with aio
+;;     (run-at-time "1 sec" nil 'my-try-insert-branch-name branch-name 20 (current-buffer))))
 
 (defun my-run-good-auto ()
   "Execute a Good-Auto query."
