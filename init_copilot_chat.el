@@ -153,8 +153,8 @@ Your ONLY task is to produce a Git commit message.
 Return EXACTLY ONE short single-line commit message. No body, no footer,
 no blank lines, no bullet points, no code fences, no explanations.
 Hard limit: 72 characters. Prefer imperative mood.
-Follow Conventional Commits when a type is obvious (feat/fix/chore/...),
-otherwise a plain short subject line is fine.
+Do NOT use Conventional Commits prefixes (no feat:/fix:/chore:/etc.).
+Just write a plain short subject line.
 
 INPUTS: current branch, `git status`, `git diff --cached`.
 OUTPUT: the single-line commit message only."
