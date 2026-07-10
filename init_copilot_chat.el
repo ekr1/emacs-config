@@ -168,8 +168,16 @@ OUTPUT: the single-line commit message only."
   ;; NOTE: `gh-copilot-chat-insert-commit-message-when-ready' is async (aio),
   ;; so a `let'-binding of `gh-copilot-chat-commit-prompt' would go out of
   ;; scope before the async request actually reads the variable, causing the
-  ;; upstream default (verbose multi-line) prompt to be used. Set it globally.
+  ;; upstream default (verbose multi-line, Conventional-Commits) prompt to be
+  ;; used. Set it globally.
   (setq gh-copilot-chat-commit-prompt my-insert-commit-msg-prompt)
+  ;; Disable per-repo `.github/git-commit-instructions.md' which typically
+  ;; enforces Conventional Commits format.
+  (setq gh-copilot-chat-use-git-commit-instruction-files nil)
+  ;; Clear persistent commit instance so its cached history (with previous
+  ;; feat:/fix:/chore: examples) does not bias the model.
+  (when (fboundp 'gh-copilot-chat-clear-git-commit-instance)
+    (gh-copilot-chat-clear-git-commit-instance))
   (let ((branch-name (string-trim (shell-command-to-string "git rev-parse --abbrev-ref HEAD 2>/dev/null"))))
     ;; (gh-copilot-chat-insert-commit-message)   ; has a 1 sec timer
     (gh-copilot-chat-insert-commit-message-when-ready)   ; is async with aio
