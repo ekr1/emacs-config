@@ -44,7 +44,8 @@
 
 # https://platform.claude.com/docs/en/about-claude/models/choosing-a-model
 # Great but expensive:
-model:              github_copilot/claude-opus-4.7
+# model:              github_copilot/claude-opus-4.7
+model:              github_copilot/claude-sonnet-5
 # Free:
 # model:              github_copilot/gpt-4.1
 # model:              github_copilot/gpt-5-mini

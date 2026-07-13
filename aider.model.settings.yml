@@ -1,6 +1,13 @@
 # whole, diff, diff-fenced, udiff
 # In architect mode: editor-diff, editor-whole
 
+# Possible experiments...
+# Copilot-Integration-Id: vscode-chat
+# Editor-Version: vscode/1.124.0
+# Editor-Plugin-Version: copilot-chat/0.30.0
+# User-Agent: GitHubCopilotChat/0.30.0
+
+
 - name: github_copilot/gpt-4.1
   edit_format: editor-diff
   extra_params:
@@ -21,22 +28,22 @@
   extra_params:
       Editor-Version: vscode/42
 
-- name: github_copilot/claude-sonnet-4.6
+- name: github_copilot/claude-opus-4.8
   edit_format: editor-diff
   extra_params:
       Editor-Version: vscode/42
 
 - name: github_copilot/claude-sonnet-4.6
+  edit_format: editor-diff
+  extra_params:
+      Editor-Version: vscode/42
+
+- name: github_copilot/claude-sonnet-5
   edit_format: editor-diff
   extra_params:
       Editor-Version: vscode/42
 
 - name: cecli/extra_params
   extra_params:
-    # max_tokens: 80000
     extra_headers:
       Editor-Version: vscode/42
-      # User-Agent: GithubCopilot/1.155.0
-      # Editor-Plugin-Version: copilot/1.155.0
-      # Editor-Version: vscode/1.85.1
-      # Copilot-Integration-Id: vscode-chat

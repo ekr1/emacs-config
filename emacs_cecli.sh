@@ -13,9 +13,8 @@ fi
 
 echo "Update Cecli fork"
 
-CECLI=cecli
-
-pushd $HOME/Documents/src/cecli-fork
+SRC=$HOME/Documents/src/cecli-fork
+pushd $SRC
 
 # Make sure the pull runs at most once a day.
 MARKER=".git/cecli-fork-pull-marker"
@@ -39,24 +38,30 @@ fi
 
 popd
 
-if ! $CECLI --help 2>&1 | grep -q -- "--spinner"; then
-    echo "Error: cecli --help does not mention the --spinner option."
+# CECLI=cecli
 
-    if [ ! -d $HOME/Documents/src/cecli-fork ] ; then
-        echo "  ... $HOME/Documents/src/cecli-fork does not exist, don't know how to re-install the tool."
-    else
-        echo "  ... reinstalling the tool..."
-        uv tool uninstall cecli-dev || true
-        uv --no-progress tool install --python python3.12 --editable ~/Documents/src/cecli-fork
-        # Install new python packages if necessary:
-        uv --no-progress tool upgrade cecli-dev
-    fi
-fi
+# if ! $CECLI --help 2>&1 | grep -q -- "--spinner"; then
+#     echo "Error: cecli --help does not mention the --spinner option."
+#
+#     if [ ! -d $SRC ] ; then
+#         echo "  ... $SRC does not exist, don't know how to re-install the tool."
+#     else
+#         echo "  ... reinstalling the tool..."
+#         uv tool uninstall cecli-dev || true
+#         uv --no-progress tool install --python python3.12 --editable $SRC
+#         # Install new python packages if necessary:
+#         uv --no-progress tool upgrade cecli-dev
+#     fi
+# fi
+
+CECLI="uv --no-progress tool run --python python3.12 --with-editable $SRC --with fastapi --with orjson --from cecli-dev cecli"
 
 if ! $CECLI --help 2>&1 | grep -q -- "--spinner"; then
     echo "Error: cecli --help does not mention the --spinner option, did the fork update and rebase correctly?"
+    $CECLI --help
     exit 1
 fi
+
 
 # ~$ uv tool uninstall cecli-dev
 # ~$ uv tool install --python python3.12 --editable ~/Documents/src/cecli-fork
@@ -132,6 +137,8 @@ TERM=xterm-256color $CECLI --no-fancy-input --no-pretty --no-spinner \
       --watch-files --subtree-only \
       --disable-playwright --disable-scraping \
       --agent --auto-accept-architect --yes-always $AUTO_TEST_FLAG
+
+#      --debug -v \
 
 # TERM=xterm-256color expect -f <(cat <<EOF
 # set timeout -1
