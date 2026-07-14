@@ -145,7 +145,7 @@ available platform-appropriate audio player."
       (let ((start compilation-filter-start)
             (end (point)))
         (goto-char start)
-        (insert (xterm-color-filter
+        (insert-before-markers (xterm-color-filter
                  (delete-and-extract-region start end)))))))
 (add-hook 'compilation-filter-hook #'my-xterm-color-compilation-filter)
 
