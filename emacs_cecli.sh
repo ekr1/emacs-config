@@ -19,7 +19,7 @@ pushd $SRC
 # Make sure the pull runs at most once a day.
 MARKER=".git/cecli-fork-pull-marker"
 if [ -f "$MARKER" ] && [ -z "$(find "$MARKER" -mtime +0)" ]; then
-    echo "  Skipping fork sync (last pull less than 24h ago)"
+    echo "  Skipping fork sync (last pull less than 24h ago, at $(date -r "$MARKER"))"
 else
     echo "  Checkout..."
     git checkout main
