@@ -54,6 +54,8 @@ popd
 #     fi
 # fi
 
+# uv cache clean   # occasional or when assuming dependency problems
+
 CECLI="uv --no-progress tool run --python python3.12 --with-editable $SRC --with fastapi --with orjson --from cecli-dev cecli"
 
 if ! $CECLI --help 2>&1 | grep -q -- "--spinner"; then
@@ -61,7 +63,6 @@ if ! $CECLI --help 2>&1 | grep -q -- "--spinner"; then
     $CECLI --help
     exit 1
 fi
-
 
 # ~$ uv tool uninstall cecli-dev
 # ~$ uv tool install --python python3.12 --editable ~/Documents/src/cecli-fork
