@@ -87,27 +87,27 @@ agent-config: |
     ],
 
     "skills_paths": ["~/.emacs.d/skills"],  # Directories to search for skills
-    "skills_init": ["caveman"],
+    "skills_init": ["caveman"]
 
     # See cecli/tools/ in source...
-    "tools_includelist": [ "CommandInteractive",
-                           "Command",
-                           "EditFile",
-                           "ExploreCode",
-                           "GitBranch",
-                           "GitDiff",
-                           "GitLog",
-                           "GitRemote",
-                           "GitShow",
-                           "GitStatus",
-                           "Grep",
-                           "Ls",
-                           "ReadFile",
-                           "ResourceManager",
-                           "Thinking",
-                           "UndoChange",
-                           "UpdateTodoList" ],
-     "tools_excludelist": [  ],
+    # "tools_includelist": [ "CommandInteractive",
+    #                        "Command",
+    #                        "EditFile",
+    #                        "ExploreCode",
+    #                        "GitBranch",
+    #                        "GitDiff",
+    #                        "GitLog",
+    #                        "GitRemote",
+    #                        "GitShow",
+    #                        "GitStatus",
+    #                        "Grep",
+    #                        "Ls",
+    #                        "ReadFile",
+    #                        "ResourceManager",
+    #                        "Thinking",
+    #                        "UndoChange",
+    #                        "UpdateTodoList" ],
+    #  "tools_excludelist": [  ],
 
   }
 
