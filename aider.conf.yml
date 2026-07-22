@@ -44,8 +44,8 @@
 
 # https://platform.claude.com/docs/en/about-claude/models/choosing-a-model
 # Great but expensive:
-# model:              github_copilot/claude-opus-4.7
-model:              github_copilot/claude-sonnet-5
+model:              github_copilot/claude-opus-4.8
+# model:              github_copilot/claude-sonnet-5
 # Free:
 # model:              github_copilot/gpt-4.1
 # model:              github_copilot/gpt-5-mini
@@ -87,9 +87,69 @@ agent-config: |
     ],
 
     "skills_paths": ["~/.emacs.d/skills"],  # Directories to search for skills
-    "skills_init": ["caveman"]
+    "skills_init": ["caveman"],
+
+    # See cecli/tools/ in source...
+    "tools_includelist": [ "CommandInteractive",
+                           "Command",
+                           "EditFile",
+                           "ExploreCode",
+                           "GitBranch",
+                           "GitDiff",
+                           "GitLog",
+                           "GitRemote",
+                           "GitShow",
+                           "GitStatus",
+                           "Grep",
+                           "Ls",
+                           "ReadFile",
+                           "ResourceManager",
+                           "Thinking",
+                           "UndoChange",
+                           "UpdateTodoList" ],
+     "tools_excludelist": [  ],
 
   }
+
+# # Enable Agent Mode
+# agent: true
+#
+# # Agent Mode configuration
+# agent-config:
+#   # Tool configuration
+#   tools_includelist: ["resourcemanager", "editfile", "finished"]  # Optional: Whitelist of tools
+#   tools_excludelist: ["command", "commandinteractive"]  # Optional: Blacklist of tools
+#   tools_paths: ["./custom-tools", "~/my-tools"]  # Optional: Directories or files containing custom tools
+#
+#   # Server configuration
+#   servers_includelist: ["local"]  # Optional: Whitelist of MCP server names to allow
+#   servers_excludelist: []  # Optional: Blacklist of MCP server names to exclude
+#
+#   # Sub-agent configuration
+#   subagent_paths: [".cecli/subagents"]  # Optional: Directories to search for sub-agent definitions
+#   max_sub_agents: 3  # Optional: Maximum concurrent sub-agents (default: 3)
+#   allow_nested_delegation: false  # Optional: Allow sub-agents to delegate further (default: false)
+#
+#   # Context blocks configuration
+#   include_context_blocks: ["todo_list", "git_status"]  # Optional: Context blocks to include
+#   exclude_context_blocks: ["symbol_outline", "directory_structure"]  # Optional: Context blocks to exclude
+#
+#   # Performance and behavior settings
+#   large_file_token_threshold: 32768  # Token threshold for large file warnings (default: 32768)
+#   skip_cli_confirmations: false  # YOLO mode - be brave and let the LLM cook
+#   allowed_commands: ["wc -l*"]  # Commands matching these glob patterns will not prompt for confirmation
+#   show_lint_errors: false  # When enabled, linting errors are shown in tool output (default: false)
+#   hot_reload: false  # When enabled, skills configuration is hot-reloaded automatically (default: false)
+# фвδ::  diff_colors: true  # When enabled, diff output uses color-coded lines (default: true)
+#   # Skills configuration (see Skills documentation for details)
+#   skills_paths: ["~/my-skills", "./project-skills"]  # Directories to search for skills
+#   skills_includelist: ["python-refactoring", "react-components"]  # Optional: Whitelist of skills to include
+#   skills_excludelist: ["legacy-tools"]  # Optional: Blacklist of skills to exclude
+#   skills_init: ["python-refactoring"]  # Optional: Skills to load and enable on startup
+#
+# # Other Agent Mode options
+# use-enhanced-map: true  # Use enhanced repo map with import relationships
+
 
 auto-save: true
 auto-load: false
